@@ -1,0 +1,77 @@
+1️⃣ Population- och åldersmodeller
+
+Du behöver förstå hur populationsfördelningar byggs upp och hur ålder påverkar överlevnad och reproduktion. Nyckelområden:
+
+Matrismodeller (Leslie matrices) – hur man modellerar diskreta åldersklasser i populationer.
+
+Teori: matrix population models, eigenvalues → populationstillväxt, stabil åldersstruktur.
+
+Rekommenderad litteratur:
+
+Caswell, H. (2001) Matrix Population Models: Construction, Analysis, and Interpretation.
+
+NINA björnmodellen (som Martin nämner) – praktiskt exempel på matris för björnar.
+
+Markov-kedjor för åldersklasser – diskret tid, överlevnad mellan åldersklasser, transition probabilities.
+
+Relevant när du modellerar mätfel som påverkar observerad ålder.
+
+2️⃣ Mätfel och observationsteori
+
+Eftersom Y = X + e handlar mycket om hur observationer skiljer sig från verkligheten:
+
+Measurement error models (klassisk litteratur inom statistisk inferens)
+
+Carroll et al. (2006) Measurement Error in Nonlinear Models.
+
+Fokus: hur mätfel påverkar parameterestimaten och fördelningar.
+
+Discrete vs continuous measurement error – viktigt för dig eftersom du har diskreta åldrar.
+
+💡 Du vill särskilt läsa om non-independent errors, dvs e|X, eftersom detta gör problemet mer realistiskt.
+
+3️⃣ Avfaltningsproblem / Deconvolution
+
+Det här är den statistiskt mest intressanta delen:
+
+Problem: du observerar Y = X + e, vill återställa fördelningen av X.
+
+Teori:
+
+Diskret och kontinuerlig deconvolution
+
+Maximum likelihood / EM-algoritmer för att estimera X-fördelning
+
+Bayesian deconvolution (posterior fördelning för X givet Y)
+
+Rekommenderad litteratur:
+
+Carroll, Ruppert, Stefanski – samma som ovan, kapitel om deconvolution.
+
+Stefanski & Carroll (1990), Deconvoluting kernel density estimators.
+
+Wang et al. (2016), Statistical Methods for Deconvolution Problems in Discrete Data.
+
+4️⃣ Simulation & Sensitivitetsanalys
+
+För att koppla teori till praktiska exempel:
+
+Monte Carlo-simulering – simulera Y från X + e för att förstå effekterna av olika felmodeller.
+
+Parametriska vs icke-parametriska modeller – vad händer om du antar normal, poisson, eller empirisk distribution för e|X?
+
+Teori:
+
+Rubinstein & Kroese, Simulation and the Monte Carlo Method
+
+Efron, Bootstrap Methods – för att förstå osäkerheten i dina uppskattningar.
+
+5️⃣ Kort sagt: fokusområden för dig
+
+Populationsteori & matrismodeller – Caswell + NINA-modellen.
+
+Measurement error theory – Carroll, Stefanski, icke-observerbara fel.
+
+Deconvolution / avfaltningsproblem – EM, ML, Bayesian.
+
+Simulation & Sensitivity – Monte Carlo, bootstrap, parametrisering av e|X.

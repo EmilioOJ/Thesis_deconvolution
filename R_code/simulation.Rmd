@@ -1,0 +1,288 @@
+---
+title: "simulation"
+author: "Emilio Otero"
+date: "2026-03-19"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+source("C:/Users/Sueco/Desktop/university/uppsats/R_code/pupulation_model.R")
+source("stat_func.R")
+library(MASS)
+
+```
+
+
+### 1. Parametrar för fördelningen
+- Välj 4–6 olika parametrar för en trunkerad normalfördelning.  
+
+### 2. Effekter av sampling och konvolution
+- Generera sampel av olika storlek (t.ex. 5, 10, 25, 50).  
+- Mät felet i konvolverade sampel jämfört med okonvolverade för att separera **samplingfel** från **informationstapp p.g.a. konvolution**.  
+- Mät via Total Variation (TV) eller andra avståndsmål som KL-divergens.
+
+### 3. Dekonvolution
+- Jämför två metoder:  
+  1. Matrisinversion  
+     - Observera när problemet blir ill-posed (condition number, negativa sannolikheter). (kortfattat)
+  2. EM-algoritm  
+     - Testa stabilitet genom flera startpunkter på samma konvolverade dataset.  
+     - Utvärdera hur nära den dekonvolverade fördelningen ligger sann distribution, med hänsyn till samplingfel.
+     - **utforska** and p start fördelningen är poisson fördelad
+
+### 4. Analys 
+- Separera totalt fel i:  
+  - Samplingfel  
+  - Informationsförlust p.g.a. konvolution  
+  - Algoritmiskt fel (stabilitet/precision)
+  - **utforska** borde ge mig svar på hur och om hur deconvolutionen presterar för olika parametrar (varians) samt hur sampelstorleken inverkar. 
+  
+### 5. Testa em metoden med japanernas fel-model
+
+
+## Error e|X
+
+$$e \mid X \sim \mathcal{N}_{(0,\infty)}\big(f(X), g(X)^2\big)$$
+where $f(x) = x+\frac{4}{x+0.5}$ and $g(x)=1$
+
+```{r, echo = FALSE}
+
+# Define mean and SD functions
+f <- function(x) x+4/(x+0.5)   # mu(x)
+g <- function(x) 4               # sigma(x)
+
+# Sequence of true ages
+x_vals <- seq(0, 20, length.out = 200)
+
+# Compute truncated mean and variance
+trunc_data <- data.frame(
+  x = x_vals,
+  mu = f(x_vals),
+  sigma = g(x_vals)
+)
+
+trunc_data <- within(trunc_data, {
+  alpha <- (0 - mu)/sigma
+  phi_alpha <- dnorm(alpha)
+  Phi_alpha <- pnorm(alpha)
+  
+  # Truncated mean
+  mean_trunc <- mu + sigma * phi_alpha / (1 - Phi_alpha) -x_vals
+  
+  # Truncated standard deviation
+  sd_trunc <- sigma * sqrt(1 - (alpha * phi_alpha)/(1 - Phi_alpha) - (phi_alpha/(1 - Phi_alpha))^2)
+  
+  # Confidence intervals (mean ± 1 SD)
+  lower <- mean_trunc - sd_trunc  # truncated at 0 
+  upper <- mean_trunc + sd_trunc 
+})
+
+# Plot
+ggplot(trunc_data, aes(x = x)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "pink", alpha = 0.4) +
+  geom_line(aes(y = mean_trunc), color = "blue", size = 1) +
+  labs(
+    title = "Expected Bias e|X with Truncated Normal Confidence Interval",
+    x = "True Age X",
+    y = "Bias e|X"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+```
+
+
+
+## X distribution plotted with convolution and simple inversion deconvolution
+
+
+
+```{r, echo=FALSE}
+# Type of erros 1. mu =  5 *exp(-0.7675 *x)+x 
+miss_class <- truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x+4/(x+0.5))
+# image(t(miss_class))
+# Convoluted data
+conv_data <- as.vector(t(miss_class)%*%dist_eigenvector$stable_dist)
+# colSums(t(miss_class))
+# Make a histogram
+plot_overlapping_bars(dist_eigenvector$stable_dist, conv_data)
+
+# Inversion 
+deconv_matrix <- ginv(miss_class)
+# Deconvolution 
+deconv_data <- as.vector(t(deconv_matrix)%*%conv_data)
+plot_overlapping_bars(dist_eigenvector$stable_dist, deconv_data, main = "True vs Deconvoluted distribution")
+
+# deconv_matrix%*%miss_class
+
+# forward modeling
+#forward_data <- forward_model_matrix(miss_class, conv_data)
+
+
+# plot_overlapping_bars(dist_eigenvector$stable_dist, forward_data)
+
+```
+## Sampling 100 data points 
+
+Deconvolution is done with EM-alg (expected-maximization) with uniform $p$
+
+```{r, echo=FALSE}
+counts_unconvolved  <- simulate_counts(dist_eigenvector$stable_dist, 100)
+counts_convolved <- simulate_convolved_counts(counts_unconvolved, miss_class)
+# Deconvolved 
+deconv_probability <- em_deconvolve(counts_convolved, miss_class)
+deconv_p_matrix <- deconv_probability[[3]]
+deconv_p_dist <- deconv_probability[[1]]
+counts_deconvolved <- simulate_deconvolved_counts(counts_convolved,deconv_p_matrix)
+n_bins <- length(counts_unconvolved)
+bins <- seq_len(n_bins)
+
+# True distribution
+barplot(
+  dist_eigenvector$stable_dist,
+  names.arg = bins,
+  col = "blue",
+  main = "True dist",
+  xlab = "Age Bin",
+  ylab = "frequenzy"
+)
+
+# 1️⃣ Unconvolved counts
+barplot(
+  counts_unconvolved,
+  names.arg = bins,
+  col = "blue",
+  main = "Unconvolved sample",
+  xlab = "Age Bin",
+  ylab = "Counts"
+)
+
+# 2️⃣ Convolved counts
+barplot(
+  counts_convolved,
+  names.arg = bins,
+  col = "red",
+  main = "Convolved sample",
+  xlab = "Age Bin",
+  ylab = "Counts"
+)
+
+# 3️⃣ Deconvolved counts
+barplot(
+  counts_deconvolved,
+  names.arg = bins,
+  col = "green",
+  main = "Deconvolved sample",
+  xlab = "Age Bin",
+  ylab = "Counts"
+)
+
+# 4 Deconvolved distribution
+barplot(
+  deconv_p_dist,
+  names.arg = bins,
+  col = "darkgreen",
+  main = "Expected distribution em-alg",
+  xlab = "Age Bin",
+  ylab = "Frequenzy"
+)
+
+```
+## Kullback–Leibler divergence for 1000 distribution estimates of n = 100 samples
+
+```{r, echo=FALSE}
+kl_values <- numeric(1000)
+
+for (i in seq_len(1000)) {
+  counts_unconvolved  <- simulate_counts(dist_eigenvector$stable_dist, 100)
+  counts_convolved <- simulate_convolved_counts(counts_unconvolved, miss_class)
+  
+  deconv_probability <- em_deconvolve(counts_convolved, miss_class)
+  
+  kl_values[i] <- kl_divergence(
+    dist_eigenvector$stable_dist, 
+    deconv_probability$p
+  )
+}
+
+hist(
+  kl_values, 
+  breaks = 30, 
+  col = "skyblue", 
+  main = "Distribution of KL divergence across 1000 simulations",
+  xlab = "KL divergence"
+)
+```
+## KL and TV divergance for different sampel sizes (100 replikas) deconvolution with EM-alg
+
+```{r, echo = FALSE}
+# Sample sizes and number of simulations
+sample_sizes <- c(5,6,7,8,9,10,15,20,25,50,100)  # adjust as needed
+n_sim <- 100
+
+# Storage for results
+kl_results <- matrix(NA, nrow = n_sim, ncol = length(sample_sizes))
+tv_results <- matrix(NA, nrow = n_sim, ncol = length(sample_sizes))
+
+# Function for TV distance
+tv_distance <- function(p, q) {
+  0.5 * sum(abs(p - q))
+}
+
+# Main loop: compute both KL and TV
+for (s in seq_along(sample_sizes)) {
+  n <- sample_sizes[s]
+  
+  for (sim in 1:n_sim) {
+    counts_unconvolved <- simulate_counts(dist_eigenvector$stable_dist, n)
+    counts_convolved   <- simulate_convolved_counts(counts_unconvolved, miss_class)
+    deconv_prob        <- em_deconvolve(counts_convolved, miss_class)
+    
+    # Compute KL and TV distances
+    kl_results[sim, s] <- kl_divergence(dist_eigenvector$stable_dist, deconv_prob$p)
+    tv_results[sim, s] <- tv_distance(dist_eigenvector$stable_dist, deconv_prob$p)
+  }
+}
+
+# Summarize KL results
+kl_summary <- data.frame(
+  sample_size = sample_sizes,
+  median = apply(kl_results, 2, median),
+  upper95 = apply(kl_results, 2, function(x) quantile(x, 0.95))
+)
+
+# Summarize TV results
+tv_summary <- data.frame(
+  sample_size = sample_sizes,
+  median = apply(tv_results, 2, median),
+  upper95 = apply(tv_results, 2, function(x) quantile(x, 0.95))
+)
+
+# Plot KL divergence
+library(ggplot2)
+ggplot(kl_summary, aes(x = sample_size)) +
+  geom_line(aes(y = median), color = "blue") +
+  geom_ribbon(aes(ymin = 0, ymax = upper95), fill = "skyblue", alpha = 0.3) +
+  labs(
+    title = "KL divergence 100 simulations vs Sample Size (95% upper-bound)",
+    x = "Sample size",
+    y = "KL divergence"
+  )
+
+# Plot TV distance
+ggplot(tv_summary, aes(x = sample_size)) +
+  geom_line(aes(y = median), color = "red") +
+  geom_ribbon(aes(ymin = 0, ymax = upper95), fill = "pink", alpha = 0.3) +
+  labs(
+    title = "Total Variation distance vs Sample Size (95% upper-bound)",
+    x = "Sample size",
+    y = "TV distance"
+  )
+```
+
+
+

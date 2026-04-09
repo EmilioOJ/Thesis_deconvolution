@@ -1,0 +1,39 @@
+\contentsline {section}{\numberline {1}Introduktion}{2}{section.1}%
+\contentsline {section}{\numberline {2}Theory}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Matrix population modells}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Computing age distribution from a Leslie matrix}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Age determination errors}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}misclassification matrices}{4}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Stable age distribution and age measurement errors}{5}{subsection.2.5}%
+\contentsline {paragraph}{Stable age distribution.}{5}{section*.2}%
+\contentsline {paragraph}{Age measurement errors.}{5}{section*.3}%
+\contentsline {paragraph}{Summary.}{5}{section*.4}%
+\contentsline {subsection}{\numberline {2.6}Condition number}{5}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}Expectation-Maximization algorithm (EM-algorithm)}{5}{subsection.2.7}%
+\contentsline {paragraph}{Monotonicity}{6}{section*.5}%
+\contentsline {subsection}{\numberline {2.8}Application of the EM algorithm to the deconvolution problem}{6}{subsection.2.8}%
+\contentsline {paragraph}{Maximization-step}{7}{section*.6}%
+\contentsline {subsection}{\numberline {2.9}Evaluation method}{7}{subsection.2.9}%
+\contentsline {paragraph}{Total Varation (TV)}{7}{section*.7}%
+\contentsline {paragraph}{KL-divergence}{8}{section*.8}%
+\contentsline {section}{\numberline {3}Methods / Simulation Setup}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Simulated Age Distributions}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Error terms}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Convolution and Sampling Effects}{9}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Deconvolution Methods}{10}{subsection.3.4}%
+\contentsline {paragraph}{Matrix inversion}{10}{section*.9}%
+\contentsline {paragraph}{EM-algorithm deconvolution}{11}{section*.10}%
+\contentsline {subsection}{\numberline {3.5}Error Analysis}{11}{subsection.3.5}%
+\contentsline {section}{\numberline {4}Results}{11}{section.4}%
+\contentsline {section}{\numberline {5}Analysis / Discussion}{11}{section.5}%
+\contentsline {section}{\numberline {6}Emacs}{12}{section.6}%
+\contentsline {section}{\numberline {7}Titta p\r a resultatet}{12}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Pdf direkt}{12}{subsection.7.1}%
+\contentsline {section}{\numberline {8}Listor och tabeller}{13}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Men jag har ju gjort en fin tabell i Excel\dots }{13}{subsection.8.1}%
+\contentsline {section}{\numberline {9}Matematiska formler och uttryck}{14}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Fels\"okning}{15}{subsection.9.1}%
+\contentsline {section}{\numberline {10}Infoga bilder och plottar}{15}{section.10}%
+\contentsline {section}{\numberline {11}Att referera, citera, och mer att l\"asa}{15}{section.11}%
+\contentsline {section}{\numberline {12}Appendix}{16}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Simulation Parameters}{16}{subsection.12.1}%

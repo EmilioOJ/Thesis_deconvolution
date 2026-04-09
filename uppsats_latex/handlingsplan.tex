@@ -1,0 +1,149 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{anysize}
+\marginsize{3cm}{3cm}{2cm}{2cm}
+%\usepackage[applemac]{inputenc}  %för mac 
+%\usepackage[latin1]{inputenc}  %för unix och PC
+%\usepackage[T1]{fontenc}            % Output Swedish characters
+\usepackage[utf8]{inputenc} 
+\usepackage[swedish]{babel}
+
+
+
+
+                 %%%%%% FYLL I UPPGIFTERNA NEDAN {XXX} %%%%%%
+
+
+\newcommand{\datum}{04 February 2026}               %%%%% DATUM FÖR UPPRÄTTANDE AV HANDLINGSPLANEN
+
+\newcommand{\kurskod}{MT6011}                      %%%%% KURSKOD,  MT6001 eller  MT6010
+
+\newcommand{\student}{Emilio Otero Johansson}              %%%%% DITT NAMN
+
+\newcommand{\pnr}{911122-0274}                       %%%%% DITT PERSONNUMMER
+
+\newcommand{\handledare}{Martin Sköld}            %%%%% NAMN PÅ HANDLEDARE
+
+\newcommand{\exthandledare}{Nej}                     %%%%% EVENTUELL EXTERN HANDLEDARE   Namn / nej
+
+\newcommand{\redovisningsdatum}{slutet av maj 2026}       %%%%% PRELIMINÄRT REDOVISNINGSDATUM
+
+\newcommand{\webbpublicering}{Ja}	%%%%%% GODKÄNNER DU ATT DIN FÄRDIGA KANDIDATUPPSATS PUBLICERAS PÅ INSTITUTIONENS HEMSIDA? Ja / Nej
+
+\newcommand{\urkund}{Ja}	%%%%%% INTYGAR DU ATT DU HAR LÄST URKUNDS HANDBOK OM PLAGIERING OCH KOMMER SKRIVA DITT ARBETE I ENLIGHET MED DEN?  Ja / Nej
+
+
+
+
+             %%% NEDAN BESKRIVER NI ARBETET OCH HUR DET SKA UTFÖRAS %%%
+                     %%% EXEMPELVIS KAN DET SE UT SÅ HÄR %%%
+
+\newcommand{\beskr}{
+\begin{enumerate}
+\item Preliminär titel\\
+Assessing the Impact of Age Determination Error for different method on population-level inference in bears.
+
+\item Översiktlig beskrivning av problemet \\
+When modelling bear populations, age determination constitutes a key component for understanding and predicting population dynamics. More recently, DNA-based methods have been developed (Nakamura et al., 2025), which may provide age estimates with better error characteristics for population level inference.
+
+Both the magnitude and the distribution of age determination errors may differ between methods as well as depend on the true age of the individual. For example, very young individuals cannot have their age underestimated below zero, whereas older individuals may exhibit larger errors. Additionally, accurately estimating the age of individuals near the threshold between non-reproductive and reproductive age is particularly important for population-level analyses.
+
+It is thus important to assess how different forms of age determination error affect estimated population age distributions, and to what extent conclusions drawn from observed age data may be sensitive to these errors.
+
+\item Förslag till lösningsmetod \\
+To investigate how age determination error affects estimated population age distributions, a simulation-based approach will be used. First, a baseline age distribution representing the true population age structure will be constructed using a simple population matrix model, inspired by models presented in Caswell (2001) and parameterized with data from Støen m.fl. (2021).
+
+Next, age determination error will be modelled as a random variable whose distribution may depend on the true age of the individual. Several plausible error distributions will be considered, with their parameters chosen so that the standard deviation of the distribution matches roughly the RMSE of the observed residuals for each age determination method. 
+
+As a final step, a deconvolution matrix will be constructed to examine whether it is possible to recover the true age distribution from observed age data, given knowledge of the age determination error distribution. This matrix can then be used to assess the accuracy of population-level inference for different age determination methods.
+
+\item Tidplan \\
+0
+\begin{itemize}
+	\item Vecka 6 (2 feb – 8 feb): Literature review population matrix. R-code simulation.
+	\item Vecka 7 (9 feb – 15 feb): Error distribution simulations/parametrization in R. Write section in thesis.
+	\item Vecka 8 (16 feb – 22 feb): Error distribution simulations/parametrization in R. Write section in thesis.
+	\item Vecka 9 (23 feb – 1 mar): Deconvolution matrix "reading" and test in R.
+	\item Vecka 10 (2 mar – 8 mar): Deconvolution matrix "reading" and test in R. Thesis writing.
+	\item Vecka 11 (9 mar – 15 mar): Hypothesis testing, population-level inference.
+	\item Vecka 12 (16 mar – 22 mar): Hypothesis testing, population-level inference.
+	\item Vecka 13 (23 mar – 29 mar): Thesis writing.
+	\item Vecka 14 (30 mar – 5 apr): Thesis writing.
+	\item Vecka 15 (6 apr – 12 apr): Extra week. First draft on 13 April.
+	\item Vecka 16 (13 apr – 19 apr): Feedback review and finish sections.
+	\item Vecka 17 (20 apr – 26 apr): Feedback review and finish sections.
+	\item Vecka 18 (27 apr – 3 maj): Feedback review and finish sections. Last hand-in for final review on 4 May.
+	\item Vecka 19 (4 maj – 10 maj): Final amendments.
+	\item Vecka 20 (11 maj – 17 maj): Final amendments until 14 May.
+\end{itemize}
+
+
+\end{enumerate}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+               %%% ÄNDRA EJ NEDAN %%%
+
+
+\begin{document} 
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX \=       \kill
+STOCKHOLMS UNIVERSITET	     \> \datum       \\
+MATEMATISKA INSTITUTIONEN     \\
+Avd. Matematisk statistik     \\
+\end{tabbing}
+\medskip
+\begin{center} \large \textbf {Handlingsplan för självständigt arbete} \end{center} 
+\textit{ \small Handlingsplanen ska upprättas av student och handledare i samråd och lämnas till koordinator vid arbetets början. Handlingsplanen gäller 6 månader efter planerat redovisningsdatum och om redovisning ej skett inom den tiden ska en ny handlingsplan upprättas. För att en färdig kandidatuppsats ska bli publicerad på institutionens hemsida krävs ett aktivt godkännande av studenten. För en godkänd handlingsplan krävs att studenten läser URKUNDs handbok om plagiering och intygar att uppsatsen  kommer skrivas  i enlighet med den.}
+
+\begin{normalsize}
+\medskip
+\begin{tabbing}
+ \hspace{22em} \=   \\
+%XXXXXXXXXXXXXXXXXXXX\=       \kill
+Kursbenämning:  \>   Kandidat~\kurskod     \\
+Student:    \> \student ~\pnr     \\
+Handledare:  \> \handledare \\
+Extern handledare: \> \exthandledare \\
+Planerat redovisningsdatum: \> \redovisningsdatum  \\
+Jag godkänner att uppsatsen publiceras \\ på institutionens hemsida: \> \webbpublicering  \\
+Jag har läst URKUNDS handbok om plagiering\\ och kommer skriva i enlighet med den: \> \urkund  \\
+\end{tabbing} 
+\textbf{Beskrivning av arbetet}
+\medskip
+\beskr 
+Stockholm\ \datum \\[30 mm]
+\student     ~~~~~~~~~~~~~~~~~~~~~    \handledare
+
+
+
+\end{normalsize}
+\end{document}

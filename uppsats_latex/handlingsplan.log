@@ -1,0 +1,138 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.26)  4 FEB 2026 12:54
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./handlingsplan.tex
+(handlingsplan.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-29>
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/base\size11.clo
+File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count275
+\c@section=\count276
+\c@subsection=\count277
+\c@subsubsection=\count278
+\c@paragraph=\count279
+\c@subparagraph=\count280
+\c@figure=\count281
+\c@table=\count282
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+)
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/anysize\anysize.sty
+Package: anysize 1994/08/13 setting margin sizes
+
+document style option `anysize' loaded
+Michael Salzenberg, Thomas Esser, Dirk Hillbrecht
+Version 1.0, Aug 13, 1994
+\@Leftmargin=\dimen149
+\@Rightmargin=\dimen150
+\@Topmargin=\dimen151
+\@Bottommargin=\dimen152
+) (C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
+Package: inputenc 2024/02/08 v1.3d Input encoding file
+\inpenc@prehook=\toks17
+\inpenc@posthook=\toks18
+)
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2025/12/30 v25.18 The multilingual framework for LuaLaTeX, pdfLa
+TeX and XeLaTeX
+\babel@savecnt=\count283
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input li
+ne 2068.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input li
+ne 2070.
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input lin
+e 2072.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input lin
+e 2073.
+LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) 
+on input line 2074.
+LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) 
+on input line 2076.
+LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) 
+on input line 2101.
+\U@D=\dimen153
+\l@unhyphenated=\language79
+
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count284
+Package babel Info: Configuration files are deprecated, as
+(babel)             they can break document portability.
+(babel)             Reported on input line 4197.
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/generic/babel/locale/sv\babel
+-swedish.tex)
+Package babel Info: Importing font and identification data for swedish
+(babel)             from babel-sv.ini. Reported on input line 4321.
+
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/babel-swedish\swedish.l
+df
+Language: swedish 2021/02/06 v2.3e Swedish support from the babel system
+Package babel Info: Making " an active character on input line 90.
+))
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count285
+) (handlingsplan.aux
+Package babel Info: 'swedish' activates 'swedish' shorthands.
+(babel)             Reported on input line 5.
+)
+\openout1 = `handlingsplan.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+ [1
+
+{C:/Users/Sueco/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] (handlin
+gsplan.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-29>
+ ***********
+ ) 
+Here is how much of TeX's memory you used:
+ 1665 strings out of 467871
+ 31339 string characters out of 5418376
+ 454678 words of memory out of 5000000
+ 30593 multiletter control sequences out of 15000+600000
+ 629967 words of font info for 47 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 38i,5n,44p,601b,262s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\Sueco\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
+1095.pk><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmbx10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmbx12.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/t
+ype1/public/amsfonts/cm/cmr10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on handlingsplan.pdf (2 pages, 72642 bytes).
+PDF statistics:
+ 34 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

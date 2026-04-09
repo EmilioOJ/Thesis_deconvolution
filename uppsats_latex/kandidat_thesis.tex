@@ -1,0 +1,739 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+% \usepackage[swedish]{babel} % sätt ett % framför denna rad om du skriver på engelska
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{xcolor}  
+\usepackage{enumitem}
+\usepackage[color=yellow!30, size=\small]{todonotes}
+\usepackage[colorlinks=true, breaklinks=true]{hyperref}
+\usepackage[backend=biber,style=authoryear]{biblatex}
+\addbibresource{references.bib}
+
+
+\title{En mall (och kort introduktion) till \LaTeX}
+\author{Andreas Nordvall Lagerås}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document} % Här börjar den egentliga texten
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle       % Här används  \title och \author för att 
+                 % ge dokumentet titel och författare.
+
+\begin{abstract}
+Detta dokument ger dig smakprov på vad man kan göra med \LaTeX. Genom att titta på och ändra i koden som ligger till grund för detta dokument kan du förhoppningsvis snabbt komma igång med att skriva snygga rapporter. 
+\end{abstract}
+\tableofcontents
+
+\section{Introduktion}\label{stycke1}
+
+When modelling bear populations, age determination constitutes a key component for understanding and predicting population dynamics. More recently, DNA-based methods have been developed (Nakamura et al., 2025), which may provide age estimates with better error characteristics for population level inference.
+
+Both the magnitude and the distribution of age determination errors may differ between methods as well as depend on the true age of the individual. For example, very young individuals cannot have their age underestimated below zero, whereas older individuals may exhibit larger errors. Additionally, accurately estimating the age of individuals near the threshold between non-reproductive and reproductive age is particularly important for population-level analyses.
+
+It is thus important to assess how different forms of age determination error affect estimated population age distributions, and to what extent conclusions drawn from observed age data may be sensitive to these errors.
+
+To investigate how age determination error affects estimated population age distributions, a simulation-based approach will be used. First, a baseline age distribution representing the true population age structure will be constructed using a simple population matrix model, inspired by models presented in Caswell (2001) and parameterized with data from Støen m.fl. (2021).
+
+Next, age determination error will be modelled as a random variable whose distribution may depend on the true age of the individual. To this purpose we will use n different distribution. A baseline case where there error is 
+
+Several plausible error distributions will be considered, with their parameters chosen so that the standard deviation of the distribution matches roughly the RMSE of the observed residuals for each age determination method. 
+
+As a final step, a deconvolution matrix will be constructed to examine whether it is possible to recover the true age distribution from observed age data, given knowledge of the age determination error distribution. This matrix can then be used to assess the accuracy of population-level inference for different age determination methods.
+
+
+\section{Theory}\label{stycke2}
+\subsection{Matrix population modells}\label{pop_model_matrix}
+
+To obtain a suitable idea of the population age distribution over time we use a population matrix model \cite{caswell2001} which we will describe shortly in this section. The age class $i=1,2,... m$ is the discretization of the age $x$ to age-class $i$ with  $i - 1 \leq x \leq i$. The number of individuals for each age class $i$ is then given by $n_1,n_2,...,n_m$.
+
+
+Following \cite[Eq.~2.1]{caswell2001} the number of $n_1$ individuals at time $t+1$ can be projected with  
+$$n_1(t+1) = f_1n_1(t) + f_2n_2(t)+... + f_in_i(t)$$
+
+Here $f_i$ denotes the reproductive rate per-capita. That is the average number of offspring an individual of age class $i$ has. For $i > 1$ the number of individuals in an age class $n_i$ at time $t+1$ is simply given by their survival probaility $(s_{i-1})(n_{i-1})$ at the previous timestep $t$. Together we can write the equation in matrix form for all $n_i$ at time $t+1$. 
+
+\[
+\begin{pmatrix}
+	n_1 \\
+	n_2 \\
+	\vdots \\
+	\vdots \\
+	n_m
+\end{pmatrix}  (t+1) =
+\begin{pmatrix}
+	f_1   & f_2   & f_3   & \cdots & f_m \\
+	s_1   & 0     & 0     & \cdots & 0   \\
+	0     & s_2   & 0     & \cdots & 0   \\
+	\vdots& \vdots& \ddots& \ddots & \vdots \\
+	0     & 0     & \cdots& s_{m-1}& 0
+\end{pmatrix}
+\begin{pmatrix}
+	n_1 \\
+	n_2 \\
+	\vdots \\
+	\vdots \\
+	n_m
+\end{pmatrix}  (t)
+\]
+
+\subsection{Computing age distribution from a Leslie matrix}\label{sec:age_distribution}
+
+The stable age distribution of a population can be obtained from the Leslie matrix $\mathbf{A}$ by computing its dominant eigenvalue $\lambda_1$ and the corresponding right eigenvector $\mathbf{w}$. 
+This eigenvector gives the relative proportions of individuals in each age class at equilibrium, and can be normalized so that the entries sum to 1.
+
+The existence of a real, non-negative eigenvalue $\lambda_1$ that is greater than or equal in magnitude to all other eigenvalues $\lambda_i$ of a non-negative, primitive matrix $\mathbf{A}$ is guaranteed by the Perron-Frobenius theorem \cite{caswell2001}. 
+
+If $\mathbf{A}$ is primitive, then as $t \rightarrow \infty$, the population vector $\mathbf{n}_t$ satisfies
+\[
+\frac{\mathbf{n}_t}{\sum_i n_{i,t}} \to \mathbf{w},
+\]
+where $\mathbf{w}$ is the normalized right eigenvector corresponding to $\lambda_1$. 
+This represents the **stable age distribution** of the population.
+
+
+\subsection{Age determination errors}\label{age_errors}
+
+Once the stable age distribution of the population has been obtained, we simulate the effect of age determination errors. 
+
+Let $\epsilon$ denote the measurement error in age, which may depend on the true age $X$:
+
+\[
+\epsilon \mid X \sim N(0, f(X)^2).
+\]
+
+The observed age $Y$ is then given by
+
+\[
+Y = X + \epsilon.
+\]
+
+Applying this error to the theoretical distribution produces the observed age distribution. 
+This can be represented using a misclassification matrix $M$, where $M_{ij}$ denotes the probability that an individual of true age class $i$ is observed in age class $j$.
+
+If $\mathbf{p}_x$ is the vector of true age proportions and $\mathbf{p}_y$ the observed proportions, then
+
+\[
+\mathbf{p}_y = M \mathbf{p}_x .
+\]
+
+
+\subsection{misclassification matrices} \label{subsec:missclasification}
+
+For discrete age classes, define a misclassification matrix $M$ such that
+
+\[
+M_{ij} = P(Y = j \mid X = i)
+\]
+
+is the probability that an individual of true age class $i$ is observed in age class $j$.  
+Let $\mathbf{p}_x$ be the vector of true age proportions (from the stable distribution $\mathbf{w}$), and $\mathbf{p}_y$ the observed age proportions. Then the observed distribution is
+
+\[
+\mathbf{p}_y = M \mathbf{p}_x.
+\]
+
+\subsection{Stable age distribution and age measurement errors}\label{age_stable_errors}
+
+Let $\mathbf{A}$ be a Leslie matrix describing the age-structured population dynamics. 
+The population vector at time $t$, $\mathbf{n}_t$, evolves as
+
+\[
+\mathbf{n}_{t+1} = \mathbf{A}\mathbf{n}_t.
+\]
+
+\paragraph{Stable age distribution.}  
+The dominant eigenvalue $\lambda_1$ of $\mathbf{A}$ and its corresponding right eigenvector $\mathbf{w}$ satisfy
+
+\[
+\mathbf{A}\mathbf{w} = \lambda_1 \mathbf{w}, \quad \mathbf{w} \ge 0.
+\]
+
+By the Perron--Frobenius theorem \cite{caswell2001}, $\lambda_1$ is real and non-negative, and as $t \to \infty$, the normalized population vector converges to the **stable age distribution**:
+
+\[
+\frac{\mathbf{n}_t}{\sum_i n_{i,t}} \longrightarrow \mathbf{w}, \quad \text{with } \sum_i w_i = 1.
+\]
+
+\paragraph{Age measurement errors.}  
+Let $X$ denote the true age of an individual, and suppose age determination is subject to measurement error $\epsilon$:
+
+\[
+Y = X + \epsilon, \quad \epsilon \mid X \sim N(0, f(X)^2),
+\]
+
+where $f(X)$ specifies the standard deviation of the error as a function of true age.
+
+
+
+\paragraph{Summary.}  
+This formulation allows us to combine the theoretical population structure (from the Leslie matrix) with realistic measurement error in age, producing an observed age distribution that accounts for both **population dynamics** and **age-determination uncertainty**.
+
+
+\subsection{Condition number}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \texttt, \textit (kursiverat) och \textbf (fetstil) 
+% är några kommandon för att ändra textens utseende
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Expectation-Maximization algorithm (EM-algorithm)} \label{sec:em_alg}
+
+
+The EM algorithm is a general-purpose method for computing maximum likelihood estimates in the presence of incomplete or latent data (\cite{mclachlan2008}). Let $\mathbf{Y}$ denote a discrete random vector corresponding to the observed (incomplete) data, and $\mathbf{X}$ a discrete random vector representing the complete data. If $\mathbf{X}$ were fully observable, we could directly compute the complete-data log-likelihood function $\ell_c(\theta)$ based on a realization $x$.
+
+However, in practice we only observe $y \in \mathcal{Y}$, the sample space of $\mathbf{Y}$. The complete-data sample space $\mathcal{X}$ is related to $\mathcal{Y}$ through a many-to-one mapping, i.e., a surjection from $\mathcal{X}$ to $\mathcal{Y}$, where multiple elements $x \in \mathcal{X}$ correspond to the same observed value $y$.
+
+The probability mass function of $\mathbf{Y}$ is therefore given by
+\begin{equation}
+	p_Y(y;\theta) = \sum_{x \in \mathcal{X}(y)} p_X(x;\theta),
+	\label{eq:pmfY}
+\end{equation}
+where $\mathcal{X}(y) = \{x \in \mathcal{X} : h(x) = y\}$.
+
+Since the complete data $\mathbf{X}$ is not observable, the complete-data log-likelihood $\ell_c(\theta)$ cannot be evaluated directly. Instead, the EM algorithm considers its conditional expectation given the observed data $y$ and a current parameter estimate $\theta^{(t)}$:
+
+\begin{equation}
+	Q(\theta \mid \theta^{(t)}) = \mathbb{E}_{\theta^{(t)}} \big[ \ell_c(\theta) \mid Y = y \big]
+	\label{eq:Qfunction}
+\end{equation}
+
+
+which corresponds to the Expectation step (E-step) of the EM algorithm. In the Maximization step (M-step), the parameter is updated by maximizing this function:
+
+\begin{equation}
+	\theta^{(t+1)} = \arg\max_{\theta} Q(\theta \mid \theta^{(t)}).
+\end{equation}
+
+The process is then iterated upon until $l(\theta^{t+1}) - l(\theta^t) <=  k$ for some arbitrary $k$ value.
+
+\paragraph{Monotonicity}. A key property for the algorithm to work is for the likelihood to be monotonically increasing for each iteration. $L(\theta^{t+1})\geq L(\theta^{t}))$ which is discussed in Section 3.2 of \cite{mclachlan2008}.   
+
+
+
+
+
+\subsection{Application of the EM algorithm to the deconvolution problem}
+
+
+Let $X = (Z,Y)$ denote our complete data, that is in our deconvolution problem the observed age $Y$ and the corresponding true age $Z$. The PMF for $X$ is then:
+
+\begin{equation}
+	p_X(x = (z_i,y_j);\theta_Z) =  p_i M_{ij}
+\end{equation}
+
+where $M$ is the missclasification matrix defined in \ref{subsec:missclasification} and for a vector of $n$ independent observations  $\textbf{x} = {(z_1,y_1),(z_2,y_2),...,(z_n,y_n)}$ we obtain
+
+\begin{equation}
+	p_X(\textbf{x};\theta_Z) = \prod_i \prod_j (p_i M_{ij})^{n_{ij}}
+\end{equation}
+
+where $n_ij = \sum_{k=1}1\{X_k = i , Y_k =j\}$ is a random variable with the number of counts that were observed as $j$ given they were $i$.
+
+The log-likelihood becomes: 
+
+\begin{equation}
+	\ell_c(\theta_Z) =  \sum_{i} \sum_{j} n_{ij} \log (p_i M_{ij}) = \sum_{i} \sum_{j} n_{ij} \log  M_{ij} + \sum_{i} \sum_{j} n_{ij} \log p_i 
+\end{equation}
+
+In accordance with equation \eqref{eq:Qfunction} we take the conditional expectation on $n_ij$ with an initial parameter $\theta^0$ conditioned on $Y$ 
+
+\begin{equation}
+\mathbb{E}_{\theta^{(0)}} \big[ \ell_c(\theta) \mid Y = j \big] = 
+\mathbf{E}_{\theta^{(0)}} \big[ \sum_{i} \sum_{j} n_{ij} \log (p_i M_{ij}) \mid Y = j \big] =
+\sum_{i} \sum_{j} \mathbf{E}_{\theta^{(0)}} \big[n_{ij} \mid Y = j\big] \log (p_i M_{ij})
+\end{equation}
+
+The conditional expectation $E[n_ij | y =j]$ is the expected number of bears of age i missclasified as age j given the total amount of bears observed as age j.
+ 
+Taking expectation:
+\begin{equation}
+	\mathbb{E}[n_{ij} \mid Y = y]
+	=
+	\sum_{k=1}^{n}
+	\mathbb{E}\big[
+	\mathbf{1}\{Z_k = i, Y_k = j\}
+	\mid Y = y
+	\big]
+\end{equation}
+
+Now conditioning on the observed $Y_k$:
+\begin{equation}
+	=
+	\sum_{k : Y_k = j}
+	P\big(
+	Z_k = i \mid Y_k = j, \theta^{(0)}
+	\big)
+\end{equation}
+
+Let $n_j = \#\{k : Y_k = j\}$ denote the number of observations with $Y=j$. Then:
+\begin{equation}
+	\mathbb{E}[n_{ij} \mid Y = y]
+	=
+	n_j \cdot
+	P\big(
+	Z = i \mid Y = j, \theta^{(0)}
+	\big)
+\end{equation}
+
+Using Bayes' theorem:
+\begin{equation}
+	P\big(
+	Z = i \mid Y = j, \theta^{(0)}
+	\big)
+	=
+	\frac{
+		p_i^{(0)} M_{ij}
+	}{
+		\sum_{i'} p_{i'}^{(0)} M_{i'j}
+	}
+\end{equation}
+
+Thus:
+\begin{equation}
+	\mathbb{E}[n_{ij} \mid Y = y]
+	=
+	n_j \cdot
+	\frac{
+		p_i^{(0)} M_{ij}
+	}{
+		\sum_{i'} p_{i'}^{(0)} M_{i'j}
+	}
+\end{equation}
+
+\paragraph{Maximization-step}
+
+\subsection{Evaluation method}\label{sec:eva_method}
+
+
+\paragraph{Total Varation (TV)}
+To quantify the difference between two discrete probability distributions $Z$ and $Q$ over the same finite sample space $\mathcal{X}$, we use the \emph{Total Variation (TV) distance}:
+
+\[
+\text{TV}(P,Q) = \frac{1}{2} \sum_{x \in \mathcal{X}} |P(x) - Q(x)|.
+\]
+
+The TV distance ranges from $0$ (distributions are identical) to $1$ (distributions have no overlap). 
+Intuitively, it represents the maximum fraction of probability mass that must be reallocated to transform $P$ into $Q$. 
+In this thesis, we use TV distance to assess how convolution and sampling affect the observed age distributions, as well as to evaluate the accuracy of deconvolution methods.
+
+\colorbox{yellow!30}{\textbf{[TODO: Does this need a source reference?]}}
+
+\paragraph{KL-divergence} \label{sec:kl_div}
+
+
+\colorbox{yellow!30}{\textbf{[TODO: unfinished section, needs reference.]}}
+
+\section{Methods / Simulation Setup}
+
+\subsection{Simulated Age Distributions}
+
+A Leslie matrix $L$ of dimension $20 \times 20$ was used to model the age-structured population.
+The first row represents the expected number of offspring produced by individuals in each age class, 
+calculated as the product of three components for age class $i$:
+
+\begin{equation}
+	F_i = s_i \cdot p_{\text{coy},i} \cdot \text{litter}_i,
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $s_i$ is the survival probability from age $i$ to $i+1$,
+	\item $p_{\text{coy},i}$ is the probability of conceiving at age $i$,
+	\item $\text{litter}_i$ is the expected litter size at age $i$.
+\end{itemize}
+
+The survival and reproduction parameters were estimated from published graphs \cite{nina_bearmodel}. The full data vectors used to construct the Leslie matrix are provided in Appendix~\ref{app:leslie_params}.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../figures/age_distribution_p1.pdf}
+	\caption{Stable age distribution obtained from the normalized dominant eigenvector of the Leslie matrix (see Section~\ref{sec:age_distribution} for derivation).}
+	\label{fig:stable_age}
+\end{figure}
+
+\subsection{Error terms} \label{sec:error_terms}
+
+To simulate plausible errors in age determination, we considered four different error models. Let $Z$ denote the true age, and $e$ the error term added to $Z$ in the convolution. We model the error as conditionally normal:
+
+\[
+e \mid Z \sim \mathcal{N}\big(\mu = f(Z), \sigma^2\big),
+\]
+
+and discretize the resulting values to the integer age bins (1--20) to match the observed age categories. 
+Negative values were excluded, and the remaining probabilities were rescaled by $1 / (1 - F(e < 0))$. Values greater than 20 were assigned to the 19+ age class.
+
+The following four specifications for $f(Z)$ (mean) and $\sigma$ (standard deviation) were considered:
+
+\begin{enumerate} [label=\textbf{Model \Alph*:}, ref=\Alph*]
+	\item \textbf{Model A Unbiased, low variance:} $f(Z) = 0$, \quad $\sigma = 1$ \label{model:A}
+	\item \textbf{Model B Unbiased, high variance:} $f(Z) = 0$, \quad $\sigma = 4$ \label{model:B}
+	\item \textbf{Model C Age-dependent bias, low variance:} $f(Z) = \dfrac{4}{Z + 0.5}$, \quad \label{model:C} $\sigma = 1$
+	\item \textbf{Model D Age-dependent bias, high variance:} $f(Z) = \dfrac{4}{Z +0.5}$, \quad $\sigma = 4$ \label{model:D}
+\end{enumerate}
+
+\colorbox{yellow!30}{\textbf{[TODO: Add reference and explanation for the choice of sigma and mu models]}}
+
+
+\subsection{Convolution and Sampling Effects}
+
+Having constructed the misclassification matrices for the four error models (Section~\ref{sec:error_terms}), we analytically convolve the true age distribution $p_Z(z)$ to obtain the distribution of observed ages $Y$:
+
+\[
+p_Y(y) = \sum_z M_{zy} \, p_Z(z),
+\]
+
+where $M$ is the misclassification matrix corresponding to each error model.
+
+To assess the effects of finite sample sizes, we simulated random samples of size $n =  10, 25, 50,100$ from the convolved distribution $p_Y(y)$. This allows us to separate variability due to sampling error from information loss caused by the convolution.
+
+The difference between the sampled distribution and the true age distribution was quantified using Total Variation distance.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../figures/age_distribution_comp_p2.pdf}
+	\caption{Stable age distribution vs convoluted age distribution using Model~\ref{model:D}}
+	\label{fig:stable_age_vs_D}
+\end{figure}
+
+
+\colorbox{yellow!30}{%
+	\parbox{\linewidth}{%
+		\textbf{[TODO: Describe how $M^t p$ is the convoluted distribution,
+		refer to section in Theory or write here?]}%
+	}%
+}
+
+\subsection{Deconvolution Methods}
+
+Two deconvolution methods were used and compared: a ?naive? matrix inversion approach, and the EM algorithm described in Section~\ref{sec:em_alg}. For each error model introduced in Section~\ref{sec:error_terms}, the deconvolution was performed using both methods. The resulting estimates were evaluated using the KL-divergence, as described in Section~\ref{sec:kl_div}.
+
+\paragraph{Matrix inversion}
+The matrix inversion method directly inverts the misclassification matrix to estimate the underlying distribution, for negative estimates are set to 0 and the distribution is then normalized.. While straightforward, this approach can become unstable if the problem is ill-conditioned, potentially leading to negative or otherwise infeasible probabilities.
+
+\paragraph{EM-algorithm deconvolution}
+The EM algorithm iteratively estimates the underlying distribution by maximizing the expected complete-data log-likelihood (see Section~\ref{sec:em_alg}). This approach is more stable than direct inversion and accommodates the probabilistic nature of misclassification, providing estimates that remain valid probabilities.
+
+\begin{enumerate}
+	\item \textbf{Matrix inversion:} 
+	\begin{itemize}
+		\item Identify when the problem is ill-posed (e.g., high condition number, negative probabilities).
+	\end{itemize}
+	\item \textbf{EM-algorithm:}
+	\begin{itemize}
+		\item Test stability with multiple starting points on the same convolved dataset.
+		\item Evaluate how close the deconvolved distribution is to the true distribution.
+		\item Explore the effect of different starting distributions (e.g., Poisson-distributed initial $p_i$).
+	\end{itemize}
+\end{enumerate}
+
+\subsection{Error Analysis}
+\begin{itemize}
+	\item Decompose total error into:
+	\begin{itemize}
+		\item Sampling error
+		\item Information loss due to convolution
+		\item Algorithmic error (stability/precision)
+	\end{itemize}
+	\item Explore how sample size and distribution parameters affect the performance of deconvolution.
+\end{itemize}
+
+\section{Results}
+\begin{itemize}
+	\item Present TV and KL divergence for each method and simulation setup.
+	\item Plot true, convolved, and deconvolved distributions.
+	\item Highlight EM stability and matrix inversion limitations.
+\end{itemize}
+
+\section{Analysis / Discussion}
+\begin{itemize}
+	\item Discuss how errors depend on sample size and distribution parameters.
+	\item Compare performance of EM and matrix inversion.
+	\item Discuss practical implications for deconvolution of age structures.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+\section{Emacs}\label{om_text}
+
+Du kan använda vilken textredigerare som helst, men denna introduktion beskriver hur du kan använda Emacs (och att du använder Linux). Öppna en konsol, och ta dig med \texttt{cd} till den katalog där du sparade \texttt{exjobbsmall.tex}. Öppna filen genom att skriva
+\begin{verbatim}
+emacs exjobbsmall.tex &
+\end{verbatim}
+(och tryck enter). Om inte texten är färglagd, så välj i menyraden Options $\to$ Syntax Highlighting.\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Man kan tvinga fram en ny rad med \\
+% Om LaTeX inte avstavar ett ord (bra) så kan man föreslå
+%  ställen så här latex\-manu\-al\-en i den löpande texten
+% Det behövs sällan, men om du vill tvinga fram ett 
+%  sidbyte kan du göra det med \newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Spara din egen kopia av mallen genom att i menyn välja File $\to$ Save Buffer As\dots, titta på listen längst ner i fönstret; där skriver du in ett lämpligt namn som måste sluta på .tex, kanske \texttt{en-fil.tex} (och trycker enter). Ändra t.ex. hÄÄr, spara genom File $\to$ Save (current buffer), och \textit{kompilera} din kod med \LaTeX\ genom att välja TeX $\to$ TeX file.\footnote{Bredvid menyalternativen står kortkommandon, du kan t.ex. spara genom att trycka Ctrl-x och sedan Ctrl-s. När det står M betyder det Alt-tangenten, t.ex. kopiera markerad text: Alt-w. Ett annat bra kommando är Ctrl-c som avbryter ett pågående kommando.}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Titta på resultatet}\label{dvi_och_pdf}
+
+Du kan kolla på din \texttt{dvi}-fil genom att skriva
+\begin{verbatim}
+xdvi en-fil.dvi &
+\end{verbatim}
+(om du nu kallade din fil för \texttt{en-fil}). Om du vill göra om \texttt{dvi}n till en \texttt{pdf}-fil så kan du i konsolen skriva
+\begin{verbatim}
+dvipdf en-fil
+\end{verbatim}
+Denna \texttt{pdf} kan du öppna med t.ex. \texttt{xpdf} med kommandot
+\begin{verbatim}
+xpdf en-fil.pdf
+\end{verbatim}
+\texttt{xdvi} laddar om filen så fort du klickar på fönstret, men i \texttt{xpdf} kan du behöva ladda om filen efter att du ha kompilerat den. Detta gör du genom att trycka \texttt{r}.
+
+\subsection{Pdf direkt}
+Ett alternativ som rekommenderas är att hoppa över \texttt{dvi}-steget och göra en \texttt{pdf}-fil direkt, genom att kompilera genom att skriva
+\begin{verbatim}
+pdflatex en-fil.tex
+\end{verbatim}
+i konsolen istället för att göra det via Emacs.\footnote{pdf\LaTeX är förvalet under MacOSX och kanske även under Windows. Det har även den fördelen att hyperlänkar fungerar bättre.}
+
+
+
+\section{Listor och tabeller}
+
+
+Det kan vara praktiskt att punkta upp olika saker
+\begin{itemize}
+\item För att det blir mer lättläst.
+\item För att det är roligt
+\end{itemize}
+Man kan också vilja göra numrerade listor
+\begin{enumerate}
+\item För att saker har en naturlig ordning.
+\item För att det är roligt
+\item Särkilt när man kombinerar
+\begin{itemize}
+\item vanliga listor och
+\item numrerade.
+\end{itemize}
+\end{enumerate}
+Tabeller finns det i många olika varianter, här är några exempel (titta i koden för kommentarer!):
+
+% ''tabular'' ligger exakt där man lägger den
+\begin{tabular}{c|r|r}
+% kolumnerna är från vänster till höger, _c_entrerad, _h_ögerjusterad och  _h_ögerjusterad,
+% och här avgränsade med vertikala linjer indikerat av |
+& krona & klave \\
+\hline % en horisontell linje
+vinst & 12 & 34 \\
+förlust & 56 & 0 
+\end{tabular}
+
+\bigskip % lite blankrader
+
+\begin{tabular}{l @{} r @{.} l | r @{.} l}
+% illustrerar hur man kan centrera på decimalpunkter med @{.}, och osynliga avgränsare: @{}
+\hline
+en lång text & 15 & 34 & -5 & 09 \\
+\TeX & 153 & 4 & -50 & 9 \\
+\hline
+\end{tabular}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Men jag har ju gjort en fin tabell i Excel\dots}
+
+\dots och vill inte behöva skriva om den med en massa \texttt{\&}-tecken?
+
+Lösningen är att spara ditt kalkylblad som en kommaseparerad fil med filändelse \texttt{.csv}. Öppna den i Emacs.\footnote{Man kan öppna en ny fil i samma fönster men i en annan s.k. ''buffer'' genom att välja File $\to$ Open File\dots och skriva in filens namn längst ner i fönstret. Du kan byta tillbaka till din tidigare öppna fil under menyn Buffers.}
+Välj Edit $\to$ Search $\to$ Replace\dots, skriv in \texttt{,} tryck enter, skriv in \texttt{\ \&\ } (med mellanrum omkring) och tryck enter. Emacs kommer nu för varje komma fråga om du vill byta ut det mot \texttt{\ \&\ }. Tryck \texttt{y} om det passar sig, annars \texttt{n}.
+
+Ett annat sätt är att från konsolen skriva:
+\begin{verbatim}
+sed 's/,/ \& /g' tabell.csv > tabell.tex
+\end{verbatim}
+Öppna \texttt{tabell.tex} i Emacs och klistra in i ditt dokument.
+
+
+
+\section{Matematiska formler och uttryck}
+
+Den stora vinsten med att använda \LaTeX\ är att det blir lätt att skriva matematiska uttryck. Uttryck som skall stå inne i en text börjar med \$, så här $P(X=k)=\binom{13}{k} (\frac{1}{3})^k (\frac{2}{3})^{13-k}$. Men kan också låta uttrycket få större utrymmme genom att använda \$\$:
+$$
+P(X=k)=\binom{13}{k} \left( \frac{1}{3} \right)^k \left( \frac{2}{3}\right)^{13-k}. % Här använder jag \left och \right för att matchande parenteser skall få rätt storlek.
+$$
+eller \texttt{equation*}:
+\begin{equation*}
+P(X_3 \leq 4) = P(X_3 \geq 5) = \sum_{k=5}^{13}\binom{13}{k} \left( \frac{1}{3} \right)^k \left( \frac{2}{3}\right)^{13-k}
+\end{equation*}
+För flera ekvationer används lämpligen \texttt{align*}, där \texttt{\&} markerar vad ekvationerna ska ordnas efter:
+\begin{align*}
+P(Y \leq y) &= P\left(\frac{Y-\mu}{\sigma} \leq \frac{y-\mu}{\sigma} \right) \\
+&= P\left(Z \leq \frac{y-\mu}{\sigma} \right) \\
+&= \int_{-\infty}^{ (y-\mu)/\sigma } \frac{1}{ \sqrt{2\pi} } e^{ -\frac{z^2}{2} } dz \\
+&= \int_{-\infty}^{ (y-\mu)/\sigma }\phi(z)dz \\
+\{ \text{per def.} \}&= \Phi\left(\frac{y-\mu}{\sigma}\right)
+\end{align*}
+Vi använder \texttt{equation} och \texttt{align} med \texttt{*} eftersom vi inte vill ha någon \textbf{ekvationsnumrering}. Man bör bara numrera ekvationer om man refererar till dem, och då behöver de också en \texttt{label}:
+\begin{equation}\label{den_haer_aer_viktig}
+\text{Bin}(n,p) \approx \text{Po}(np)\quad\text{då $p$ är litet}
+\end{equation}
+% \quad ger lite tomt utrymme i formler. Du kan också prova \! \, \: \; \qquad
+Ett annat exempel:
+\begin{equation}\label{ganska_basic}
+1+1=2
+\end{equation}
+På kursen Sanno I lär man sig att uttryck \eqref{den_haer_aer_viktig} är sant, att ekvationen \eqref{ganska_basic} är sann vet du sedan tidigare. Poängen med att använda \texttt{label}s och \texttt{eqref} är att du slipper hålla reda på de faktiska numrena. Prova att klippa ut koden till den andra ekvationen och lägga den före den första så att det ser ut så här: (kolla hur jag använder \texttt{verbatim} för längre kod-exempel!)
+
+\begin{verbatim}
+\begin{equation}\label{ganska_basic}
+1+1=2
+\end{equation}
+\begin{equation}\label{den_haer_aer_viktig}
+\text{Bin}(n,p) \approx \text{Po}(np)\quad\text{då $p$ är litet}
+\end{equation}
+\end{verbatim}
+Kompilera (kan behöva göras två gånger!), och kolla att resultatet stämmer.
+
+
+Matriser behöver man ibland:
+$$
+\begin{pmatrix}
+a & b & c \\
+d & e & f
+\end{pmatrix}
+\neq 
+\begin{pmatrix}
+12 & 3 & \rho \\
+\Pi & \frac{1}{2} & \int f(x)dx \\
+\end{pmatrix}
+$$
+
+
+\subsection{Felsökning}
+
+Om \LaTeX\ spottar ur sig en massa varningar och felmeddelanden i nedre halvan av Emacs-fönstret beror det oftast på att
+\begin{enumerate}
+\item du har skrivit en \{ eller en \} för mycket eller för litet, eller så
+\item har du skrivit ett eller två \$ för mycket eller för litet. 
+\end{enumerate}
+ Om du läser felmeddelandena så brukar det stå vilken rad felet började på (eller åtminstone var \LaTeX\ först upptäckte att något var fuffens). Använd \texttt{\%} på olika ställen på den raden eller i närheten för att kommentera bort kod som det kanske är något fel med, så att du kan se var felet finns eller inte finns.
+
+
+\section{Infoga bilder och plottar}\label{infoga_bilder}
+
+Bilder är lätt att få med. Om man använder först gör \texttt{dvi}-filer så måste bilderna vara sparade som \texttt{eps}. Om man gör \texttt{pdf}-filer direkt så måste bilderna vara sparade som just \texttt{pdf}. Du kan enkelt konvertera dina \texttt{eps}-filer till \texttt{pdf}-filer med kommandot \texttt{epstopdf}:
+\begin{verbatim}
+epstopdf plus_och_kryss.eps
+\end{verbatim}
+
+Det kan vara lite svårt att få bilder att ligga exakt var man vill, eftersom \LaTeX\ har en egen uppfattning om vad som ser bäst ut. Kolla var figur \ref{en_figur} hamnade, och hur jag refererade till den med \texttt{ref}
+
+
+
+
+\section{Att referera, citera, och mer att läsa}
+
+Man kan referera till vad som helst du har gett en \texttt{label} med kommandot \texttt{ref}. \texttt{eqref} lägger dessutom till parenteser kring (ekvations-)numret. Man kan t.ex. hänvisa till stycke \ref{om_text} som handlar om Emacs. Om din \texttt{pdf}- eller \texttt{dvi}-läsare klarar av hyperlänkar så är dessutom dina referser klickbara eftersom vi använder packaget \texttt{hyperref}.\footnote{Prova att ta bort \texttt{colorlinks=true} på rad 6 innan du skall skriva ut.}
+
+Om du vill citera en källa gör du det enklast med \texttt{cite} så här:  Jag har lärt mig mycket om \LaTeX\ från \cite{lshort}. Om man vill veta mer om detaljer för att typsätta matematik bör man även titta på \cite{amsmath}.
+
+
+
+\section{Appendix}
+\subsection{Simulation Parameters}
+\label{app:leslie_params}
+
+\begin{table}[ht]
+	\centering
+	\caption{Parameters used to construct the Leslie matrix.}
+	\label{tab:leslie_params}
+\begin{tabular}{rrrrr}
+	\hline
+	Age & Survival & p\_coy & Litter\_size & F\_i \\ 
+	\hline
+	1 & 0.50 & 0.00 & 0.00 & 0.00 \\ 
+	2 & 0.89 & 0.00 & 0.00 & 0.00 \\ 
+	3 & 0.95 & 0.00 & 0.00 & 0.00 \\ 
+	4 & 0.99 & 0.00 & 0.00 & 0.00 \\ 
+	5 & 0.98 & 0.15 & 2.12 & 0.31 \\ 
+	6 & 0.96 & 0.35 & 2.25 & 0.76 \\ 
+	7 & 0.96 & 0.55 & 2.40 & 1.27 \\ 
+	8 & 0.96 & 0.55 & 2.40 & 1.27 \\ 
+	9 & 0.96 & 0.55 & 2.40 & 1.27 \\ 
+	10 & 0.96 & 0.55 & 2.40 & 1.27 \\ 
+	11 & 0.96 & 0.55 & 2.40 & 1.27 \\ 
+	12 & 0.96 & 0.70 & 2.60 & 1.75 \\ 
+	13 & 0.96 & 0.70 & 2.60 & 1.75 \\ 
+	14 & 0.96 & 0.70 & 2.60 & 1.75 \\ 
+	15 & 0.96 & 0.70 & 2.60 & 1.75 \\ 
+	16 & 0.96 & 0.70 & 2.60 & 1.75 \\ 
+	17 & 0.96 & 0.58 & 2.75 & 1.53 \\ 
+	18 & 0.96 & 0.58 & 2.75 & 1.53 \\ 
+	19 & 0.96 & 0.58 & 2.75 & 1.53 \\ 
+	20 & 0.96 & 0.58 & 2.75 & 1.53 \\ 
+	\hline
+\end{tabular}
+\end{table}
+
+
+\end{document}   % Här slutar dokumentet
+
+
+Det som står här kommer inte med. Jag brukar använda utrymmet för att spara på textsnuttar som jag inte är säker på att ta med.
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{blaha.eps}
+\caption{}
+\end{figure}
+
+\overset{d}{=}
+

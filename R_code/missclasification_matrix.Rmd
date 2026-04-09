@@ -1,0 +1,19 @@
+---
+title: "Missclasification matrix"
+author: "Emilio Otero"
+date: "2026-03-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("population_model.R")
+```
+
+
+## R Markdown
+
+```{r}
+
+```
+

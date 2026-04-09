@@ -1,0 +1,67 @@
+---
+title: "Fel_normalfördelning"
+author: "Emilio Otero"
+date: "2026-03-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+source("population_model.R")
+```
+
+# Simulera fel från en normalfördelning
+
+Sex olika fall av $$N(\mu, \sigma)$$:
+
+1. $$\mu = 0, \; \sigma = c$$
+2. $$\mu = 0, \; \sigma = \frac{X+1}{10}$$
+3. $$\mu = 5 - 0.25 X, \; \sigma = c$$
+4. $$\mu = 5 - 0.25 X, \; \sigma = \frac{X+1}{10}$$
+5. $$\mu = 5 e^{-0.7675 X}, \; \sigma = c$$
+6. $$\mu = 5 e^{-0.7675 X}, \; \sigma = \frac{X+1}{10}$$
+
+## Baseline modell
+
+$$\epsilon  \sim N(0,\sigma^2 )$$
+```{r}
+baseline_error <- dist_with_error(dist_eigenvector$stable_dist, function(x) 4.5)
+plot_overlapping_bars(dist_eigenvector$stable_dist,baseline_error)
+
+```
+
+
+## Heteroskedastic fel (Äldre björnar får större fel)
+
+$$\epsilon | X \sim N(0,f(X)^2 )$$
+
+```{r}
+baseline_error <- dist_with_error(dist_eigenvector$stable_dist, function(x) 4)
+sum(baseline_error)
+plot_overlapping_bars(dist_eigenvector$stable_dist,baseline_error)
+```
+
+## Truncated error 
+$$
+\epsilon \,\big|\, X \sim 
+\text{TruncatedNormal}\Big(
+\mu = 0,\; 
+\sigma = f(X),\; 
+a = -X,\; 
+b = \infty
+\Big)
+$$
+
+```{r}
+baseline_error <- dist_with_error_trunc(dist_eigenvector$stable_dist, function(x) 1)
+
+plot_overlapping_bars(dist_eigenvector$stable_dist,baseline_error)
+
+```
+
+```
+
+

@@ -1,0 +1,19 @@
+---
+title: "replicate_Nakamura"
+author: "Emilio Otero"
+date: "2026-03-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+## R Markdown
+
+```{r}
+data <- read_csv("bear_methylation.csv")
+```
+
