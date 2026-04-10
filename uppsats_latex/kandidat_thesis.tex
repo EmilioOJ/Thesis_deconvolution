@@ -6,6 +6,8 @@
 \usepackage{amssymb}
 \usepackage{xcolor}  
 \usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{float}
 \usepackage[color=yellow!30, size=\small]{todonotes}
 \usepackage[colorlinks=true, breaklinks=true]{hyperref}
 \usepackage[backend=biber,style=authoryear]{biblatex}
@@ -173,11 +175,18 @@ where $f(X)$ specifies the standard deviation of the error as a function of true
 This formulation allows us to combine the theoretical population structure (from the Leslie matrix) with realistic measurement error in age, producing an observed age distribution that accounts for both **population dynamics** and **age-determination uncertainty**.
 
 
-\subsection{Condition number}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \texttt, \textit (kursiverat) och \textbf (fetstil) 
-% är några kommandon för att ändra textens utseende
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Matrix inversion \& condition number}
+
+\colorbox{yellow!30}{\textbf{[TODO: Does this need a source reference?]}}
+
+\subsection{Thikanov regularization}
+
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO: Expand this section.} \\ 
+		Include SVD formulation, derivation of the filter factor 
+		$\frac{\sigma_i}{\sigma_i^2+\lambda}$, and discussion of how 
+		regularization trades bias for stability in ill-posed inverse problems.}
+}
 
 
 \subsection{Expectation-Maximization algorithm (EM-algorithm)} \label{sec:em_alg}
@@ -392,7 +401,7 @@ To assess the effects of finite sample sizes, we simulated random samples of siz
 
 The difference between the sampled distribution and the true age distribution was quantified using Total Variation distance.
 
-\begin{figure}[ht]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{../figures/age_distribution_comp_p2.pdf}
 	\caption{Stable age distribution vs convoluted age distribution using Model~\ref{model:D}}
@@ -409,44 +418,53 @@ The difference between the sampled distribution and the true age distribution wa
 
 \subsection{Deconvolution Methods}
 
-Two deconvolution methods were used and compared: a ?naive? matrix inversion approach, and the EM algorithm described in Section~\ref{sec:em_alg}. For each error model introduced in Section~\ref{sec:error_terms}, the deconvolution was performed using both methods. The resulting estimates were evaluated using the KL-divergence, as described in Section~\ref{sec:kl_div}.
+Two deconvolution methods were used and compared: a simple matrix inversion approach, and the EM algorithm described in Section~\ref{sec:em_alg}. For each error model introduced in Section~\ref{sec:error_terms}, the deconvolution was performed using both methods. The resulting estimates were evaluated using the KL-divergence, as described in Section~\ref{sec:kl_div}.
 
 \paragraph{Matrix inversion}
-The matrix inversion method directly inverts the misclassification matrix to estimate the underlying distribution, for negative estimates are set to 0 and the distribution is then normalized.. While straightforward, this approach can become unstable if the problem is ill-conditioned, potentially leading to negative or otherwise infeasible probabilities.
+The matrix inversion method directly inverts the missclassification matrix that can then be used to calculate the recovered distribution, for negative estimates are set to 0 and the distribution is then normalized. While straightforward, this approach can become unstable and or ill-conditioned as $\sigma$ for the error distribution increases as shown in \ref{fig:kondition_vs_sd}.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../figures/kondition_number_vs_sd_p3.pdf}
+	%\caption{Kondition number for missclasifcation matrix as sd increases from 0.2-10 with $\mu = \frac{4}{z+0.5}$}
+	\label{fig:kondition_vs_sd}
+\end{figure}
 
 \paragraph{EM-algorithm deconvolution}
-The EM algorithm iteratively estimates the underlying distribution by maximizing the expected complete-data log-likelihood (see Section~\ref{sec:em_alg}). This approach is more stable than direct inversion and accommodates the probabilistic nature of misclassification, providing estimates that remain valid probabilities.
+We applied the EM algorithm (see Appendix~\ref{app:em_alg}) using two different initializations: a uniform distribution, representing a neutral initial belief about the age distribution, and the true age distribution. 
 
-\begin{enumerate}
-	\item \textbf{Matrix inversion:} 
-	\begin{itemize}
-		\item Identify when the problem is ill-posed (e.g., high condition number, negative probabilities).
-	\end{itemize}
-	\item \textbf{EM-algorithm:}
-	\begin{itemize}
-		\item Test stability with multiple starting points on the same convolved dataset.
-		\item Evaluate how close the deconvolved distribution is to the true distribution.
-		\item Explore the effect of different starting distributions (e.g., Poisson-distributed initial $p_i$).
-	\end{itemize}
-\end{enumerate}
+The initialization based on the true age distribution was included to assess how a well-informed prior affects the resulting estimate compared to a neutral one. In particular, this allows us to evaluate the sensitivity of the EM algorithm to initialization and to investigate for which sample sizes initialization no longer constitutes a confounding factor in an ideal setting.
 
-\subsection{Error Analysis}
-\begin{itemize}
-	\item Decompose total error into:
-	\begin{itemize}
-		\item Sampling error
-		\item Information loss due to convolution
-		\item Algorithmic error (stability/precision)
-	\end{itemize}
-	\item Explore how sample size and distribution parameters affect the performance of deconvolution.
-\end{itemize}
+The algorithm was iterated until convergence, defined as 
+\[
+\ell_c(\theta^{(t+1)}) - \ell_c(\theta^{(t)}) \leq 10^{-6},
+\]
+or until a maximum of 100 iterations was reached.
 
 \section{Results}
-\begin{itemize}
-	\item Present TV and KL divergence for each method and simulation setup.
-	\item Plot true, convolved, and deconvolved distributions.
-	\item Highlight EM stability and matrix inversion limitations.
-\end{itemize}
+
+\subsection{Effect of convolution and sampling}
+
+\subsection{Effect of convolution and sampling}
+
+Figure~\ref{fig:TV_convoluted_samplesize} shows how sample size affects the total variation distance (TV distance) across all models. For small sample sizes, sampling noise significantly affects the TV distance. As the sample size increases, the TV distance gradually stabilises across all models. Around a sample size of approximately 100, the TV distance appears to have largely stabilised, suggesting that sampling noise plays a diminishing role relative to the structural effects induced by the convolution.
+
+For the unbiased Models~\ref{model:A} and~\ref{model:B}, most of the variation in TV distance is driven by sampling noise, whereas for the biased Models~\ref{model:C} and~\ref{model:D}, the TV distance is primarily driven by convolutional structure. Additionally, Model~\ref{model:C}, which is characterised by lower variance ($\sigma = 1$) compared to Model~\ref{model:D} ($\sigma = 4$), exhibits systematically higher total variation distance. This is contrary to the standard expectation that higher variance leads to more dispersed convoluted distributions and therefore larger deviations from the true distribution.
+
+The median and non-parametric 95\% upper quantile also exhibit a consistent decreasing pattern with increasing sample size, in line with the results observed for the mean (see Table~\ref{tab:tv_summary_conv}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../figures/Conv_TV_convoluted_p4.pdf}
+	\caption{Mean TV distance for convoluted distributions based on Model~\ref{model:A}--\ref{model:D}, with 100 replicas per sample size. Total variation distance is computed relative to the true distribution.}
+	\label{fig:TV_convoluted_samplesize}
+\end{figure}
+
+
+\subsection{Deconvolution}
+
+Table~\ref{tab:tv_summary_conv} serves as a baseline for evaluating the deconvolution method. 
+
 
 \section{Analysis / Discussion}
 \begin{itemize}
@@ -454,237 +472,6 @@ The EM algorithm iteratively estimates the underlying distribution by maximizing
 	\item Compare performance of EM and matrix inversion.
 	\item Discuss practical implications for deconvolution of age structures.
 \end{itemize}
-
-
-
-
-
-
-
-
-
-
-\section{Emacs}\label{om_text}
-
-Du kan använda vilken textredigerare som helst, men denna introduktion beskriver hur du kan använda Emacs (och att du använder Linux). Öppna en konsol, och ta dig med \texttt{cd} till den katalog där du sparade \texttt{exjobbsmall.tex}. Öppna filen genom att skriva
-\begin{verbatim}
-emacs exjobbsmall.tex &
-\end{verbatim}
-(och tryck enter). Om inte texten är färglagd, så välj i menyraden Options $\to$ Syntax Highlighting.\\
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Man kan tvinga fram en ny rad med \\
-% Om LaTeX inte avstavar ett ord (bra) så kan man föreslå
-%  ställen så här latex\-manu\-al\-en i den löpande texten
-% Det behövs sällan, men om du vill tvinga fram ett 
-%  sidbyte kan du göra det med \newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Spara din egen kopia av mallen genom att i menyn välja File $\to$ Save Buffer As\dots, titta på listen längst ner i fönstret; där skriver du in ett lämpligt namn som måste sluta på .tex, kanske \texttt{en-fil.tex} (och trycker enter). Ändra t.ex. hÄÄr, spara genom File $\to$ Save (current buffer), och \textit{kompilera} din kod med \LaTeX\ genom att välja TeX $\to$ TeX file.\footnote{Bredvid menyalternativen står kortkommandon, du kan t.ex. spara genom att trycka Ctrl-x och sedan Ctrl-s. När det står M betyder det Alt-tangenten, t.ex. kopiera markerad text: Alt-w. Ett annat bra kommando är Ctrl-c som avbryter ett pågående kommando.}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Titta på resultatet}\label{dvi_och_pdf}
-
-Du kan kolla på din \texttt{dvi}-fil genom att skriva
-\begin{verbatim}
-xdvi en-fil.dvi &
-\end{verbatim}
-(om du nu kallade din fil för \texttt{en-fil}). Om du vill göra om \texttt{dvi}n till en \texttt{pdf}-fil så kan du i konsolen skriva
-\begin{verbatim}
-dvipdf en-fil
-\end{verbatim}
-Denna \texttt{pdf} kan du öppna med t.ex. \texttt{xpdf} med kommandot
-\begin{verbatim}
-xpdf en-fil.pdf
-\end{verbatim}
-\texttt{xdvi} laddar om filen så fort du klickar på fönstret, men i \texttt{xpdf} kan du behöva ladda om filen efter att du ha kompilerat den. Detta gör du genom att trycka \texttt{r}.
-
-\subsection{Pdf direkt}
-Ett alternativ som rekommenderas är att hoppa över \texttt{dvi}-steget och göra en \texttt{pdf}-fil direkt, genom att kompilera genom att skriva
-\begin{verbatim}
-pdflatex en-fil.tex
-\end{verbatim}
-i konsolen istället för att göra det via Emacs.\footnote{pdf\LaTeX är förvalet under MacOSX och kanske även under Windows. Det har även den fördelen att hyperlänkar fungerar bättre.}
-
-
-
-\section{Listor och tabeller}
-
-
-Det kan vara praktiskt att punkta upp olika saker
-\begin{itemize}
-\item För att det blir mer lättläst.
-\item För att det är roligt
-\end{itemize}
-Man kan också vilja göra numrerade listor
-\begin{enumerate}
-\item För att saker har en naturlig ordning.
-\item För att det är roligt
-\item Särkilt när man kombinerar
-\begin{itemize}
-\item vanliga listor och
-\item numrerade.
-\end{itemize}
-\end{enumerate}
-Tabeller finns det i många olika varianter, här är några exempel (titta i koden för kommentarer!):
-
-% ''tabular'' ligger exakt där man lägger den
-\begin{tabular}{c|r|r}
-% kolumnerna är från vänster till höger, _c_entrerad, _h_ögerjusterad och  _h_ögerjusterad,
-% och här avgränsade med vertikala linjer indikerat av |
-& krona & klave \\
-\hline % en horisontell linje
-vinst & 12 & 34 \\
-förlust & 56 & 0 
-\end{tabular}
-
-\bigskip % lite blankrader
-
-\begin{tabular}{l @{} r @{.} l | r @{.} l}
-% illustrerar hur man kan centrera på decimalpunkter med @{.}, och osynliga avgränsare: @{}
-\hline
-en lång text & 15 & 34 & -5 & 09 \\
-\TeX & 153 & 4 & -50 & 9 \\
-\hline
-\end{tabular}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Men jag har ju gjort en fin tabell i Excel\dots}
-
-\dots och vill inte behöva skriva om den med en massa \texttt{\&}-tecken?
-
-Lösningen är att spara ditt kalkylblad som en kommaseparerad fil med filändelse \texttt{.csv}. Öppna den i Emacs.\footnote{Man kan öppna en ny fil i samma fönster men i en annan s.k. ''buffer'' genom att välja File $\to$ Open File\dots och skriva in filens namn längst ner i fönstret. Du kan byta tillbaka till din tidigare öppna fil under menyn Buffers.}
-Välj Edit $\to$ Search $\to$ Replace\dots, skriv in \texttt{,} tryck enter, skriv in \texttt{\ \&\ } (med mellanrum omkring) och tryck enter. Emacs kommer nu för varje komma fråga om du vill byta ut det mot \texttt{\ \&\ }. Tryck \texttt{y} om det passar sig, annars \texttt{n}.
-
-Ett annat sätt är att från konsolen skriva:
-\begin{verbatim}
-sed 's/,/ \& /g' tabell.csv > tabell.tex
-\end{verbatim}
-Öppna \texttt{tabell.tex} i Emacs och klistra in i ditt dokument.
-
-
-
-\section{Matematiska formler och uttryck}
-
-Den stora vinsten med att använda \LaTeX\ är att det blir lätt att skriva matematiska uttryck. Uttryck som skall stå inne i en text börjar med \$, så här $P(X=k)=\binom{13}{k} (\frac{1}{3})^k (\frac{2}{3})^{13-k}$. Men kan också låta uttrycket få större utrymmme genom att använda \$\$:
-$$
-P(X=k)=\binom{13}{k} \left( \frac{1}{3} \right)^k \left( \frac{2}{3}\right)^{13-k}. % Här använder jag \left och \right för att matchande parenteser skall få rätt storlek.
-$$
-eller \texttt{equation*}:
-\begin{equation*}
-P(X_3 \leq 4) = P(X_3 \geq 5) = \sum_{k=5}^{13}\binom{13}{k} \left( \frac{1}{3} \right)^k \left( \frac{2}{3}\right)^{13-k}
-\end{equation*}
-För flera ekvationer används lämpligen \texttt{align*}, där \texttt{\&} markerar vad ekvationerna ska ordnas efter:
-\begin{align*}
-P(Y \leq y) &= P\left(\frac{Y-\mu}{\sigma} \leq \frac{y-\mu}{\sigma} \right) \\
-&= P\left(Z \leq \frac{y-\mu}{\sigma} \right) \\
-&= \int_{-\infty}^{ (y-\mu)/\sigma } \frac{1}{ \sqrt{2\pi} } e^{ -\frac{z^2}{2} } dz \\
-&= \int_{-\infty}^{ (y-\mu)/\sigma }\phi(z)dz \\
-\{ \text{per def.} \}&= \Phi\left(\frac{y-\mu}{\sigma}\right)
-\end{align*}
-Vi använder \texttt{equation} och \texttt{align} med \texttt{*} eftersom vi inte vill ha någon \textbf{ekvationsnumrering}. Man bör bara numrera ekvationer om man refererar till dem, och då behöver de också en \texttt{label}:
-\begin{equation}\label{den_haer_aer_viktig}
-\text{Bin}(n,p) \approx \text{Po}(np)\quad\text{då $p$ är litet}
-\end{equation}
-% \quad ger lite tomt utrymme i formler. Du kan också prova \! \, \: \; \qquad
-Ett annat exempel:
-\begin{equation}\label{ganska_basic}
-1+1=2
-\end{equation}
-På kursen Sanno I lär man sig att uttryck \eqref{den_haer_aer_viktig} är sant, att ekvationen \eqref{ganska_basic} är sann vet du sedan tidigare. Poängen med att använda \texttt{label}s och \texttt{eqref} är att du slipper hålla reda på de faktiska numrena. Prova att klippa ut koden till den andra ekvationen och lägga den före den första så att det ser ut så här: (kolla hur jag använder \texttt{verbatim} för längre kod-exempel!)
-
-\begin{verbatim}
-\begin{equation}\label{ganska_basic}
-1+1=2
-\end{equation}
-\begin{equation}\label{den_haer_aer_viktig}
-\text{Bin}(n,p) \approx \text{Po}(np)\quad\text{då $p$ är litet}
-\end{equation}
-\end{verbatim}
-Kompilera (kan behöva göras två gånger!), och kolla att resultatet stämmer.
-
-
-Matriser behöver man ibland:
-$$
-\begin{pmatrix}
-a & b & c \\
-d & e & f
-\end{pmatrix}
-\neq 
-\begin{pmatrix}
-12 & 3 & \rho \\
-\Pi & \frac{1}{2} & \int f(x)dx \\
-\end{pmatrix}
-$$
-
-
-\subsection{Felsökning}
-
-Om \LaTeX\ spottar ur sig en massa varningar och felmeddelanden i nedre halvan av Emacs-fönstret beror det oftast på att
-\begin{enumerate}
-\item du har skrivit en \{ eller en \} för mycket eller för litet, eller så
-\item har du skrivit ett eller två \$ för mycket eller för litet. 
-\end{enumerate}
- Om du läser felmeddelandena så brukar det stå vilken rad felet började på (eller åtminstone var \LaTeX\ först upptäckte att något var fuffens). Använd \texttt{\%} på olika ställen på den raden eller i närheten för att kommentera bort kod som det kanske är något fel med, så att du kan se var felet finns eller inte finns.
-
-
-\section{Infoga bilder och plottar}\label{infoga_bilder}
-
-Bilder är lätt att få med. Om man använder först gör \texttt{dvi}-filer så måste bilderna vara sparade som \texttt{eps}. Om man gör \texttt{pdf}-filer direkt så måste bilderna vara sparade som just \texttt{pdf}. Du kan enkelt konvertera dina \texttt{eps}-filer till \texttt{pdf}-filer med kommandot \texttt{epstopdf}:
-\begin{verbatim}
-epstopdf plus_och_kryss.eps
-\end{verbatim}
-
-Det kan vara lite svårt att få bilder att ligga exakt var man vill, eftersom \LaTeX\ har en egen uppfattning om vad som ser bäst ut. Kolla var figur \ref{en_figur} hamnade, och hur jag refererade till den med \texttt{ref}
-
-
-
-
-\section{Att referera, citera, och mer att läsa}
-
-Man kan referera till vad som helst du har gett en \texttt{label} med kommandot \texttt{ref}. \texttt{eqref} lägger dessutom till parenteser kring (ekvations-)numret. Man kan t.ex. hänvisa till stycke \ref{om_text} som handlar om Emacs. Om din \texttt{pdf}- eller \texttt{dvi}-läsare klarar av hyperlänkar så är dessutom dina referser klickbara eftersom vi använder packaget \texttt{hyperref}.\footnote{Prova att ta bort \texttt{colorlinks=true} på rad 6 innan du skall skriva ut.}
-
-Om du vill citera en källa gör du det enklast med \texttt{cite} så här:  Jag har lärt mig mycket om \LaTeX\ från \cite{lshort}. Om man vill veta mer om detaljer för att typsätta matematik bör man även titta på \cite{amsmath}.
-
 
 
 \section{Appendix}
@@ -723,7 +510,14 @@ Om du vill citera en källa gör du det enklast med \texttt{cite} så här:  Jag har
 \end{tabular}
 \end{table}
 
+\subsection{Results}
 
+\begin{table}[H]
+	\centering
+	\input{../tables/df_tv.tex}
+	\caption{Summary of total variation distance across models and sample sizes, based on 100 replications per configuration. Total variation distance is computed relative to the true distribution.}
+	\label{tab:tv_summary_conv}
+\end{table}
 \end{document}   % Här slutar dokumentet
 
 

@@ -1,9 +1,16 @@
 # Function to sample from a discrete distribution
-simulate_counts <- function(distr_vector, n) {
-  t(rmultinom(n = 1, size = n, prob = distr_vector))
+simulate_counts <- function(distr_vector, size_per_sample, n_samples = 1) {
+  replicate(
+    n_samples,
+    as.vector(rmultinom(1, size = size_per_sample, prob = distr_vector))
+  )
+}
+# Total variaton function
+tv_distance <- function(p, q) {
+  0.5 * sum(abs(p - q))
 }
 
-# Step 2: simulate convolution while keeping integer counts
+# S simulate convolution while keeping integer counts
 simulate_convolved_counts <- function(counts, K) {
   n_bins <- length(counts)
   convolved <- numeric(n_bins)

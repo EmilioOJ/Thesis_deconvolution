@@ -2381,8 +2381,6 @@
     <bcf:citekey order="5" intorder="1">mclachlan2008</bcf:citekey>
     <bcf:citekey order="6" intorder="1">mclachlan2008</bcf:citekey>
     <bcf:citekey order="7" intorder="1">nina_bearmodel</bcf:citekey>
-    <bcf:citekey order="8" intorder="1">lshort</bcf:citekey>
-    <bcf:citekey order="9" intorder="1">amsmath</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">
