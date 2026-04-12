@@ -32,23 +32,16 @@ Detta dokument ger dig smakprov på vad man kan göra med \LaTeX. Genom att titta 
 
 \section{Introduktion}\label{stycke1}
 
-When modelling bear populations, age determination constitutes a key component for understanding and predicting population dynamics. More recently, DNA-based methods have been developed (Nakamura et al., 2025), which may provide age estimates with better error characteristics for population level inference.
-
-Both the magnitude and the distribution of age determination errors may differ between methods as well as depend on the true age of the individual. For example, very young individuals cannot have their age underestimated below zero, whereas older individuals may exhibit larger errors. Additionally, accurately estimating the age of individuals near the threshold between non-reproductive and reproductive age is particularly important for population-level analyses.
-
-It is thus important to assess how different forms of age determination error affect estimated population age distributions, and to what extent conclusions drawn from observed age data may be sensitive to these errors.
-
-To investigate how age determination error affects estimated population age distributions, a simulation-based approach will be used. First, a baseline age distribution representing the true population age structure will be constructed using a simple population matrix model, inspired by models presented in Caswell (2001) and parameterized with data from Støen m.fl. (2021).
-
-Next, age determination error will be modelled as a random variable whose distribution may depend on the true age of the individual. To this purpose we will use n different distribution. A baseline case where there error is 
-
-Several plausible error distributions will be considered, with their parameters chosen so that the standard deviation of the distribution matches roughly the RMSE of the observed residuals for each age determination method. 
-
-As a final step, a deconvolution matrix will be constructed to examine whether it is possible to recover the true age distribution from observed age data, given knowledge of the age determination error distribution. This matrix can then be used to assess the accuracy of population-level inference for different age determination methods.
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO: Expand this section.} \\ 
+		Include SVD formulation, derivation of the filter factor 
+		$\frac{\sigma_i}{\sigma_i^2+\lambda}$, and discussion of how 
+		regularization trades bias for stability in ill-posed inverse problems.}
+}
 
 
 \section{Theory}\label{stycke2}
-\subsection{Matrix population modells}\label{pop_model_matrix}
+\subsection{Matrix population models}\label{pop_model_matrix}
 
 To obtain a suitable idea of the population age distribution over time we use a population matrix model \cite{caswell2001} which we will describe shortly in this section. The age class $i=1,2,... m$ is the discretization of the age $x$ to age-class $i$ with  $i - 1 \leq x \leq i$. The number of individuals for each age class $i$ is then given by $n_1,n_2,...,n_m$.
 
@@ -441,30 +434,77 @@ The algorithm was iterated until convergence, defined as
 \]
 or until a maximum of 100 iterations was reached.
 
+
+\subsection{Evaluation Against a Random Parameter Baseline}
+
+To assess whether our estimator outperforms a random baseline, we estimate the probability that a randomly sampled parameter from the parameter space yields a smaller total variation (TV) distance to the true distribution than our estimator.
+
+Let $\theta_s^{(i)} \sim \mathcal{U}(\Theta)$ for $i = 1, \dots, N$ denote independent samples from the parameter space. For each sample, we compute the indicator
+\begin{equation}
+	I^{(i)} =
+	\begin{cases}
+		1 & \text{if } TV(\theta_s^{(i)}, \theta_{true}) < TV(\hat{\theta}, \theta_{true}), \\
+		0 & \text{otherwise}.
+	\end{cases}
+\end{equation}
+
+The probability is then estimated using a Monte Carlo approximation:
+\begin{equation}
+	\hat{P} =
+	\frac{1}{N} \sum_{i=1}^{N} I^{(i)}.
+\end{equation}
+
+This quantity represents the empirical probability that a randomly chosen parameter from the parameter space outperforms the estimator in terms of total variation distance to the true distribution.
+
 \section{Results}
 
 \subsection{Effect of convolution and sampling}
 
 \subsection{Effect of convolution and sampling}
 
-Figure~\ref{fig:TV_convoluted_samplesize} shows how sample size affects the total variation distance (TV distance) across all models. For small sample sizes, sampling noise significantly affects the TV distance. As the sample size increases, the TV distance gradually stabilises across all models. Around a sample size of approximately 100, the TV distance appears to have largely stabilised, suggesting that sampling noise plays a diminishing role relative to the structural effects induced by the convolution.
+Figure~\ref{fig:TV_convoluted_samplesize} shows how sample size affects the total variation distance (TV distance) across all models. For small sample sizes, sampling noise significantly affects the TV distance. As the sample size increases, the TV distance gradually stabilizes across all models, suggesting that sampling noise plays a diminishing role relative to the structural effects induced by the convolution. Sampling from the true model is included as as a theoretical baseline for sampling noise for different sample sizes.
 
-For the unbiased Models~\ref{model:A} and~\ref{model:B}, most of the variation in TV distance is driven by sampling noise, whereas for the biased Models~\ref{model:C} and~\ref{model:D}, the TV distance is primarily driven by convolutional structure. Additionally, Model~\ref{model:C}, which is characterised by lower variance ($\sigma = 1$) compared to Model~\ref{model:D} ($\sigma = 4$), exhibits systematically higher total variation distance. This is contrary to the standard expectation that higher variance leads to more dispersed convoluted distributions and therefore larger deviations from the true distribution.
+For the unbiased Models~\ref{model:A} and~\ref{model:B}, most of the variation in TV distance is driven by sampling noise, whereas for the biased Models~\ref{model:C} and~\ref{model:D}, the TV distance is primarily driven by convolution structure. Additionally, Model~\ref{model:C}, which is characterized by lower sd ($\sigma = 1$) compared to Model~\ref{model:D} ($\sigma = 4$), exhibits systematically higher total variation distance. 
 
-The median and non-parametric 95\% upper quantile also exhibit a consistent decreasing pattern with increasing sample size, in line with the results observed for the mean (see Table~\ref{tab:tv_summary_conv}).
+The median and non-parametric 95\% upper quantile also exhibit a consistent decreasing pattern with increasing sample size, in line with the results observed for the mean (see Table~\ref{tab:}).
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{../figures/Conv_TV_convoluted_p4.pdf}
-	\caption{Mean TV distance for convoluted distributions based on Model~\ref{model:A}--\ref{model:D}, with 100 replicas per sample size. Total variation distance is computed relative to the true distribution.}
-	\label{fig:TV_convoluted_samplesize}
+	\includegraphics[width=0.8\textwidth]{../figures/Conv_TV_vs_sample_p4.pdf}
+	\caption{Mean TV distance for convoluted distributions for Model~\ref{model:A}--\ref{model:D}, with 100 replicas per sample size. Total variation distance is computed relative to the true distribution.}
+	\label{fig:tv_summary_conv}
 \end{figure}
 
 
 \subsection{Deconvolution}
 
-Table~\ref{tab:tv_summary_conv} serves as a baseline for evaluating the deconvolution method. 
+Figure~\ref{fig:tv_summary_deconv_u} and Figure~\ref{fig:tv_summary_deconv_i} 
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../figures/deconv_TV_vs_sample_p7.pdf}
+	\caption{
+		Mean total variation (TV) distance for deconvolved samples based on an uninformed initialization for Models~\ref{model:A}--\ref{model:D}, using 100 replicates per sample size. The TV distance is computed relative to the true distribution. Panel (a) shows the EM algorithm with a uniform (uninformed) initialization, while panel (b) shows results with initialization using the true (informed) distribution.
+	}
+	\label{fig:tv_summary_deconv_u}
+\end{figure}
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../figures/barplot_c_u_i_TV_minus_baseline_p8.pdf}
+	\caption{
+		Mean total variation (TV) distance for convolved and deconvolved samples based on an uninformed and informed initialization, using 100 replicates per sample size. The TV distance is computed relative to the true distribution. Panel (A--D) corresponding to error Models~\ref{model:A}--\ref{model:D}.
+	}
+	\label{fig:diff_tv_samples_models}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\input{../tables/diff_tv_top10_t4.tex}
+	\caption{Table displaying the top 10 differences in total variation (TV) distance between convoluted and deconvoluted samples. Statistical significance is assessed using paired t-tests, where * $p < 0.05$, ** $p < 0.01$, and *** $p < 0.001$.}
+	\label{tab:diff_tv_top10}
+\end{table}
 
 \section{Analysis / Discussion}
 \begin{itemize}
@@ -514,9 +554,30 @@ Table~\ref{tab:tv_summary_conv} serves as a baseline for evaluating the deconvol
 
 \begin{table}[H]
 	\centering
-	\input{../tables/df_tv.tex}
-	\caption{Summary of total variation distance across models and sample sizes, based on 100 replications per configuration. Total variation distance is computed relative to the true distribution.}
+	\input{../tables/df_tv_true_t1.tex}
+	\caption{Summary of total variation distance for samples from true distribution, based on 100 replications per sample size. Total variation distance is computed relative to the true distribution.}
+	\label{tab:tv_summary_true_dist}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\input{../tables/df_tv_convolution_t2.tex}
+	\caption{Summary of total variation distance statistics from sample simulations across convoluted distributions and different sample sizes, based on 100 replicas per sample siza. Total variation distance is computed relative to the true distribution.}
 	\label{tab:tv_summary_conv}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\input{../tables/df_tv_deconvolution_u_t3.tex}
+	\caption{Summary of total variation distance statistics from sample simulations across uniformed deconvolutions and different sample sizes, based on 100 replicas per sample siza. Total variation distance is computed relative to the true distribution.}
+	\label{tab:tv_summary_deconv_u}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\input{../tables/df_tv_deconvolution_i_t3.tex}
+	\caption{Summary of total variation distance statistics from sample simulations across informed deconvolutions and different sample sizes, based on 100 replicas per sample siza. Total variation distance is computed relative to the true distribution.}
+	\label{tab:tv_summary_deconv_i}
 \end{table}
 \end{document}   % Här slutar dokumentet
 

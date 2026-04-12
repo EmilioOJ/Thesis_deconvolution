@@ -9,10 +9,38 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 source("stat_func.R")
 source("pupulation_model.R")
+source("thikanov_inv.R")
 library(xtable)
+library(glmnet)
+library(purrr)
+library(patchwork)
 library(ggplot2)
 library(dplyr)
+library(knitr)
 ```
+
+```{r}
+# My missclass matrix
+missclass_matrix_A <-  truncated_misclassification(func_sigma = function(x) 1, func_mu = function(x) x)
+missclass_matrix_B <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x)
+missclass_matrix_C <-  truncated_misclassification(func_sigma = function(x) 1, func_mu = function(x) x+4/(x+0.5))
+missclass_matrix_D <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x+4/(x+0.5))
+
+missclass_all_t <- list(
+  A = t(missclass_matrix_A),
+  B = t(missclass_matrix_B),
+  C = t(missclass_matrix_C),
+  D = t(missclass_matrix_D)
+)
+
+missclass_all <- list(
+  A = missclass_matrix_A,
+  B = missclass_matrix_B,
+  C = missclass_matrix_C,
+  D = missclass_matrix_D
+)
+```
+
 
 
 ## R Markdown
@@ -102,8 +130,322 @@ p2
 
 ```
 ```{r}
-# ill conditioned section
-missclass_matrix <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x+4/(x+0.5))
 
+# Standard deviations from 0.2 to 20
+sigma_values <- seq(0.2, 10, length.out = 1000)
+
+  
+
+# Function to calculate condition number for a given sigma
+calc_condition <- function(sigma) {
+  mat <- truncated_misclassification(
+    func_sigma = function(x) sigma,
+    func_mu    = function(x) x
+  )
+  # Compute condition number
+  kappa(mat)
+}
+
+# Apply function over all sigma values
+cond_numbers <- map_dbl(sigma_values, calc_condition)
+
+plot_data <- data.frame(
+  sigma = sigma_values,
+  variance = sigma_values^2,
+  condition_number = cond_numbers
+)
+
+thresholds <- round(log(c(1, 5, 100)),3)
+
+p3 <- ggplot(plot_data, aes(x = sigma, y = condition_number)) +
+  geom_point(color = "black", size = 0.5) +
+  geom_hline(yintercept = thresholds, linetype = "dashed", color = "gray40") +
+  annotate("text", x = c(0.5,2,3.5), y = thresholds, label = paste0("κ=", c(1,5,100)),
+           hjust = 0, vjust = -0.3, size = 3.5, color = "gray40") +
+  scale_y_log10() +
+  labs(
+    x = "Standard Deviation (σ)",
+    y = "Logged Condition Number (κ)",
+    title = "Logged Condition Number vs standard deviation of error"
+  ) +
+  theme_minimal()
+
+
+ggsave(
+  filename = "../figures/kondition_number_vs_sd_p3.pdf",
+  plot = p3,
+  width = 6,
+  height = 4
+)
+p3
+```
+## True distribution simulation
+```{r}
+# simulate 
+
+sim_results_true_dist <- lapply( list(stable_dist), function(dist) {
+  lapply(samples, function(n) {
+    simulate_counts(dist, size_per_sample = n, n_samples = 100)
+  })
+})
+
+#  summary statistic of TV from sim_results
+tv_result_summary_true <-  compute_tv_all(sim_results_true_dist, stable_dist)
+
+# convert to data frame
+df_tv_true <- tv_to_df_summary(tv_result_summary_true)
+df_tv_true$model <- "True distribution"
+df_tv_true
+
+# Export to ..\tables
+table_tex <- kable(df_tv_true, format = "latex", booktabs = TRUE)
+
+writeLines(table_tex, "../tables/df_tv_true_t1.tex")
+```
+
+
+### Convolution data simulation
+```{r}
+# Show convolution 
+set.seed(19911122)
+
+# Convoluted Distribution
+conv_dist <- lapply(missclass_all_t, function(M) {
+  as.vector(M %*% stable_dist)
+})
+
+# Set samples
+samples <- c(10, 25, 50, 100, 150, 200)
+
+# To each type of conv matrix, sample for each type of sample size 
+# Dist A,B,C,D = 1,2,3,4 & sampel size 10, 25, 50, 100 = 1, 2, 3, 4,5,6 Each one is a matrix where column is replica and row "bin" 
+sim_results <- lapply(conv_dist, function(dist) {
+  lapply(samples, function(n) {
+    simulate_counts(dist, size_per_sample = n, n_samples = 100)
+  })
+})
+
+#  summary statistic of TV from sim_results
+tv_result_summary <-  compute_tv_all(sim_results, stable_dist)
+
+# convert to data frame
+df_tv_c <- tv_to_df_summary(tv_result_summary)
+
+df_tv_c
+
+# Export to ..\tables
+table_tex <- kable(df_tv_c, format = "latex", booktabs = TRUE)
+
+writeLines(table_tex, "../tables/df_tv_convolution_t2.tex")
+
+```
+
+### Convolution graph
+```{r}
+
+df_all_c_t <- rbind(df_tv_c, df_tv_true)
+
+p4 <- ggplot(df_all, aes(x = sample_size, y = mean, group = model, color = model)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Convergence of TV Distance vs sample size",
+    x = "Sample size",
+    y = "Mean TV distance",
+    color = "Error Model"
+  ) +
+  scale_color_manual(values = c(
+    "A" = "red",
+    "B" = "blue",
+    "C" = "darkgreen",
+    "D" = "orange",
+    "True distribution" = "black"
+  )) +
+  coord_cartesian(ylim = c(0, 0.7)) +
+  theme_minimal(base_size = 14)
+
+
+
+ggsave(
+  filename = "../figures/Conv_TV_vs_sample_p4.pdf",
+  plot = p4,
+  width = 6,
+  height = 4
+)
+
+
+
+p4
+```
+### Deconvolution uniform-init simulation 
+```{r}
+# Deconvolution steps
+set.seed(19911122)
+
+deconvolved_samples <- Map(function(dist_list, K) {
+  lapply(dist_list, function(mat) {
+    apply(mat, 2, function(col) {
+      em_deconvolve(col, K = K)$p
+    })
+  })
+}, sim_results, missclass_all)
+
+#  summary statistic of TV from sim_results
+tv_result_summary_deconv <-  compute_tv_all(deconvolved_samples, stable_dist)
+
+# convert to data frame
+df_tv_deconv_u <- tv_to_df_summary(tv_result_summary_deconv)
+
+df_tv_deconv_u
+
+# Export to ..\tables
+table_tex <- kable(df_tv_deconv_u, format = "latex", booktabs = TRUE)
+
+writeLines(table_tex, "../tables/df_tv_deconvolution_u_t3.tex")
+# 
+# A	10	0.5635416	0.5442254	0.7641923
+# A	25	0.4792911	0.4671815	0.7003950
+# A	50	0.3984489	0.3892980	0.5646527
+# A	100	0.3354296	0.3257366	0.4896924
+# A	150	0.2741892	0.2598381	0.3893600
+# A	200	0.2690260	0.2600026	0.3836192
+# B	10	0.5363998	0.5455556	0.7712813
+# B	25	0.4087443	0.4013897	0.6919004
+# B	50	0.3180364	0.3045640	0.5465116
+# B	100	0.2502946	0.2323665	0.4132018
+```
+
+### Deconvolution uniform graph
+```{r}
+
+df_all_du_t <- rbind(df_tv_deconv_u, df_tv_true)
+
+p5 <- ggplot(df_all_du_t, aes(x = sample_size, y = mean, group = model, color = model)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    x = "Sample size",
+    y = "Mean TV distance",
+    color = "Error Model"
+  ) +
+  scale_color_manual(values = c(
+    "A" = "red",
+    "B" = "blue",
+    "C" = "darkgreen",
+    "D" = "orange",
+    "True distribution" = "black"
+  )) +
+  coord_cartesian(ylim = c(0, 0.7)) +
+  theme_minimal(base_size = 14)
+
+p5
+
+ggsave(
+  filename = "../figures/deconv_TV_vs_sample_u_p5.pdf",
+  plot = p5,
+  width = 6,
+  height = 4
+)
+
+```
+## Deconvolution well-informed init simulation
+
+```{r}
+# Deconvolution steps
+set.seed(19911122)
+
+deconvolved_samples_i <- Map(function(dist_list, K) {
+  lapply(dist_list, function(mat) {
+    apply(mat, 2, function(col) {
+      em_deconvolve(col, K = K, init = TRUE)$p
+    })
+  })
+}, sim_results, missclass_all)
+
+#  summary statistic of TV from sim_results
+tv_result_summary_deconv_i <-  compute_tv_all(deconvolved_samples_i, stable_dist)
+
+# convert to data frame
+df_tv_deconv_i <- tv_to_df_summary(tv_result_summary_deconv_i)
+
+df_tv_deconv_i
+
+# Export to ..\tables
+table_tex <- kable(df_tv_deconv_i, format = "latex", booktabs = TRUE)
+
+writeLines(table_tex, "../tables/df_tv_deconvolution_i_t3.tex")
+```
+### Deconvolution informed - Graph
+```{r}
+df_all_di_i <- rbind(df_tv_deconv_i, df_tv_true)
+
+p6 <- ggplot(df_all_di_i, aes(x = sample_size, y = mean, group = model, color = model)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    x = "Sample size",
+    y = "Mean TV distance",
+    color = "Error Model"
+  ) +
+  scale_color_manual(values = c(
+    "A" = "red",
+    "B" = "blue",
+    "C" = "darkgreen",
+    "D" = "orange",
+    "True distribution" = "black"
+  )) +
+  coord_cartesian(ylim = c(0, 0.7)) +
+  theme_minimal(base_size = 14)
+
+
+p6
+
+ggsave(
+  filename = "../figures/deconv_TV_vs_sample_i_p6.pdf",
+  plot = p6,
+  width = 6,
+  height = 4
+)
+  
+```
+
+```{r}
+p7 <- (p5 | p6) +
+  plot_layout(guides = "collect")  + 
+  plot_annotation(
+    title = "Convergence of TV Distance vs sample size",
+    tag_levels = "a"
+  ) &
+  theme(legend.position = "bottom")
+
+p7
+
+ggsave(
+  filename = "../figures/deconv_TV_vs_sample_p7.pdf",
+  plot = p7,
+  width = 6,
+  height = 4
+)
+```
+```{r}
+df_all <- rbind(
+  df_tv_c %>% mutate(method = "Convolved"),
+  df_tv_deconv_i %>% mutate(method = "Deconvolved informed"),
+  df_tv_deconv_u %>% mutate(method = "Deconvolved uninformed")
+)
+
+ggplot(df_all, aes(x = factor(sample_size), y = mean, fill = method)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~model) +
+  labs(
+    x = "Sample size",
+    y = "Mean TV distance",
+    fill = "method"
+  ) +
+  scale_fill_manual(values = c(
+    "Convolved" = "steelblue",
+    "True / Convolved" = "black"
+  )) +
+  theme_minimal(base_size = 14)
 ```
 

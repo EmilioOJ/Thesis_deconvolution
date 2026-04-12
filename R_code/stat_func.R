@@ -1,3 +1,5 @@
+source("pupulation_model.R")
+
 # Function to sample from a discrete distribution
 simulate_counts <- function(distr_vector, size_per_sample, n_samples = 1) {
   replicate(
@@ -29,30 +31,29 @@ simulate_convolved_counts <- function(counts, K) {
 # EM algorithm for deconvolution
 # -----------------------------
 
-em_deconvolve <- function(counts_convolved, K, n_iter = 100, tol = 1e-6) {
+em_deconvolve <- function(counts_convolved, K, n_iter = 100, tol = 1e-4, init = FALSE) {
   
   n_bins <- length(counts_convolved)
   n_total <- sum(counts_convolved)
   
   #  Initialize prior (can also use uniform or your stable_dist)
-  p <- rep(1/n_bins, n_bins)
+  if(init){
+    p <- stable_dist
+  } else {
+    p <- rep(1/n_bins, n_bins)
+  }
   
-  # exp srat
-  # bins <- 1:n_bins
-  # lambda <- 1 / mean(counts_convolved)
-  # p <- dexp(bins, rate = 0.1)
-  # p <- p / sum(p)
-  
+  iterations = 1
   for (iter in seq_len(n_iter)) {
     
     # Store old p to check convergence
     p_old <- p
     
     
-    # E-step: compute posterior P(true=i | observed=j)
+    # E-step: compute conditoned P(true=i | observed=j)
     posterior <- matrix(0, n_bins, n_bins) # rows=i, cols=j
     for (j in seq_len(n_bins)) {
-      denom <- sum(K[, j] * p)    # Total probability of ending in j from any i 
+      denom <- sum(K[, j] * p)    # Total probability of ending in j from any i k is a miscclas-matrix
       if (denom > 0) {
         posterior[, j] <- (K[, j] * p) / denom # P_ij / sum (P_ij)  
       } else {
@@ -64,13 +65,17 @@ em_deconvolve <- function(counts_convolved, K, n_iter = 100, tol = 1e-6) {
     p <- rowSums(sweep(posterior, 2, counts_convolved, `*`)) / n_total
     
     #  Check convergence
-    if (max(abs(p - p_old)) < tol) break
+    diff <- max(abs(p - p_old))
+    rel_diff <- diff / (max(abs(p_old)) + 1e-12)
+    # We break if reach convergence or are moving at to slow of a rate
+    if (diff < tol || rel_diff < tol) break
+    iterations = iterations + 1
   }
   
   # Optional: convert expected counts
   counts_deconvolved <- p * n_total
   
-  return(list(p = p, counts = counts_deconvolved, post = posterior))
+  return(list(p = p, counts = counts_deconvolved, post = posterior, iter = iterations))
 }
 
 # Simulate deconvolved counts from observed counts using posterior
