@@ -1,4 +1,3 @@
-# this comment
 
 # Takes a Matrix of matrixes where col is replika and row is bin and computes TV summary
 compute_tv_all <- function(sim_results, stable_dist) {
@@ -64,4 +63,81 @@ tv_to_df_summary <- function(tv_results) {
   
   df
 }
+
+
+
+# ------------------------------------------------------------------------------------
+
+# Generate summary for forward simulation
+
+
+# Outputs a matrix of the projection per simulation n steps in to the future displays it as total population
+compute_leslie_projection <- function(mat, leslie_power_list, n_future_proj = 5) {
   
+  nr_col <- ncol(mat)
+  m <- matrix(NA, nrow = n_future_proj +1, ncol = nr_col)
+  
+  # iterate over each column
+  for (j in seq_len(nr_col) ) {
+    
+    # First col value 
+    obs_pop <- c(sum(mat[,j]))
+    
+    # where leslie_power_list = list(L,L^2,..,L^n_future_proj)
+    for (i in seq_len(n_future_proj) ) {
+      obs_pop <- c(obs_pop, sum(leslie_power_list[[i]]%*%mat[,j]))
+    }
+  m[,j] <- obs_pop
+  }
+  return(m)
+}
+
+# Takes a simulation matrix and sumarises
+summary_leslie_proj <- function(mat) {
+  
+  data.frame(
+    mean     = apply(mat, 1, mean),
+    median   = apply(mat, 1, median),
+    lower_95 = apply(mat, 1, function(x) quantile(x, 0.025)),
+    upper_95 = apply(mat, 1, function(x) quantile(x, 0.975))
+  )
+}
+
+
+generate_leslie_powers <- function(L, n) {
+  
+  leslie_list <- vector("list", n)
+  
+  for (i in seq_len(n)) {
+    leslie_list[[i]] <- L %^% i
+  }
+  
+  return(leslie_list)
+}
+
+# Compute summary leslie projection nested matrices 
+
+leslie_summary_nested <- function(sim_nested, L, n_future = 5) {
+  
+  leslie_powers <- generate_leslie_powers(L, n_future)
+  
+  lapply(sim_nested, function(model_list) {
+    
+    lapply(model_list, function(mat_list) {
+      
+      lapply(mat_list, function(mat) {
+        
+        proj <- compute_leslie_projection(
+          mat = mat,
+          leslie_power_list = leslie_powers,
+          n_future_proj = n_future
+        )
+        
+        summary_leslie_proj(proj)
+        
+      })
+      
+    })
+    
+  })
+}

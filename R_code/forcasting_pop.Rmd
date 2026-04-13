@@ -1,0 +1,280 @@
+---
+title: "forcasting_pop"
+author: "Emilio Otero"
+date: "2026-04-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("stat_func.R")
+source("pupulation_model.R")
+source("thikanov_inv.R")
+library(xtable)
+library(glmnet)
+library(purrr)
+library(patchwork)
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(expm)
+```
+
+### Population framskrivning
+## Convolution data
+```{r}
+
+# sim_results_true_dist <- true data simulation
+convolved_sim <- lapply(missclass_all, function(K) {
+  
+  lapply(sim_results_true_dist, function(sim_list) {
+    
+    lapply(sim_list, function(mat) {
+      
+      apply(mat, 2, simulate_convolved_counts, K = K)
+      
+    })
+    
+  })
+  
+})
+```
+
+
+## EM-alg Skatta parameter p for a decon for a u-init
+
+```{r}
+deconvolved_p_samples_u <- Map(function(model_list, K) {
+  
+  lapply(model_list, function(scenario_list) {
+    
+    lapply(scenario_list, function(mat) {
+      
+      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
+      
+      apply(mat, 2, function(col) {
+        em_deconvolve(col, K = K)$p
+      })
+      
+    })
+    
+  })
+  
+}, convolved_sim, missclass_all)
+```
+
+## EM-alg Skatta parameter p for a decon for informed init
+
+```{r}
+deconvolved_p_samples_i <- Map(function(model_list, K) {
+  
+  lapply(model_list, function(scenario_list) {
+    
+    lapply(scenario_list, function(mat) {
+      
+      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
+      
+      apply(mat, 2, function(col) {
+        em_deconvolve(col, K = K, init=TRUE)$p
+      })
+      
+    })
+    
+  })
+  
+}, convolved_sim, missclass_all)
+```
+# Normalize 
+```{r}
+# normalized convolved sim 
+
+normalized_convolved_sim <- lapply(convolved_sim, function(model_list) {
+  
+  lapply(model_list, function(sample_list) {
+    
+    lapply(sample_list, function(mat) {
+      
+      stopifnot(is.matrix(mat))
+      
+      col_sums <- colSums(mat)
+      
+      # avoid division by zero
+      col_sums[col_sums == 0] <- 1
+      
+      sweep(mat, 2, col_sums, `/`)
+    })
+    
+  })
+  
+})
+
+# Normalize true dist sim
+
+
+normalized_truedist_sim <- lapply(sim_results_true_dist, function(model_list) {
+  
+  lapply(model_list, function(mat) {
+    
+    stopifnot(is.matrix(mat))
+    
+    if (anyNA(mat)) stop("NA detected in matrix")
+    
+    col_sums <- colSums(mat)
+    
+    if (any(col_sums <= 0)) {
+      stop("Invalid column sums (<=0) detected")
+    }
+    
+    sweep(mat, 2, col_sums, "/")
+  })
+  
+})
+
+```
+
+## summarized data 
+
+
+```{r}
+true_proj_f <- function(sim_list, L, n_future = 5, summarize = FALSE) {
+  
+  leslie_powers <- generate_leslie_powers(L, n_future)
+
+  out <- lapply(sim_list, function(model_block) {
+    
+    lapply(model_block, function(mat) {
+      
+      mat <- as.matrix(mat)
+
+      proj <- compute_leslie_projection(
+        mat,
+        leslie_powers,
+        n_future
+      )
+
+      if (summarize) {
+        summary_leslie_proj(proj)
+      } else {
+        proj
+      }
+      
+    })
+  })
+
+  out
+}
+# 
+true_summary_proj <- true_proj_f(normalized_truedist_sim, L, n_future = 5, summarize = TRUE)
+convoluted_summary_proj <- leslie_summary_nested(normalized_convolved_sim, L, n_future = 5)
+decon_u_summary_proj <- leslie_summary_nested(deconvolved_p_samples_u, L, n_future = 5)
+decon_i_summary_proj <- leslie_summary_nested(deconvolved_p_samples_i, L, n_future = 5)
+```
+
+```{r}
+flatten_results <- function(nested_list, source_name, models, sample_sizes) {
+  
+  out <- list()
+  idx <- 1
+  
+  for (m in seq_along(models)) {
+    for (s in seq_along(sample_sizes)) {
+      
+      df <- nested_list[[m]][[1]][[s]]  # <- FIX IS HERE
+      
+      df$model <- models[m]
+      df$sample_size <- sample_sizes[s]
+      df$source <- source_name
+      df$time <- seq_len(nrow(df))
+      
+      out[[idx]] <- df
+      idx <- idx + 1
+    }
+  }
+  
+  do.call(rbind, out)
+}
+
+df_con <- flatten_results(convoluted_summary_proj, "convoluted", c("A", "B", "C", "D"), c(10, 25, 50, 100, 150, 200))
+df_decon_u <- flatten_results(decon_u_summary_proj, "deconvoluted uninformed", c("A", "B", "C", "D"), c(10, 25, 50, 100, 150, 200)) 
+df_decon_i <- flatten_results(decon_i_summary_proj, "deconvoluted informed", c("A", "B", "C", "D"), c(10, 25, 50, 100, 150, 200)) 
+df_true_dist <- flatten_results(list(true_summary_proj), "true distribution", c("True dist"), c(10, 25, 50, 100, 150, 200)) 
+
+combined_df_projection_sum <- do.call(rbind, list(df_con, df_decon_u, df_decon_i, df_true_dist))
+combined_df_projection_sum
+```
+
+
+
+
+```{r}
+df_final <- combined_df_projection_sum %>%
+  group_by(sample_size, time) %>%
+  mutate(
+    true_mean   = mean[source == "true distribution"][1],
+    true_median = median[source == "true distribution"][1],
+    true_lower  = lower_95[source == "true distribution"][1],
+    true_upper  = upper_95[source == "true distribution"][1]
+  ) %>%
+  ungroup() %>%
+  mutate(
+    mean_diff   = mean - true_mean,
+    median_diff = median - true_median,
+    lower_diff  = lower_95 - true_mean,
+    upper_diff  = upper_95 - true_mean
+  )
+df_final
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+plot_df <- df_final %>%
+  filter(sample_size %in% c(50, 100, 200),
+         source != "true distribution")
+
+
+make_plot <- function(df, m, s) {
+  
+  df_sub <- df %>%
+    filter(model == m,
+           sample_size == s,
+           source != "true distribution")
+  
+  ggplot(df_sub, aes(x = time, color = source)) +
+    
+    geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
+    
+    geom_ribbon(aes(ymin = lower_diff, ymax = upper_diff, fill = source),
+                alpha = 0.5, color = NA) +
+    
+    geom_line(aes(y = mean_diff), linewidth = 1) +
+    
+    geom_line(aes(y = median_diff, linetype = source), linewidth = 0.8) +
+    
+    labs(
+      title = paste("Model", m, "| n =", s),
+      x = "Time step",
+      y = "Difference (estimate - true)",
+      color = "Source",
+      fill = "Source",
+      linetype = "Source"
+    ) +
+    
+    theme_minimal()
+}
+```
+
+```{r}
+models <- c("A", "B", "C", "D")
+sizes  <- c(50, 100, 200)
+
+make_plot(df_final,"C","200")
+```
+

@@ -1,35 +1,29 @@
-\contentsline {section}{\numberline {1}Introduktion}{2}{section.1}%
-\contentsline {section}{\numberline {2}Theory}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Matrix population models}{2}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Computing age distribution from a Leslie matrix}{2}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Age determination errors}{3}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}misclassification matrices}{3}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Stable age distribution and age measurement errors}{4}{subsection.2.5}%
-\contentsline {paragraph}{Stable age distribution.}{4}{section*.2}%
-\contentsline {paragraph}{Age measurement errors.}{4}{section*.3}%
-\contentsline {paragraph}{Summary.}{4}{section*.4}%
-\contentsline {subsection}{\numberline {2.6}Matrix inversion \& condition number}{4}{subsection.2.6}%
-\contentsline {subsection}{\numberline {2.7}Thikanov regularization}{4}{subsection.2.7}%
-\contentsline {subsection}{\numberline {2.8}Expectation-Maximization algorithm (EM-algorithm)}{5}{subsection.2.8}%
-\contentsline {paragraph}{Monotonicity}{5}{section*.5}%
-\contentsline {subsection}{\numberline {2.9}Application of the EM algorithm to the deconvolution problem}{5}{subsection.2.9}%
-\contentsline {paragraph}{Maximization-step}{7}{section*.6}%
-\contentsline {subsection}{\numberline {2.10}Evaluation method}{7}{subsection.2.10}%
-\contentsline {paragraph}{Total Varation (TV)}{7}{section*.7}%
-\contentsline {paragraph}{KL-divergence}{7}{section*.8}%
-\contentsline {section}{\numberline {3}Methods / Simulation Setup}{7}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Simulated Age Distributions}{7}{subsection.3.1}%
+\contentsline {section}{\numberline {1}Introduktion}{3}{section.1}%
+\contentsline {section}{\numberline {2}Theory}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Matrix population models}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Computing age distribution from a Leslie matrix}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Measurement error (convolution)}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Matrix inversion \& condition number}{5}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Thikanov regularization}{5}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Expectation-Maximization algorithm (EM-algorithm)}{5}{subsection.2.6}%
+\contentsline {paragraph}{Monotonicity}{6}{section*.2}%
+\contentsline {subsection}{\numberline {2.7}Application of the EM algorithm to the deconvolution problem}{6}{subsection.2.7}%
+\contentsline {paragraph}{Maximization-step}{7}{section*.3}%
+\contentsline {subsection}{\numberline {2.8}Evaluation method}{7}{subsection.2.8}%
+\contentsline {paragraph}{Total Varation (TV)}{7}{section*.4}%
+\contentsline {paragraph}{KL-divergence}{7}{section*.5}%
+\contentsline {section}{\numberline {3}Methods / Simulation Setup}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Simulated Age Distributions}{8}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Error terms}{8}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Convolution and Sampling Effects}{9}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Deconvolution Methods}{9}{subsection.3.4}%
-\contentsline {paragraph}{Matrix inversion}{10}{section*.9}%
-\contentsline {paragraph}{EM-algorithm deconvolution}{10}{section*.10}%
-\contentsline {subsection}{\numberline {3.5}Evaluation Against a Random Parameter Baseline}{10}{subsection.3.5}%
-\contentsline {section}{\numberline {4}Results}{11}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Effect of convolution and sampling}{11}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Effect of convolution and sampling}{11}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Deconvolution}{12}{subsection.4.3}%
-\contentsline {section}{\numberline {5}Analysis / Discussion}{13}{section.5}%
-\contentsline {section}{\numberline {6}Appendix}{14}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Simulation Parameters}{14}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Results}{15}{subsection.6.2}%
+\contentsline {subsection}{\numberline {3.4}Deconvolution Methods}{10}{subsection.3.4}%
+\contentsline {paragraph}{Matrix inversion}{10}{section*.6}%
+\contentsline {paragraph}{EM-algorithm deconvolution}{10}{section*.7}%
+\contentsline {subsection}{\numberline {3.5}Evaluation Against a Random Parameter Baseline}{11}{subsection.3.5}%
+\contentsline {section}{\numberline {4}Results}{12}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Effect of convolution and sampling}{12}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Deconvolution}{13}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Analysis / Discussion}{17}{section.5}%
+\contentsline {section}{\numberline {6}Appendix}{18}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Simulation Parameters}{18}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Results}{18}{subsection.6.2}%

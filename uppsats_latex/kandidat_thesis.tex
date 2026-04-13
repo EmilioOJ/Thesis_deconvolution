@@ -14,36 +14,56 @@
 \addbibresource{references.bib}
 
 
-\title{En mall (och kort introduktion) till \LaTeX}
-\author{Andreas Nordvall Lagerås}
+\title{To be determined) }
+\author{Emilio Otero Johansson}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document} % Här börjar den egentliga texten
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+\colorbox{green!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO:} Jag har försökt lägga fram kärnan i vad jag tror kommer att bli uppsatsen, men många delar är ännu inte färdiga. Jag har försökt lämna färgade kommentarer här och var så att du kan se hur jag har tänkt samt vilka frågeställningar jag har.
+		
+		Utöver det är jag inte helt säker på mina val av felmodeller (convolution) och stickprovsstorlekar. Jag har skrivit min kod i R som en pipeline, så dokumentet kan enkelt uppdatera befintliga grafer och plottar om du tycker att jag bör använda andra värden.
+		
+		Jag är också osäker på hur mycket av materialet som bör tas med i uppsatsen i dess nuvarande form. I dagsläget har jag 64 olika simuleringar, vilket är en kombination av felmodell, stickprovsstorlek och dekonvolutionsmetod.}
+}
+
 \maketitle       % Här används  \title och \author för att 
                  % ge dokumentet titel och författare.
 
 \begin{abstract}
-Detta dokument ger dig smakprov på vad man kan göra med \LaTeX. Genom att titta på och ändra i koden som ligger till grund för detta dokument kan du förhoppningsvis snabbt komma igång med att skriva snygga rapporter. 
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO: Will be done at the end} \\
+
+}}
 \end{abstract}
 \tableofcontents
 
 \section{Introduktion}\label{stycke1}
 
 \colorbox{yellow!30}{%
-	\parbox{0.95\linewidth}{\textbf{TODO: Expand this section.} \\ 
-		Include SVD formulation, derivation of the filter factor 
-		$\frac{\sigma_i}{\sigma_i^2+\lambda}$, and discussion of how 
-		regularization trades bias for stability in ill-posed inverse problems.}
-}
+	\parbox{0.95\linewidth}{\textbf{TODO:} \\
+		\begin{itemize}
+			\item \textbf{Background:} Introduce existing age determination methods, in particular recent developments \cite{nakamura2023}. Discuss why accurate age determination is important for understanding population dynamics and improving population forecasts.
+			
+			\item \textbf{Problem statement:} Measurement methods introduce inherent error, causing observed age distributions to deviate from the true underlying distribution. If uncorrected, this can lead to biased population estimates and unreliable forecasts. This thesis addresses this issue by accounting for such errors.
+			
+			\item \textbf{Convolution:} Provide a brief explanation of convolution and its role in modeling measurement processes.
+			
+			\item \textbf{Scope of this thesis:} Conduct a simulation study to evaluate a deconvolution method based on the EM algorithm. The method is applied to a hypothetical age distribution generated using a Leslie matrix, together with theoretical error models based on \cite{nina_bearmodel}, across varying sample sizes. Performance is assessed using total variation distance and a forecast simulation.
+			
+			\item \textbf{Optional?:} use the error model of \cite{nakamura2023} and asses it with above given methods.
+		\end{itemize}
+}}
 
 
 \section{Theory}\label{stycke2}
 \subsection{Matrix population models}\label{pop_model_matrix}
 
-To obtain a suitable idea of the population age distribution over time we use a population matrix model \cite{caswell2001} which we will describe shortly in this section. The age class $i=1,2,... m$ is the discretization of the age $x$ to age-class $i$ with  $i - 1 \leq x \leq i$. The number of individuals for each age class $i$ is then given by $n_1,n_2,...,n_m$.
+To obtain a suitable idea of the population age distribution over time we use a population matrix model \cite{caswell2001} which we will describe shortly in this section. The age class $i=1,2,... m$ is the discretization of the age $z$ to age-class $i$ with  $i - 1 \leq z \leq i$. The number of individuals for each age class $i$ is then given by $n_1,n_2,...,n_m$.
 
 
 Following \cite[Eq.~2.1]{caswell2001} the number of $n_1$ individuals at time $t+1$ can be projected with  
@@ -87,103 +107,56 @@ If $\mathbf{A}$ is primitive, then as $t \rightarrow \infty$, the population vec
 \frac{\mathbf{n}_t}{\sum_i n_{i,t}} \to \mathbf{w},
 \]
 where $\mathbf{w}$ is the normalized right eigenvector corresponding to $\lambda_1$. 
-This represents the **stable age distribution** of the population.
+This represents the \textbf{stable age distribution} of the population.
+
+\colorbox{blue!30}{%
+	\parbox{0.95\linewidth}{\textbf{Question: Maybe explain here that w is the parameter of a multinomial distribution?} \\
+
+}}
 
 
-\subsection{Age determination errors}\label{age_errors}
+\subsection{Measurement error (convolution)}\label{sec:convolution}
 
-Once the stable age distribution of the population has been obtained, we simulate the effect of age determination errors. 
+We simulate measurement error by spreading each true age bin across neighboring observed bins according to probabilities derived from a normal distribution.
 
-Let $\epsilon$ denote the measurement error in age, which may depend on the true age $X$:
-
+We model measurement error at the latent level as
 \[
-\epsilon \mid X \sim N(0, f(X)^2).
+\epsilon \mid Z \sim \mathcal{N}(g(Z), f(Z)^2),
+\]
+where the mean and variance of the error may depend on the true age $Z$ through functions $g(\cdot)$ and $f(\cdot)$.
+
+The observed age is then given by
+\[
+Y = Z + \epsilon.
 \]
 
-The observed age $Y$ is then given by
-
+This induces a misclassification matrix $M$, where $M_{ij}$ denotes the probability that an individual in true age class $i$ is observed in age class $j$. For a discretized age distribution $\boldsymbol{\pi}_z$, the observed distribution is given by
 \[
-Y = X + \epsilon.
+\boldsymbol{\pi}_y = M \boldsymbol{\pi}_z.
 \]
 
-Applying this error to the theoretical distribution produces the observed age distribution. 
-This can be represented using a misclassification matrix $M$, where $M_{ij}$ denotes the probability that an individual of true age class $i$ is observed in age class $j$.
-
-If $\mathbf{p}_x$ is the vector of true age proportions and $\mathbf{p}_y$ the observed proportions, then
-
-\[
-\mathbf{p}_y = M \mathbf{p}_x .
-\]
-
-
-\subsection{misclassification matrices} \label{subsec:missclasification}
-
-For discrete age classes, define a misclassification matrix $M$ such that
-
-\[
-M_{ij} = P(Y = j \mid X = i)
-\]
-
-is the probability that an individual of true age class $i$ is observed in age class $j$.  
-Let $\mathbf{p}_x$ be the vector of true age proportions (from the stable distribution $\mathbf{w}$), and $\mathbf{p}_y$ the observed age proportions. Then the observed distribution is
-
-\[
-\mathbf{p}_y = M \mathbf{p}_x.
-\]
-
-\subsection{Stable age distribution and age measurement errors}\label{age_stable_errors}
-
-Let $\mathbf{A}$ be a Leslie matrix describing the age-structured population dynamics. 
-The population vector at time $t$, $\mathbf{n}_t$, evolves as
-
-\[
-\mathbf{n}_{t+1} = \mathbf{A}\mathbf{n}_t.
-\]
-
-\paragraph{Stable age distribution.}  
-The dominant eigenvalue $\lambda_1$ of $\mathbf{A}$ and its corresponding right eigenvector $\mathbf{w}$ satisfy
-
-\[
-\mathbf{A}\mathbf{w} = \lambda_1 \mathbf{w}, \quad \mathbf{w} \ge 0.
-\]
-
-By the Perron--Frobenius theorem \cite{caswell2001}, $\lambda_1$ is real and non-negative, and as $t \to \infty$, the normalized population vector converges to the **stable age distribution**:
-
-\[
-\frac{\mathbf{n}_t}{\sum_i n_{i,t}} \longrightarrow \mathbf{w}, \quad \text{with } \sum_i w_i = 1.
-\]
-
-\paragraph{Age measurement errors.}  
-Let $X$ denote the true age of an individual, and suppose age determination is subject to measurement error $\epsilon$:
-
-\[
-Y = X + \epsilon, \quad \epsilon \mid X \sim N(0, f(X)^2),
-\]
-
-where $f(X)$ specifies the standard deviation of the error as a function of true age.
-
-
-
-\paragraph{Summary.}  
-This formulation allows us to combine the theoretical population structure (from the Leslie matrix) with realistic measurement error in age, producing an observed age distribution that accounts for both **population dynamics** and **age-determination uncertainty**.
 
 
 \subsection{Matrix inversion \& condition number}
 
-\colorbox{yellow!30}{\textbf{[TODO: Does this need a source reference?]}}
+\colorbox{blue!30}{\textbf{[Question: Does this need a source reference? ill posed problems, justification to EM]}}
 
 \subsection{Thikanov regularization}
 
-\colorbox{yellow!30}{%
-	\parbox{0.95\linewidth}{\textbf{TODO: Expand this section.} \\ 
+\colorbox{gray!30}{%
+	\parbox{0.95\linewidth}{\textbf{Optional: could be interesting to compare with em-alg} \\ 
 		Include SVD formulation, derivation of the filter factor 
 		$\frac{\sigma_i}{\sigma_i^2+\lambda}$, and discussion of how 
-		regularization trades bias for stability in ill-posed inverse problems.}
+		regularization trades bias for stability in ill-posed inverse problems. Would justify the use of kl-divergence too}
 }
 
 
 \subsection{Expectation-Maximization algorithm (EM-algorithm)} \label{sec:em_alg}
 
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO: Har inte infört några förändringar sen senaste feedback} \\ 
+		}
+}
 
 The EM algorithm is a general-purpose method for computing maximum likelihood estimates in the presence of incomplete or latent data (\cite{mclachlan2008}). Let $\mathbf{Y}$ denote a discrete random vector corresponding to the observed (incomplete) data, and $\mathbf{X}$ a discrete random vector representing the complete data. If $\mathbf{X}$ were fully observable, we could directly compute the complete-data log-likelihood function $\ell_c(\theta)$ based on a realization $x$.
 
@@ -312,22 +285,22 @@ Thus:
 
 
 \paragraph{Total Varation (TV)}
-To quantify the difference between two discrete probability distributions $Z$ and $Q$ over the same finite sample space $\mathcal{X}$, we use the \emph{Total Variation (TV) distance}:
+To quantify the difference between two probability distributions $P$ and $Q$ over the same finite sample space $\mathcal{X}$, we use the \emph{Total Variation distance (TV)}:
 
 \[
 \text{TV}(P,Q) = \frac{1}{2} \sum_{x \in \mathcal{X}} |P(x) - Q(x)|.
 \]
 
 The TV distance ranges from $0$ (distributions are identical) to $1$ (distributions have no overlap). 
-Intuitively, it represents the maximum fraction of probability mass that must be reallocated to transform $P$ into $Q$. 
-In this thesis, we use TV distance to assess how convolution and sampling affect the observed age distributions, as well as to evaluate the accuracy of deconvolution methods.
+Intuitively, it represents the maximum fraction of probability mass that must be reallocated to transform $P$ into $Q$ or vice versa. 
+In this thesis, we use TV distance to quantify and distinguish the effects of sampling variability, convolution, and deconvolution on our estimates of the latent distribution (true age distribution).
 
 \colorbox{yellow!30}{\textbf{[TODO: Does this need a source reference?]}}
 
 \paragraph{KL-divergence} \label{sec:kl_div}
 
 
-\colorbox{yellow!30}{\textbf{[TODO: unfinished section, needs reference.]}}
+\colorbox{gray!30}{\textbf{[Optional: seems unnecessary, it would only be useful if Tikhonov regularization reg was used too. ]}}
 
 \section{Methods / Simulation Setup}
 
@@ -368,7 +341,14 @@ e \mid Z \sim \mathcal{N}\big(\mu = f(Z), \sigma^2\big),
 and discretize the resulting values to the integer age bins (1--20) to match the observed age categories. 
 Negative values were excluded, and the remaining probabilities were rescaled by $1 / (1 - F(e < 0))$. Values greater than 20 were assigned to the 19+ age class.
 
+\colorbox{blue!30}{%
+	\parbox{0.95\linewidth}{\textbf{ Question: I set the mortality for bears over 19+ to 100\% because i didnt find data to compute actual mortality or fertility} 
+
+}}
+
+
 The following four specifications for $f(Z)$ (mean) and $\sigma$ (standard deviation) were considered:
+
 
 \begin{enumerate} [label=\textbf{Model \Alph*:}, ref=\Alph*]
 	\item \textbf{Model A Unbiased, low variance:} $f(Z) = 0$, \quad $\sigma = 1$ \label{model:A}
@@ -377,8 +357,11 @@ The following four specifications for $f(Z)$ (mean) and $\sigma$ (standard devia
 	\item \textbf{Model D Age-dependent bias, high variance:} $f(Z) = \dfrac{4}{Z +0.5}$, \quad $\sigma = 4$ \label{model:D}
 \end{enumerate}
 
-\colorbox{yellow!30}{\textbf{[TODO: Add reference and explanation for the choice of sigma and mu models]}}
 
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{ TODO: Add reference and explanation for the choice of sigma and mu models. Improve clarity on how the mass redistribution was done with error models. Check for consitency /overlap with section \ref{sec:convolution}. } 
+		
+}}
 
 \subsection{Convolution and Sampling Effects}
 
@@ -390,7 +373,7 @@ p_Y(y) = \sum_z M_{zy} \, p_Z(z),
 
 where $M$ is the misclassification matrix corresponding to each error model.
 
-To assess the effects of finite sample sizes, we simulated random samples of size $n =  10, 25, 50,100$ from the convolved distribution $p_Y(y)$. This allows us to separate variability due to sampling error from information loss caused by the convolution.
+To assess the effects of sampling error, we simulated random samples of size $n =  10, 25, 50,100,150,200$ from the convolved distribution $p_Y(y)$. This allows us to separate variability due to sampling error from information loss caused by the convolution.
 
 The difference between the sampled distribution and the true age distribution was quantified using Total Variation distance.
 
@@ -411,10 +394,15 @@ The difference between the sampled distribution and the true age distribution wa
 
 \subsection{Deconvolution Methods}
 
-Two deconvolution methods were used and compared: a simple matrix inversion approach, and the EM algorithm described in Section~\ref{sec:em_alg}. For each error model introduced in Section~\ref{sec:error_terms}, the deconvolution was performed using both methods. The resulting estimates were evaluated using the KL-divergence, as described in Section~\ref{sec:kl_div}.
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{ TODO: This section depends if i will have the time or should attempt any other method for deconvolution i leave it as it is for after feedback } 
+		
+}}
+
+Two deconvolution methods were used and compared: a thikanov regularization matrix inversion and the EM algorithm described in Section~\ref{sec:em_alg}. For each error model introduced in Section~\ref{sec:error_terms}. The resulting estimates were evaluated using the KL-divergence, as described in Section~\ref{sec:kl_div}.
 
 \paragraph{Matrix inversion}
-The matrix inversion method directly inverts the missclassification matrix that can then be used to calculate the recovered distribution, for negative estimates are set to 0 and the distribution is then normalized. While straightforward, this approach can become unstable and or ill-conditioned as $\sigma$ for the error distribution increases as shown in \ref{fig:kondition_vs_sd}.
+The matrix inversion method inverts the misclassification matrix that can then be used to calculate the recovered distribution, negative estimates are set to 0 and the distribution is then normalized. While straightforward, this approach can become unstable and or ill-conditioned as $\sigma$ for the error distribution increases as shown in \ref{fig:kondition_vs_sd}.
 
 \begin{figure}[ht]
 	\centering
@@ -424,18 +412,25 @@ The matrix inversion method directly inverts the missclassification matrix that 
 \end{figure}
 
 \paragraph{EM-algorithm deconvolution}
-We applied the EM algorithm (see Appendix~\ref{app:em_alg}) using two different initializations: a uniform distribution, representing a neutral initial belief about the age distribution, and the true age distribution. 
+We applied the EM algorithm (see Appendix~\ref{app:em_alg}) using two different initialization: a uniform distribution, representing a neutral/uninformed initial belief about the latent age distribution, and the true age distribution. 
 
 The initialization based on the true age distribution was included to assess how a well-informed prior affects the resulting estimate compared to a neutral one. In particular, this allows us to evaluate the sensitivity of the EM algorithm to initialization and to investigate for which sample sizes initialization no longer constitutes a confounding factor in an ideal setting.
 
 The algorithm was iterated until convergence, defined as 
 \[
-\ell_c(\theta^{(t+1)}) - \ell_c(\theta^{(t)}) \leq 10^{-6},
+\ell_c(\theta^{(t+1)}) - \ell_c(\theta^{(t)}) \leq 10^{-4},
 \]
 or until a maximum of 100 iterations was reached.
 
 
 \subsection{Evaluation Against a Random Parameter Baseline}
+
+\colorbox{blue!30}{%
+	\parbox{0.95\linewidth}{\textbf{Question:} \\
+		\begin{itemize}
+			\item I wanted to include this as a sanity check. We may prove that deconvolution is better than convolution in terms of TV however it does not say that we might as well be better off ignoring the data and guessing the parameter randomly. 
+		\end{itemize}
+}}
 
 To assess whether our estimator outperforms a random baseline, we estimate the probability that a randomly sampled parameter from the parameter space yields a smaller total variation (TV) distance to the true distribution than our estimator.
 
@@ -458,11 +453,16 @@ This quantity represents the empirical probability that a randomly chosen parame
 
 \section{Results}
 
-\subsection{Effect of convolution and sampling}
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO: text and polish is largely unfinished but the main results to describe are there in plots and tables} 
+}}
+
 
 \subsection{Effect of convolution and sampling}
 
-Figure~\ref{fig:TV_convoluted_samplesize} shows how sample size affects the total variation distance (TV distance) across all models. For small sample sizes, sampling noise significantly affects the TV distance. As the sample size increases, the TV distance gradually stabilizes across all models, suggesting that sampling noise plays a diminishing role relative to the structural effects induced by the convolution. Sampling from the true model is included as as a theoretical baseline for sampling noise for different sample sizes.
+
+
+Figure~\ref{fig:TV_convoluted_samplesize} shows how sample size affects the total variation distance (TV distance) across all models. For small sample sizes, sampling noise significantly affects the TV distance. As the sample size increases, the TV distance gradually stabilizes across all models, suggesting that sampling noise plays a diminishing role relative to the structural effects induced by the convolution. Sampling from the true model is included as  a theoretical baseline for sampling noise.
 
 For the unbiased Models~\ref{model:A} and~\ref{model:B}, most of the variation in TV distance is driven by sampling noise, whereas for the biased Models~\ref{model:C} and~\ref{model:D}, the TV distance is primarily driven by convolution structure. Additionally, Model~\ref{model:C}, which is characterized by lower sd ($\sigma = 1$) compared to Model~\ref{model:D} ($\sigma = 4$), exhibits systematically higher total variation distance. 
 
@@ -506,12 +506,46 @@ Figure~\ref{fig:tv_summary_deconv_u} and Figure~\ref{fig:tv_summary_deconv_i}
 	\label{tab:diff_tv_top10}
 \end{table}
 
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO: Plot ~\ref{fig:TP_50_samples} and Plot \ref{fig:TP_100_samples} tell the main story how sample size, deconvolution vs convoluted samples affect total population forecasts. I didnt have time to describe these properly and what can be observed. TV was used more as a diagonostic tool for the deconvolution but does not say much about weather or not forecast would be good using it. E.g. if most of the TV can be explained my shifts in the probability mass of age classes that have 0 fertility this would not affect the total population forecast the coming year. The plots were made by simulating 100 samples for each combination and taking  $L^n( p_{error }- p_{true}) $ for $ n = 1,2,...5$} 
+}}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.2\textwidth]{../figures/TP_50_samples.pdf}
+	\caption{
+		s
+	}
+	\label{fig:TP_50_samples}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.2\textwidth]{../figures/TP_200_samples.pdf}
+	\caption{
+s
+	}
+	\label{fig:TP_100_samples}
+\end{figure}
+
 \section{Analysis / Discussion}
-\begin{itemize}
-	\item Discuss how errors depend on sample size and distribution parameters.
-	\item Compare performance of EM and matrix inversion.
-	\item Discuss practical implications for deconvolution of age structures.
-\end{itemize}
+
+\colorbox{yellow!30}{%
+	\parbox{0.95\linewidth}{\textbf{TODO:} \\
+		\begin{itemize}
+			
+			\item Under which conditions the deconvolution method is reliable and appropriate, in terms of total variation (TV), sample size, and error structure.
+			
+			\item Analyze how sampling variability interacts with different error models, and whether it affects deconvolution performance differently across these settings.
+			
+			\item Compare informed vs uninformed deconvolution approaches vs keep convoluted. Assess whether informed initialization leads to improved performance, and how this relates to convergence properties of the expected conditional log-likelihood, including the probability of convergence to different local optima. Suggest as improvement  whether multiple random initializations with selection based on arg max log-likelihood, or structural parameter constraints (e.g., monotonicity constraints such as bin 1 $\geq$ bin 2 $\geq \dots$). 
+			
+			\item Evaluate whether total variation relates or not to forecasts. Is the variability of the forecasts more dominated by the sampling error vs ... Does the deconvolution improve forecasts relative to the convolution? In which way ? bias , variability? 
+			
+			\item Why does the em-alg behave differently for each model? Is deconvolution better suited for certain types of error models? 
+			
+		\end{itemize}
+}}
 
 
 \section{Appendix}

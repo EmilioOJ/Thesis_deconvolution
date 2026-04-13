@@ -219,19 +219,21 @@ samples <- c(10, 25, 50, 100, 150, 200)
 
 # To each type of conv matrix, sample for each type of sample size 
 # Dist A,B,C,D = 1,2,3,4 & sampel size 10, 25, 50, 100 = 1, 2, 3, 4,5,6 Each one is a matrix where column is replica and row "bin" 
-sim_results <- lapply(conv_dist, function(dist) {
+sim_results_c <- lapply(conv_dist, function(dist) {
   lapply(samples, function(n) {
     simulate_counts(dist, size_per_sample = n, n_samples = 100)
   })
 })
 
 #  summary statistic of TV from sim_results
-tv_result_summary <-  compute_tv_all(sim_results, stable_dist)
+tv_result_summary <-  compute_tv_all(sim_results_c, stable_dist)
 
 # convert to data frame
 df_tv_c <- tv_to_df_summary(tv_result_summary)
 
 df_tv_c
+df_tv_deconv_u
+df_tv_deconv_i
 
 # Export to ..\tables
 table_tex <- kable(df_tv_c, format = "latex", booktabs = TRUE)
@@ -245,7 +247,7 @@ writeLines(table_tex, "../tables/df_tv_convolution_t2.tex")
 
 df_all_c_t <- rbind(df_tv_c, df_tv_true)
 
-p4 <- ggplot(df_all, aes(x = sample_size, y = mean, group = model, color = model)) +
+p4 <- ggplot(df_all_c_t, aes(x = sample_size, y = mean, group = model, color = model)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   labs(
@@ -282,16 +284,16 @@ p4
 # Deconvolution steps
 set.seed(19911122)
 
-deconvolved_samples <- Map(function(dist_list, K) {
+deconvolved_samples_u <- Map(function(dist_list, K) {
   lapply(dist_list, function(mat) {
     apply(mat, 2, function(col) {
       em_deconvolve(col, K = K)$p
     })
   })
-}, sim_results, missclass_all)
+}, sim_results_c, missclass_all)
 
 #  summary statistic of TV from sim_results
-tv_result_summary_deconv <-  compute_tv_all(deconvolved_samples, stable_dist)
+tv_result_summary_deconv <-  compute_tv_all(deconvolved_samples_u, stable_dist)
 
 # convert to data frame
 df_tv_deconv_u <- tv_to_df_summary(tv_result_summary_deconv)
@@ -324,6 +326,7 @@ p5 <- ggplot(df_all_du_t, aes(x = sample_size, y = mean, group = model, color = 
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   labs(
+
     x = "Sample size",
     y = "Mean TV distance",
     color = "Error Model"
@@ -360,7 +363,7 @@ deconvolved_samples_i <- Map(function(dist_list, K) {
       em_deconvolve(col, K = K, init = TRUE)$p
     })
   })
-}, sim_results, missclass_all)
+}, sim_results_c, missclass_all)
 
 #  summary statistic of TV from sim_results
 tv_result_summary_deconv_i <-  compute_tv_all(deconvolved_samples_i, stable_dist)
@@ -427,25 +430,210 @@ ggsave(
   height = 4
 )
 ```
-```{r}
-df_all <- rbind(
-  df_tv_c %>% mutate(method = "Convolved"),
-  df_tv_deconv_i %>% mutate(method = "Deconvolved informed"),
-  df_tv_deconv_u %>% mutate(method = "Deconvolved uninformed")
-)
 
-ggplot(df_all, aes(x = factor(sample_size), y = mean, fill = method)) +
+```{r}
+
+df_diff_i <- df_tv_deconv_i %>%
+  left_join(df_tv_true, by = "sample_size", suffix = c("", "_true")) %>%
+  mutate(
+    mean_diff = mean - mean_true,
+    median_diff = median - median_true,
+    upper_95_diff = upper_95 - upper_95_true,
+    method = "Informed"
+  )
+
+df_diff_u <- df_tv_deconv_u %>%
+  left_join(df_tv_true, by = "sample_size", suffix = c("", "_true")) %>%
+  mutate(
+    mean_diff = mean - mean_true,
+    median_diff = median - median_true,
+    upper_95_diff = upper_95 - upper_95_true,
+    method = "Uninformed"
+  )
+
+df_diff_c <- df_tv_c %>%
+  left_join(df_tv_true, by = "sample_size", suffix = c("", "_true")) %>%
+  mutate(
+    mean_diff = mean - mean_true,
+    median_diff = median - median_true,
+    upper_95_diff = upper_95 - upper_95_true,
+    method = "convoluted"
+  )
+df_all
+df_all <- rbind(df_diff_u,df_diff_i,df_diff_c)
+df_all$method <- factor(df_all$method,
+                        levels = c("convoluted", "Uninformed", "Informed"))
+
+```
+```{r}
+# df_all <- rbind(
+#   df_tv_c %>% mutate(method = "Convolved"),
+#   df_tv_deconv_i %>% mutate(method = "Deconvolved informed"),
+#   df_tv_deconv_u %>% mutate(method = "Deconvolved uninformed")
+# )
+
+p8 <- ggplot(df_all, aes(x = factor(sample_size), y = mean_diff, fill = method)) +
   geom_col(position = "dodge") +
   facet_wrap(~model) +
   labs(
+    title = "Excess TV Distance Relative to the True Distribution sample",
     x = "Sample size",
-    y = "Mean TV distance",
+    y = "Difference in Mean TV Distance",,
     fill = "method"
   ) +
   scale_fill_manual(values = c(
-    "Convolved" = "steelblue",
-    "True / Convolved" = "black"
+    "convoluted" = "black",
+    "Informed" = "green",
+    "Uninformed" = "darkgreen"
   )) +
   theme_minimal(base_size = 14)
+p8
+ggsave(
+  filename = "../figures/barplot_c_u_i_TV_minus_baseline_p8.pdf",
+  plot = p8,
+  width = 6,
+  height = 4
+)
+```
+
+```{r}
+# t-test
+sim_results_c
+deconvolved_samples_u
+deconvolved_samples_i
+
+compute_tv_all_per_replica <- function(sim_results, stable_dist) {
+  
+  lapply(seq_along(sim_results), function(i) {
+    
+    true_dist <- stable_dist
+    
+    lapply(sim_results[[i]], function(mat) {
+      tv_vec <- apply(mat, 2, function(counts) {
+    est_dist <- counts / sum(counts)
+    tv_distance(est_dist, true_dist)
+  })
+    })
+    
+  })
+}
+```
+```{r}
+compute_tv_all_per_replica <- function(sim_results, stable_dist) {
+  
+  lapply(seq_along(sim_results), function(i) {
+    
+    true_dist <- stable_dist
+    
+    lapply(sim_results[[i]], function(mat) {
+      tv_vec <- apply(mat, 2, function(counts) {
+    est_dist <- counts / sum(counts)
+    tv_distance(est_dist, true_dist)
+  })
+    })
+    
+  })
+}
+tv_per_rep_c <- compute_tv_all_per_replica(sim_results_c,stable_dist)
+tv_per_rep_u <- compute_tv_all_per_replica(deconvolved_samples_u,stable_dist)
+tv_per_rep_i <- compute_tv_all_per_replica(deconvolved_samples_i,stable_dist)
+
+results_t_test <- data.frame()
+
+for (i in seq_along(tv_per_rep_u)) {
+  for (j in seq_along(tv_per_rep_u[[i]])) {
+
+    c_vals <- tv_per_rep_c[[i]][[j]]
+    u_vals <- tv_per_rep_u[[i]][[j]]
+    i_vals <- tv_per_rep_i[[i]][[j]]
+
+    test_i_u <- t.test(u_vals, i_vals, paired = TRUE)
+    test_i_c <- t.test(c_vals, i_vals, paired = TRUE)
+    test_u_c <- t.test(c_vals, u_vals, paired = TRUE)
+
+    results <- rbind(results, data.frame(
+      model = i,
+      sample_size = j,
+
+      mean_c = mean(c_vals),
+      mean_u = mean(u_vals),
+      mean_i = mean(i_vals),
+
+      diff_i_u = mean(i_vals - u_vals),
+      diff_i_c = mean(i_vals - c_vals),
+      diff_u_c = mean(u_vals - c_vals),
+
+      p_i_u = test_i_u$p.value,
+      p_i_c = test_i_c$p.value,
+      p_u_c = test_u_c$p.value
+    ))
+  }
+}
+results$model <- factor(results$model,
+                     levels = 1:4,
+                     labels = c("A", "B", "C", "D"))
+  
+results$sample_size <- factor(results$sample_size,
+                           levels = 1:6,
+                           labels = c("10", "25", "50", "100", "150", "200"))
+  
+# results
+```
+
+```{r}
+results_long <- bind_rows(
+  data.frame(
+    model = results$model,
+    sample_size = results$sample_size,
+    comparison = "I-U",
+    diff = round(results$diff_i_u,3),
+    p_value = results$p_i_u
+  ),
+  data.frame(
+    model = results$model,
+    sample_size = results$sample_size,
+    comparison = "I-C",
+    diff = round(results$diff_i_c, 3),
+    p_value = results$p_i_c
+  ),
+  data.frame(
+    model = results$model,
+    sample_size = results$sample_size,
+    comparison = "U-C",
+    diff = round(results$diff_u_c,3),
+    p_value = results$p_u_c
+  )
+)
+results_long <- results_long %>%
+  mutate(
+    stars = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE ~ ""
+    )
+  )
+
+top10 <- results_long %>%
+  select(-p_value) %>%
+  arrange(desc(abs(diff))) %>%
+  slice(1:10)
+
+# Export to ..\tables
+table_tex <- kable(top10, format = "latex", booktabs = TRUE)
+
+writeLines(table_tex, "../tables/diff_tv_top10_t4.tex")
+```
+### Population framskrivning
+```{r}
+#simulera från convolverad fel-modeller 
+
+#EM-alg Skatta parameter s-parameter
+
+#Simulera från s-paramter: 100 replikat med stickprovsstorlek n=(10,25,50,100,150,200) x_n-stickprov
+
+#Framskriv 1-10 generationer L^i x_n = x_n^(i) i = 1,2,...,10
+
+# ta medelvärde, median och tvåsidigt 
 ```
 

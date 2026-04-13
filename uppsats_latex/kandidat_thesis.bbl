@@ -95,6 +95,105 @@
       \field{title}{The EM Algorithm and Extensions}
       \field{year}{2008}
     \endentry
+    \entry{nakamura2023}{article}{}{}
+      \name{author}{12}{}{%
+        {{un=0,uniquepart=base,hash=b97b1ca3e382faa4040bd24c23d1e447}{%
+           family={Nakamura},
+           familyi={N\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=08102afec47c071284a71d11b650fca6}{%
+           family={Yamazaki},
+           familyi={Y\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5f01b59ddf9839bffd9af79d13773c0c}{%
+           family={Matsumoto},
+           familyi={M\bibinitperiod},
+           given={N.},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6999f9b8f4bbbc4793fa510af494dce5}{%
+           family={Inoue-Murayama},
+           familyi={I\bibinithyphendelim M\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5e7bbf0d2a2b478896de68e62a4f508f}{%
+           family={Qi},
+           familyi={Q\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6a6b5d2348b73d396eda48660bdc7b90}{%
+           family={Yamanaka},
+           familyi={Y\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5f1020fbf4b1d797c9a07e7bff830968}{%
+           family={Nakanishi},
+           familyi={N\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=83f7ee58e3476bc5d1e5ace29d5820d3}{%
+           family={Yanagawa},
+           familyi={Y\bibinitperiod},
+           given={Y.},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=315b22c4bcc8c448e86c088be4837760}{%
+           family={Sashika},
+           familyi={S\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=016d93ff9f4dcee83d7cb06a877609cd}{%
+           family={Tsubota},
+           familyi={T\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=3830e9b96f117ba0852beeaf472823bd}{%
+           family={Ito},
+           familyi={I\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=481b225ae2b663a51554c51089838573}{%
+           family={Shimozuru},
+           familyi={S\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{01d6b236d654ec7df3acb7499aa58395}
+      \strng{fullhash}{fda4d748350b6cbeda7f50e1b473db34}
+      \strng{fullhashraw}{fda4d748350b6cbeda7f50e1b473db34}
+      \strng{bibnamehash}{01d6b236d654ec7df3acb7499aa58395}
+      \strng{authorbibnamehash}{01d6b236d654ec7df3acb7499aa58395}
+      \strng{authornamehash}{01d6b236d654ec7df3acb7499aa58395}
+      \strng{authorfullhash}{fda4d748350b6cbeda7f50e1b473db34}
+      \strng{authorfullhashraw}{fda4d748350b6cbeda7f50e1b473db34}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Molecular Ecology Resources}
+      \field{title}{Age estimation based on blood DNA methylation levels in brown bears}
+      \field{volume}{23}
+      \field{year}{2023}
+      \field{pages}{1211\bibrangedash 1225}
+      \range{pages}{15}
+      \verb{doi}
+      \verb 10.1111/1755-0998.13788
+      \endverb
+    \endentry
     \entry{nina_bearmodel}{misc}{}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=4d5f748a872558c448c7430ed8742219}{%
@@ -119,8 +218,6 @@
       \field{title}{Bear Population Model}
     \endentry
   \enddatalist
-  \missing{amsmath}
-  \missing{lshort}
 \endrefsection
 \endinput
 
