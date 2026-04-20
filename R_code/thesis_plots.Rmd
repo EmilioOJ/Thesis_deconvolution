@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 source("stat_func.R")
 source("pupulation_model.R")
 source("thikanov_inv.R")
+source("simulation_data.R")
 library(xtable)
 library(glmnet)
 library(purrr)
@@ -17,12 +18,16 @@ library(patchwork)
 library(ggplot2)
 library(dplyr)
 library(knitr)
+library(expm)
+library(here)
+
+
 ```
 
 ```{r}
 # My missclass matrix
-missclass_matrix_A <-  truncated_misclassification(func_sigma = function(x) 1, func_mu = function(x) x)
-missclass_matrix_B <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x)
+missclass_matrix_A <-  truncated_misclassification(func_sigma = function(x) 1)
+missclass_matrix_B <-  truncated_misclassification(func_sigma = function(x) 4)
 missclass_matrix_C <-  truncated_misclassification(func_sigma = function(x) 1, func_mu = function(x) x+4/(x+0.5))
 missclass_matrix_D <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x+4/(x+0.5))
 
@@ -39,17 +44,16 @@ missclass_all <- list(
   C = missclass_matrix_C,
   D = missclass_matrix_D
 )
+
+# Set samples
+samples <- c(10, 25, 50, 100, 150, 200)
 ```
 
 
 
-## R Markdown
+## Plot stable age distribution
 
 ```{r}
-#Simulated stable age distribution
-
-
-
 # Ensure folder exists
 dir.create("figures", showWarnings = FALSE)
 
@@ -74,14 +78,17 @@ ggsave(
   width = 6,
   height = 4
 )
+
 p1
 ```
-```{r}
-# create msisclass matrix
-missclass_matrix <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x+4/(x+0.5))
 
-# convolute distribution analytically 
-conv_data <- as.vector(t(missclass_matrix)%*%dist_eigenvector$stable_dist)
+
+## naiv metod (mätfel)
+```{r}
+
+
+# convolute distribution analytically  with a msicclass matrix
+conv_data <- as.vector(t(missclass_matrix_D)%*%dist_eigenvector$stable_dist)
 
 dist1 <- data.frame(
   age_labels = dist_eigenvector$age_labels,
@@ -129,6 +136,8 @@ ggsave(
 p2
 
 ```
+## Numerisk instabilitet plot
+
 ```{r}
 
 # Standard deviations from 0.2 to 20
@@ -179,7 +188,8 @@ ggsave(
 )
 p3
 ```
-## True distribution simulation
+
+## True distribution sampling & statistics & table
 ```{r}
 # simulate 
 
@@ -204,7 +214,7 @@ writeLines(table_tex, "../tables/df_tv_true_t1.tex")
 ```
 
 
-### Convolution data simulation
+### Convolute samples 
 ```{r}
 # Show convolution 
 set.seed(19911122)
@@ -214,8 +224,6 @@ conv_dist <- lapply(missclass_all_t, function(M) {
   as.vector(M %*% stable_dist)
 })
 
-# Set samples
-samples <- c(10, 25, 50, 100, 150, 200)
 
 # To each type of conv matrix, sample for each type of sample size 
 # Dist A,B,C,D = 1,2,3,4 & sampel size 10, 25, 50, 100 = 1, 2, 3, 4,5,6 Each one is a matrix where column is replica and row "bin" 
@@ -226,14 +234,12 @@ sim_results_c <- lapply(conv_dist, function(dist) {
 })
 
 #  summary statistic of TV from sim_results
-tv_result_summary <-  compute_tv_all(sim_results_c, stable_dist)
+tv_result_summary <-  compute_tv_all(convolved_sim, stable_dist)
 
 # convert to data frame
 df_tv_c <- tv_to_df_summary(tv_result_summary)
-
 df_tv_c
-df_tv_deconv_u
-df_tv_deconv_i
+
 
 # Export to ..\tables
 table_tex <- kable(df_tv_c, format = "latex", booktabs = TRUE)
@@ -459,7 +465,7 @@ df_diff_c <- df_tv_c %>%
     upper_95_diff = upper_95 - upper_95_true,
     method = "convoluted"
   )
-df_all
+
 df_all <- rbind(df_diff_u,df_diff_i,df_diff_c)
 df_all$method <- factor(df_all$method,
                         levels = c("convoluted", "Uninformed", "Informed"))
@@ -627,13 +633,130 @@ writeLines(table_tex, "../tables/diff_tv_top10_t4.tex")
 ### Population framskrivning
 ```{r}
 #simulera från convolverad fel-modeller 
+#simulation from true dist
 
-#EM-alg Skatta parameter s-parameter
+# convolute 
+
+convolved_sim <- lapply(missclass_all, function(K) {
+  
+  lapply(sim_results_true_dist, function(sim_list) {
+    
+    lapply(sim_list, function(mat) {
+      
+      out <- matrix(0, nrow = nrow(mat), ncol = ncol(mat))
+      
+      for (j in seq_len(ncol(mat))) {
+        out[, j] <- simulate_convolved_counts(mat[, j], K)
+      }
+      
+      out
+    })
+    
+  })
+  
+})
+# #  summary statistic of TV from sim_results
+# tv_result_summary_deconv_i <-  compute_tv_all(deconvolved_samples_i, stable_dist)
+
 
 #Simulera från s-paramter: 100 replikat med stickprovsstorlek n=(10,25,50,100,150,200) x_n-stickprov
 
 #Framskriv 1-10 generationer L^i x_n = x_n^(i) i = 1,2,...,10
 
-# ta medelvärde, median och tvåsidigt 
+# ta medelvärde, median och tvåsidigt ci baserat på datat 
+```
+
+## EM-alg Skatta parameter p for a decon for a u-init
+
+```{r}
+deconvolved_p_samples_u <- Map(function(model_list, K) {
+  
+  lapply(model_list, function(scenario_list) {
+    
+    lapply(scenario_list, function(mat) {
+      
+      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
+      
+      apply(mat, 2, function(col) {
+        em_deconvolve(col, K = K)$p
+      })
+      
+    })
+    
+  })
+  
+}, convolved_sim, missclass_all)
+```
+
+## EM-alg Skatta parameter p for a decon for informed init
+
+```{r}
+deconvolved_p_samples_i <- Map(function(model_list, K) {
+  
+  lapply(model_list, function(scenario_list) {
+    
+    lapply(scenario_list, function(mat) {
+      
+      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
+      
+      apply(mat, 2, function(col) {
+        em_deconvolve(col, K = K, init=TRUE)$p
+      })
+      
+    })
+    
+  })
+  
+}, convolved_sim, missclass_all)
+```
+
+```{r}
+# normalized convolved sim 
+
+normalized_convolved_sim <- lapply(convolved_sim, function(model_list) {
+  
+  lapply(model_list, function(sample_list) {
+    
+    lapply(sample_list, function(mat) {
+      
+      stopifnot(is.matrix(mat))
+      
+      col_sums <- colSums(mat)
+      
+      # avoid division by zero
+      col_sums[col_sums == 0] <- 1
+      
+      sweep(mat, 2, col_sums, `/`)
+    })
+    
+  })
+  
+})
+```
+
+## forcasting 
+
+```{r}
+
+```
+
+```{r}
+#Plot part
+leslie_p <- generate_leslie_powers(L, 100) 
+
+f_proj_c <- compute_leslie_projection(deconvolved_p_samples_i[[1]][[1]][[1]], leslie_p, n_future_proj = 100)
+summary_case <- summary_leslie_proj(f_proj_c)
+
+ggplot(summary_case, aes(x = seq_len(nrow(summary_case)))) +
+  
+  geom_ribbon(aes(ymin = lower_95, ymax = upper_95),
+              fill = "skyblue", alpha = 0.3) +
+  
+  geom_line(aes(y = mean), color = "blue", linewidth = 1) +
+  
+  geom_line(aes(y = median), color = "red", linetype = "dashed") +
+  
+  labs(x = "Time step", y = "Population") +
+  theme_minimal()
 ```
 

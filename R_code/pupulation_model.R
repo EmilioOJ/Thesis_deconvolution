@@ -55,10 +55,11 @@ dist_eigenvector$age_labels <- factor(
 
 ### Ad error
 
-dist_with_error <-function(X_dist, func_sigma= function(x) 1){
+missclass_absorbing <-function(func_sigma= function(x) 1){
   
   error_dist <- numeric(20)
-  
+  n_bins <- 20
+  missclass_matrix <- matrix(0, nrow = n_bins, ncol = n_bins)
   
   for (i in seq(0.5,19.5,by = 1)){
     
@@ -70,11 +71,11 @@ dist_with_error <-function(X_dist, func_sigma= function(x) 1){
     # Compute probabilities for each interval
     probs <- pnorm(edges[-1], mean=i, sd=sd) - pnorm(edges[-length(edges)], mean=i, sd=sd)
     
-    # Add contribution of each vector with mu = i
-    error_dist = error_dist + probs*X_dist[i+0.5]
-    
+    # Assign to row corresponding to this true age
+    row_index <- floor(i + 0.5)  # i = 0.5 → row 1, i = 1.5 → row 2, etc.
+    missclass_matrix[row_index, ] <- probs
   }
-  return(error_dist)
+  return(missclass_matrix)
   
 }
 ## dist with error and truncation
@@ -185,4 +186,35 @@ forward_model <- function(miss_class, conv_dist) {
   vec <- f %*% conv_dist
   
   return(vec)
+}
+
+# miscclass absolute
+
+missclass_absolute <-function(func_sigma= function(x) 1){
+  
+  error_dist <- numeric(20)
+  n_bins <- 20
+  missclass_matrix <- matrix(0, nrow = n_bins, ncol = n_bins)
+  
+  for (i in seq(0.5,19.5,by = 1)){
+    
+    # heteroskedasticity
+    sd <- func_sigma(i)
+    # Define intevals
+    edges <- c(-Inf, seq(-18, 19, by=1), Inf)
+    
+    # Compute probabilities for each interval
+    probs_with_neg <- pnorm(edges[-1], mean=i, sd=sd) - pnorm(edges[-length(edges)], mean=i, sd=sd)
+    
+    # divide in to two vectors
+    probs_without_neg <- probs_with_neg[-(1:19)]
+    probs_with_neg_only <- probs_with_neg[1:19]
+    
+    result <- c(probs_without_neg[1], probs_without_neg[2:20] + rev(probs_with_neg_only))
+    # Assign to row corresponding to this true age
+    row_index <- floor(i + 0.5)  # i = 0.5 → row 1, i = 1.5 → row 2, etc.
+    missclass_matrix[row_index, ] <- result
+  }
+  return(missclass_matrix)
+  
 }
