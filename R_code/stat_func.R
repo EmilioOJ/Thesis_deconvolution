@@ -1,6 +1,6 @@
 source("pupulation_model.R")
 
-# Function to sample from a discrete distribution
+# Function to sample from a multinomial distribution
 simulate_counts <- function(distr_vector, size_per_sample, n_samples = 1) {
   replicate(
     n_samples,
@@ -100,11 +100,12 @@ simulate_deconvolved_counts <- function(counts_convolved, posterior) {
   deconvolved
 }
 
-# KL divergence: D_KL(p || q)
-kl_divergence <- function(p, q, eps = 1e-12) {
-  # Add a small epsilon to avoid log(0)
-  p <- p + eps
-  q <- q + eps
+simulate_events <- function(counts, miscclass) {
+  true <- rep(seq_along(counts), counts)
   
-  sum(p * log(p / q))
+  obs <- unlist(lapply(seq_along(counts), function(i) {
+    sample(seq_along(counts), size = counts[i], replace = TRUE, prob = miscclass[i, ])
+  }))
+  
+  data.frame(true = true, obs = obs, diff = obs - true)
 }

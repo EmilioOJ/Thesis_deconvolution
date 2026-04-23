@@ -19,6 +19,46 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global/global}
+    \entry{AlmBritton2008}{book}{}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=9addcc200f6b6334c2ee39038f3f4902}{%
+           family={Alm},
+           familyi={A\bibinitperiod},
+           given={Sven\bibnamedelima Erick},
+           giveni={S\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=31c1b2044c75ef0fb349df99eb15ed1a}{%
+           family={Britton},
+           familyi={B\bibinitperiod},
+           given={Tom},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{location}{1}{%
+        {Stockholm}%
+      }
+      \list{publisher}{1}{%
+        {Liber}%
+      }
+      \strng{namehash}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{fullhash}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{fullhashraw}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{bibnamehash}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{authorbibnamehash}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{authornamehash}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{authorfullhash}{a587d3d494fb76d7ded82e11c1e4b683}
+      \strng{authorfullhashraw}{a587d3d494fb76d7ded82e11c1e4b683}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{1}
+      \field{isbn}{978-91-47-05351-3}
+      \field{title}{Stokastik: sannolikhetsteori och statistikteori med tillämpningar}
+      \field{year}{2008}
+    \endentry
     \entry{caswell2001}{book}{}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=c1ca0958655e25f8facdd1ce8b110a0c}{%

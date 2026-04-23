@@ -44,21 +44,23 @@
 
 \section{Introduktion}\label{stycke1}
 
-\colorbox{yellow!30}{%
-	\parbox{0.95\linewidth}{\textbf{TODO:} \\
-		\begin{itemize}
-			\item \textbf{Background:} Introduce existing age determination methods, in particular recent developments \cite{nakamura2023}. Discuss why accurate age determination is important for understanding population dynamics and improving population forecasts.
-			
-			\item \textbf{Problem statement:} Measurement methods introduce inherent error, causing observed age distributions to deviate from the true underlying distribution. If uncorrected, this can lead to biased population estimates and unreliable forecasts. This thesis addresses this issue by accounting for such errors.
-			
-			\item \textbf{Convolution:} Provide a brief explanation of convolution and its role in modeling measurement processes.
-			
-			\item \textbf{Scope of this thesis:} Conduct a simulation study to evaluate a deconvolution method based on the EM algorithm. The method is applied to a hypothetical age distribution generated using a Leslie matrix, together with theoretical error models based on \cite{nina_bearmodel}, across varying sample sizes. Performance is assessed using total variation distance and a forecast simulation.
-			
-			\item \textbf{Optional?:} use the error model of \cite{nakamura2023} and asses it with above given methods.
-		\end{itemize}
-}}
+\section{Introduction}
 
+Accurate knowledge of population structure is fundamental in wildlife ecology, particularly for long-lived species where survival and reproduction vary strongly with age. In Scandinavian brown bear populations, age composition plays a central role in understanding population growth, reproductive potential, and long-term sustainability. For this reason, monitoring programs, such as the Swedish Environmental Protection Agency?s national wildlife monitoring scheme, regularly collect biological data to estimate population size and structure, including age distributions of bears \cite{nrm_bear_monitoring}.
+
+A central challenge in such monitoring efforts is that age is rarely observed directly. Instead, age is typically inferred using indirect biological indicators such as tooth cementum layers or other morphological measurements. These procedures are inherently subject to measurement uncertainty and classification error. As a result, the observed age distribution does not perfectly reflect the true underlying population structure. This discrepancy can introduce bias into demographic estimates and may propagate into downstream analyses such as population forecasting and management decisions.
+
+Recent methodological developments have therefore focused on statistical correction techniques that explicitly account for measurement error in age estimation. One such approach is based on deconvolution methods, where the observed data are modeled as a noisy transformation of an unobserved latent distribution. In this framework, the observed age distribution is expressed as a convolution between the true age distribution and a measurement error mechanism. Recovering the latent distribution then becomes an inverse problem, which is often ill-posed and sensitive to noise in the data.
+
+A recent development in this area is the work by Nakamura et al. \cite{nakamura2023}, who propose an age estimation method for brown bears based on blood DNA methylation levels. This approach provides a molecular alternative to traditional age determination techniques, which are often based on tooth wear or cementum annuli. While such methods can improve individual-level age estimation, they still produce observations that are subject to measurement error and uncertainty, which propagates into population-level age structure estimates.
+
+In general, any age estimation method introduces a stochastic relationship between the true age and the observed measurement. This motivates statistical approaches that explicitly model this uncertainty and attempt to reconstruct the latent age distribution from noisy observations. Such approaches can be formulated as inverse problems, where the observed data are viewed as a convolution of the true age distribution and a measurement error mechanism. The effectiveness of these methods depends on both the severity of measurement error and the amount of available data.
+
+The present thesis investigates this inverse problem in a controlled simulation setting. The true population age structure is generated using a Leslie matrix model, which provides a biologically grounded age-dependent population dynamic. Measurement error is then introduced through a probabilistic misclassification mechanism, producing an observed age distribution that deviates from the latent structure.
+
+The main objective of this study is to evaluate how well the latent age distribution can be recovered using a deconvolution approach based on the Expectation-Maximization (EM) algorithm. In particular, the performance of the method is assessed under varying levels of measurement error and sample sizes. The quality of the estimated distributions is evaluated using total variation distance, while the practical implications of estimation error are further examined through population forecasting using the Leslie matrix model.
+
+By combining a structured demographic model with a controlled measurement error framework, this study aims to provide insight into the conditions under which deconvolution methods can meaningfully improve inference about population age structure, and when such corrections may or may not translate into improved ecological forecasts.
 
 \section{Methodology}\label{stycke2}
 
@@ -91,144 +93,125 @@ In this study, the true age structure of the bear population is represented by t
  
  where $\pi_j$ denotes the probability that an individual belongs to age class $j$. In particular, $\pi_1$ corresponds to the age group 0--1 years, $\pi_2$ to 1--2 years, and so on. The discretization of age into fixed classes is also consistent with population structure is often analyzed in biologically meaningful age intervals, where demographic processes such as survival and reproduction are age-class dependent as seen in \cite{nina_bearmodel}. 
  
- Let $n$ denote a number of independent observations drawn from this distribution. The random vector $\boldsymbol{Z} = (Z_1, Z_2, \dots, Z_k)$ represents the number of individuals in each age class for a sample of size $n$. We assume that 
- 
- \[
- \boldsymbol{Z} \sim \text{Multinomial}(n, \boldsymbol{\pi}). 
- \]
+Let $n$ denote the number of independent individuals in the sample. For each individual $r = 1,\dots,n$, let $Z_r \in \{1,\dots,k\}$ denote the true age class. We assume that the latent age classes are independent and identically distributed with
 
-\paragraph{Measurement error}
+\[
+P(Z_r = j) = \pi_j.
+\]
+
+The vector of observed class counts is then defined as
+
+\[
+\boldsymbol{Z} = \left(Z_1^{(c)}, Z_2^{(c)}, \dots, Z_k^{(c)}\right),
+\]
+
+where
+
+\[
+Z_j^{(c)} = \sum_{r=1}^{n} \boldsymbol{1}(Z_r = j)
+\]
+
+denotes the number of individuals in age class $j$. It follows that
+
+\[
+\boldsymbol{Z} \sim \text{Multinomial}(n, \boldsymbol{\pi}).
+\]
+
+\paragraph{Measurement error}\label{par:measurement-error}
 
 As mentioned in section \ref{sec:deconvolution} the measurement error is assumed to be fully known. In this simulation study, we assume a normal distribution for the error term as a simple and tractable way to control the variability in the observations and to introduce systematic measurement error. While this choice may not exactly reflect the error structure described in \cite{nakamura2023}, the aim of this thesis is to investigate the recovery of the latent distribution under a simplified but comparable error setting.
 
-Additionally, we assume that the measurement error depends on the true age class $j$. Specifically, we model
+Additionally, we assume that the measurement error depends on the true age class $Z_r$. Specifically, we model
 \[
-e \mid j \sim \mathcal{N}(f(j), g(j)).
+\epsilon_r \mid Z_r=j \sim \mathcal{N}(0, \sigma^2).
 \]
-where both the mean and variance of the error may vary across age classes. Applying the measurement error as an additive effect on the latent random vector $\mathbf{Z}$ would yield a random vector of continuous scalar values $\mathbf{Y}$ thus violating the discrete setting of our model. We therefore bin the probability mass of our error model $\mathbf{\epsilon} \mid j$ in to the age classes j. let: 
+Applying the measurement error directly at the individual level would yield a continuous latent measurement $Z_r + \epsilon_r$, which is incompatible with the discrete age-class structure of the model. We therefore define a discrete observation mechanism induced by this continuous error model by discretizing the conditional distribution of $\epsilon_r \mid Z_r = j$ over the $k$ predefined age classes.
 
-The probabilities $p_{ij}$ denote the probability of misclassifying a bear of true age j with age i which is obtained by discretizing the conditional distribution of $\epsilon \mid j$ over the predefined age intervals such that:
+Let the probabilities $M_{ij}$ denote the probability of misclassifying a bear of true age j with age i:
 
 \[
-\sum_{i = 1}^{k} p_{ij} = 1
+M_{ij} = P(Y_r = i \mid Z_r = j)
+\] 
+
+Where $Y_r \in \{1,\dots,k\}$ denotes the observed (possibly misclassified) age class corresponding to individual $r$ such that:
+\[
+\sum_{i = 1}^{k} M_{ij} = 1
 \]
 
-This leads to to the construction of a square missclassification matrix M of dimension $k$ where $M_{ij}$ corresponds to $p_{ij}$. That is, row represents the observed age class and column true age class.
+This leads to the construction of a square missclassification matrix M with $k$ rows and columns. Representing observed age class $i$ and true age $j$ respectively.
 
+\paragraph{Observed data} \label{par:observed_dist}
 
-\paragraph{Observed data}
+Given the misclassification mechanism described above, each individual $r$ with true age class $j$ is observed in age class $i$ with probability $M_{ij}$. Consequently, the observed counts $\mathbf{Y} = (Y_1, \dots, Y_k)$ follow a multinomial distribution with probabilities given by the transformed latent distribution:
 
-Given the misclassification mechanism described above, each individual from true age class $j$ is observed in age class $i$ with probability $p_{ij}$. Consequently, the observed counts $\mathbf{Y} = (Y_1, \dots, Y_k)$ follow a multinomial distribution with probabilities given by the transformed latent distribution:
-
-\[
+\begin{equation}
 \mathbf{Y} \sim \text{Multinomial}(n, M \boldsymbol{\pi}).
-\]
-
+\label{eq:observed_distribution}
+\end{equation}
 \paragraph{Naive estimator}
 
 The objective of this thesis is to investigate how well the true age distribution $\boldsymbol{\pi}$ can be recovered from misclassified observations. In the absence of measurement error, a natural estimator of $\boldsymbol{\pi}$ is given by the empirical proportions
 
-\[
-\hat{\boldsymbol{\pi}} = \frac{\mathbf{Z}}{n},
-\]
+\begin{equation}
+	\hat{\boldsymbol{\pi}} = \frac{\mathbf{Z}}{n}
+	\label{eq:naive_estimate}
+\end{equation}
 
 which satisfies $\mathbb{E}[\hat{\boldsymbol{\pi}}] = \boldsymbol{\pi}$.
 
 However, in the presence of measurement error, we observe $\mathbf{Y}$ instead of $\mathbf{Z}$, and the naive estimator $\mathbf{Y}/n$ is generally biased for $\boldsymbol{\pi}$. This motivates the deconvolution approach considered in this thesis.
 
 
-\subsection{Matrix population models}\label{pop_model_matrix}
+\subsection{Estimation methods}
 
-To obtain a suitable idea of the population age distribution over time we use a population matrix model \cite{caswell2001} which we will describe shortly in this section. The age class $i=1,2,... m$ is the discretization of the age $z$ to age-class $i$ with  $i - 1 \leq z \leq i$. The number of individuals for each age class $i$ is then given by $n_1,n_2,...,n_m$.
+In this thesis, we consider two methods for estimating the latent age structure $\boldsymbol{\pi}$: a method-of-moments (MoM) estimator and a maximum likelihood estimator based on the EM algorithm.
 
 
-Following \cite[Eq.~2.1]{caswell2001} the number of $n_1$ individuals at time $t+1$ can be projected with  
-$$n_1(t+1) = f_1n_1(t) + f_2n_2(t)+... + f_in_i(t)$$
+\subsubsection{Method of Moments}
 
-Here $f_i$ denotes the reproductive rate per-capita. That is the average number of offspring an individual of age class $i$ has. For $i > 1$ the number of individuals in an age class $n_i$ at time $t+1$ is simply given by their survival probaility $(s_{i-1})(n_{i-1})$ at the previous timestep $t$. Together we can write the equation in matrix form for all $n_i$ at time $t+1$. 
+The method-of-moments assumes that population moments, such as $\mathbb{E}[\mathbf{Z}]$, can be expressed as functions of the unknown parameter $\boldsymbol{\pi}$. Parameter estimates are obtained by equating these theoretical moments with their empirical counterparts \cite[p.~275]{AlmBritton2008}. 
 
-\[
-\begin{pmatrix}
-	n_1 \\
-	n_2 \\
-	\vdots \\
-	\vdots \\
-	n_m
-\end{pmatrix}  (t+1) =
-\begin{pmatrix}
-	f_1   & f_2   & f_3   & \cdots & f_m \\
-	s_1   & 0     & 0     & \cdots & 0   \\
-	0     & s_2   & 0     & \cdots & 0   \\
-	\vdots& \vdots& \ddots& \ddots & \vdots \\
-	0     & 0     & \cdots& s_{m-1}& 0
-\end{pmatrix}
-\begin{pmatrix}
-	n_1 \\
-	n_2 \\
-	\vdots \\
-	\vdots \\
-	n_m
-\end{pmatrix}  (t)
-\]
+From equation~\eqref{eq:observed_distribution}, the first moment of the observed data is given by
+\begin{equation}
+	\mathbb{E}[\boldsymbol{Y}] = n M \boldsymbol{\pi}.
+	\label{eq:mom_expectation}
+\end{equation}
 
-\subsection{Computing age distribution from a Leslie matrix}\label{sec:age_distribution}
+The corresponding empirical moment is given by the observed proportions $\boldsymbol{Y}/n$ see equation~\ref{eq:naive_estimate}. Equating theoretical and empirical moments yields
+\begin{equation}
+	M \boldsymbol{\pi} = \frac{\boldsymbol{Y}}{n}.
+	\label{eq:mom_equation}
+\end{equation}
 
-The stable age distribution of a population can be obtained from the Leslie matrix $\mathbf{A}$ by computing its dominant eigenvalue $\lambda_1$ and the corresponding right eigenvector $\mathbf{w}$. 
-This eigenvector gives the relative proportions of individuals in each age class at equilibrium, and can be normalized so that the entries sum to 1.
-
-The existence of a real, non-negative eigenvalue $\lambda_1$ that is greater than or equal in magnitude to all other eigenvalues $\lambda_i$ of a non-negative, primitive matrix $\mathbf{A}$ is guaranteed by the Perron-Frobenius theorem \cite{caswell2001}. 
-
-If $\mathbf{A}$ is primitive, then as $t \rightarrow \infty$, the population vector $\mathbf{n}_t$ satisfies
-\[
-\frac{\mathbf{n}_t}{\sum_i n_{i,t}} \to \mathbf{w},
-\]
-where $\mathbf{w}$ is the normalized right eigenvector corresponding to $\lambda_1$. 
-This represents the \textbf{stable age distribution} of the population.
-
-\colorbox{blue!30}{%
-	\parbox{0.95\linewidth}{\textbf{Question: Maybe explain here that w is the parameter of a multinomial distribution?} \\
-
-}}
+Solving for $\boldsymbol{\pi}$ gives the MoM estimator
+\begin{equation}
+	\hat{\boldsymbol{\pi}} = M^{-1} \frac{\boldsymbol{Y}}{n},
+\end{equation}
+provided that $M$ is invertible.
 
 
 
-
-\subsection{Matrix inversion \& condition number}
-
-\colorbox{blue!30}{\textbf{[Question: Does this need a source reference? ill posed problems, justification to EM]}}
-
-\subsection{Thikanov regularization}
-
-\colorbox{gray!30}{%
-	\parbox{0.95\linewidth}{\textbf{Optional: could be interesting to compare with em-alg} \\ 
-		Include SVD formulation, derivation of the filter factor 
-		$\frac{\sigma_i}{\sigma_i^2+\lambda}$, and discussion of how 
-		regularization trades bias for stability in ill-posed inverse problems. Would justify the use of kl-divergence too}
-}
+\subsubsection{Maximum-likelihood method ML} \label{sec:ML}
 
 
-\subsection{Expectation-Maximization algorithm (EM-algorithm)} \label{sec:em_alg}
+The ML method method for parameter estiamte consist of arg maxing the log likelihood function for a parameter. Which in our current multinomial case coinced with the MoM thus leading to the same problem of matrix inversion (negative estiamtes , probabilities not summing to 1and so on). We therefore present the em-alg presented bellow  
 
-\colorbox{yellow!30}{%
-	\parbox{0.95\linewidth}{\textbf{TODO: Har inte infört några förändringar sen senaste feedback} \\ 
-		}
-}
-
-The EM algorithm is a general-purpose method for computing maximum likelihood estimates in the presence of incomplete or latent data (\cite{mclachlan2008}). Let $\mathbf{Y}$ denote a discrete random vector corresponding to the observed (incomplete) data, and $\mathbf{X}$ a discrete random vector representing the complete data. If $\mathbf{X}$ were fully observable, we could directly compute the complete-data log-likelihood function $\ell_c(\theta)$ based on a realization $x$.
+\paragraph{Expextacion Maximization algorithm EM-algorithm}
+The EM algorithm is a general-purpose method for computing maximum likelihood estimates in the presence of incomplete or latent data (\cite{mclachlan2008}). Let $\mathbf{Y}$ denote a discrete random vector corresponding to the observed (incomplete) data, and $\mathbf{X}$ a discrete random vector representing the complete data. If $\mathbf{X}$ were fully observable, we could directly compute the complete-data log-likelihood function $\ell_c(\boldsymbol{\pi})$ based on a realization $x$.
 
 However, in practice we only observe $y \in \mathcal{Y}$, the sample space of $\mathbf{Y}$. The complete-data sample space $\mathcal{X}$ is related to $\mathcal{Y}$ through a many-to-one mapping, i.e., a surjection from $\mathcal{X}$ to $\mathcal{Y}$, where multiple elements $x \in \mathcal{X}$ correspond to the same observed value $y$.
 
 The probability mass function of $\mathbf{Y}$ is therefore given by
 \begin{equation}
-	p_Y(y;\theta) = \sum_{x \in \mathcal{X}(y)} p_X(x;\theta),
+	p_{\mathbf{Y}}(y;\boldsymbol{\pi}) = \sum_{x \in \mathcal{X}(y)} p_{\boldsymbol{X}}(x;\boldsymbol{\pi}),
 	\label{eq:pmfY}
 \end{equation}
 where $\mathcal{X}(y) = \{x \in \mathcal{X} : h(x) = y\}$.
 
-Since the complete data $\mathbf{X}$ is not observable, the complete-data log-likelihood $\ell_c(\theta)$ cannot be evaluated directly. Instead, the EM algorithm considers its conditional expectation given the observed data $y$ and a current parameter estimate $\theta^{(t)}$:
+Since the complete data $\mathbf{X}$ is not observable, the complete-data log-likelihood $\ell_c(\boldsymbol{\pi})$ cannot be evaluated directly. Instead, the EM algorithm considers its conditional expectation given the observed data $y$ and a current parameter estimate $\boldsymbol{\pi}^{(t)}$ \cite{mclachlan2008}:
 
 \begin{equation}
-	Q(\theta \mid \theta^{(t)}) = \mathbb{E}_{\theta^{(t)}} \big[ \ell_c(\theta) \mid Y = y \big]
+	Q(\mathbf{\pi} \mid \boldsymbol{\pi}^{(t)}) = \mathbb{E}_{\mathbf{\pi}^{(t)}} \big[ \ell_c(\boldsymbol{\pi}) \mid Y = y \big]
 	\label{eq:Qfunction}
 \end{equation}
 
@@ -236,92 +219,60 @@ Since the complete data $\mathbf{X}$ is not observable, the complete-data log-li
 which corresponds to the Expectation step (E-step) of the EM algorithm. In the Maximization step (M-step), the parameter is updated by maximizing this function:
 
 \begin{equation}
-	\theta^{(t+1)} = \arg\max_{\theta} Q(\theta \mid \theta^{(t)}).
+	\mathbf{\pi}^{(t+1)} = \arg\max_{\mathbf{\pi}} Q(\mathbf{\pi} \mid \mathbf{\pi}^{(t)}).
 \end{equation}
 
-The process is then iterated upon until $l(\theta^{t+1}) - l(\theta^t) <=  k$ for some arbitrary $k$ value.
+The process is then iterated upon until $\ell(\mathbf{\pi}^{t+1}) - \ell(\mathbf{\pi}^t) <=  k$ for some arbitrary small $k$ value, which is then interpreted as a local/global maxima.
 
 \paragraph{Monotonicity}. A key property for the algorithm to work is for the likelihood to be monotonically increasing for each iteration. $L(\theta^{t+1})\geq L(\theta^{t}))$ which is discussed in Section 3.2 of \cite{mclachlan2008}.   
 
 
 
+\paragraph{Applying EM-alg}
 
-
-\subsection{Application of the EM algorithm to the deconvolution problem}
-
-
-Let $X = (Z,Y)$ denote our complete data, that is in our deconvolution problem the observed age $Y$ and the corresponding true age $Z$. The PMF for $X$ is then:
-
-\begin{equation}
-	p_X(x = (z_i,y_j);\theta_Z) =  p_i M_{ij}
-\end{equation}
-
-where $M$ is the missclasification matrix defined in \ref{subsec:missclasification} and for a vector of $n$ independent observations  $\textbf{x} = {(z_1,y_1),(z_2,y_2),...,(z_n,y_n)}$ we obtain
-
-\begin{equation}
-	p_X(\textbf{x};\theta_Z) = \prod_i \prod_j (p_i M_{ij})^{n_{ij}}
-\end{equation}
-
-where $n_ij = \sum_{k=1}1\{X_k = i , Y_k =j\}$ is a random variable with the number of counts that were observed as $j$ given they were $i$.
-
-The log-likelihood becomes: 
-
-\begin{equation}
-	\ell_c(\theta_Z) =  \sum_{i} \sum_{j} n_{ij} \log (p_i M_{ij}) = \sum_{i} \sum_{j} n_{ij} \log  M_{ij} + \sum_{i} \sum_{j} n_{ij} \log p_i 
-\end{equation}
-
-In accordance with equation \eqref{eq:Qfunction} we take the conditional expectation on $n_ij$ with an initial parameter $\theta^0$ conditioned on $Y$ 
-
-\begin{equation}
-\mathbb{E}_{\theta^{(0)}} \big[ \ell_c(\theta) \mid Y = j \big] = 
-\mathbf{E}_{\theta^{(0)}} \big[ \sum_{i} \sum_{j} n_{ij} \log (p_i M_{ij}) \mid Y = j \big] =
-\sum_{i} \sum_{j} \mathbf{E}_{\theta^{(0)}} \big[n_{ij} \mid Y = j\big] \log (p_i M_{ij})
-\end{equation}
-
-The conditional expectation $E[n_ij | y =j]$ is the expected number of bears of age i missclasified as age j given the total amount of bears observed as age j.
+In principle, the complete data could be represented by individual-level pairs $X = (Z, Y)$, where $Z$ denotes the true age class and $Y$ the observed age class for each individual. However, in the present multinomial setting it is more convenient to work with $N_{ij}$, where $N_{ij}$ denotes the number of individuals with true age class $j$ that are observed in age class $i$. 
  
-Taking expectation:
+The PMF for $X$ is then:
+
 \begin{equation}
-	\mathbb{E}[n_{ij} \mid Y = y]
-	=
-	\sum_{k=1}^{n}
-	\mathbb{E}\big[
-	\mathbf{1}\{Z_k = i, Y_k = j\}
-	\mid Y = y
-	\big]
+	p_X(x = (z_j,y_i);\pi_j) =  \pi_j M_{ij}
 \end{equation}
 
-Now conditioning on the observed $Y_k$:
+where $M$ is the misclasification matrix defined in \ref{par:measurement-error} and for a vector of $n$ independent observations  $x_v = {(z_1,y_1),(z_2,y_2),...,(z_n,y_n)}$ we obtain
+
 \begin{equation}
-	=
-	\sum_{k : Y_k = j}
-	P\big(
-	Z_k = i \mid Y_k = j, \theta^{(0)}
-	\big)
+	p_X(x_v;\boldsymbol{\pi}) = \prod_i \prod_j (\pi_j M_{ij})^{n_{ij}}
 \end{equation}
 
-Let $n_j = \#\{k : Y_k = j\}$ denote the number of observations with $Y=j$. Then:
+where $n_{ij} = \sum_{n=1}1\{Z_r = j , Y_r =i\}$ is a random variable with the counts that were observed as $i$ given they were $j$.
+
+The log-likelihood is then: 
+
 \begin{equation}
-	\mathbb{E}[n_{ij} \mid Y = y]
-	=
-	n_j \cdot
-	P\big(
-	Z = i \mid Y = j, \theta^{(0)}
-	\big)
+	\ell_c(\boldsymbol{\pi}) =  \sum_{j} \sum_{i} n_{ij} \log (p_j M_{ij}) = \sum_{j} \sum_{i} n_{ij} \log  M_{ij} + \sum_{j} \sum_{i} n_{ij} \log \pi_j 
 \end{equation}
 
-Using Bayes' theorem:
+In accordance with equation \eqref{eq:Qfunction} we take the conditional expectation on $n_{ij}$ with an initial parameter $\boldsymbol{\pi^{(0)}}$ conditioned on $Y$ 
+
 \begin{equation}
-	P\big(
-	Z = i \mid Y = j, \theta^{(0)}
-	\big)
-	=
-	\frac{
-		p_i^{(0)} M_{ij}
-	}{
-		\sum_{i'} p_{i'}^{(0)} M_{i'j}
-	}
+\mathbb{E}_{\boldsymbol{\pi}^{(0)}} \big[ \ell_c(\boldsymbol{\pi}) \mid \mathbf{Y} = \mathbf{y} \big] =
+\mathbf{E}_{\mathbf{\pi}^{(0)}} \big[ \sum_{j} \sum_{i} n_{ij} \log (\pi_j M_{ij}) \mid \mathbf{Y} = \mathbf{y} \big] =
+\sum_{i} \sum_{j} \mathbf{E}_{\boldsymbol{\pi}^{(0)}} \big[n_{ij} \mid \boldsymbol{Y} = \boldsymbol{y}\big] \log (\pi_j M_{ij})
 \end{equation}
+The conditional expectation $E_{\boldsymbol{\pi^{(0)}}}[n_{ij} \mid \mathbf{Y} = \mathbf{y}]$ is the expected number of bears with true age class $j$ that are observed in age class $i$, given the observed data $\mathbf{Y} = \mathbf{y}$. Note that this depends on the assumed latent age distribution $\boldsymbol{\pi^{(0)}}$.
+
+Let $Y_i^{(c)}$ denote the number of observed individuals in age class $i$:
+\begin{equation}
+	Y_i^{(c)} = \sum_{r=1}^{n} \mathbf{1}\{Y_r = i\}
+\end{equation}
+
+The expected number of individuals with true age class $j$, among those observed in age class $i$, is given by the number of observed individuals $Y_i^{(c)}$ multiplied by the probability of originating from true age class $j$ given observation in class $i$, $P(Z=j \mid Y=i, \boldsymbol{\pi}^{(0)})$. This probability is proportional to the product of the misclassification probability $M_{ij}$ and the assumed true proportion $\pi_j^{(0)}$, and is normalized by the total probability of being observed in class $i$ from any true age class.
+
+\[
+P(Z=j \mid Y=i, \boldsymbol{\pi}^{(0)}) =
+\frac{\pi_j^{(0)} M_{ij}}{\sum_{a=1}^{k} \pi_a^{(0)} M_{ia}}
+\]
+
 
 Thus:
 \begin{equation}
@@ -329,13 +280,68 @@ Thus:
 	=
 	n_j \cdot
 	\frac{
-		p_i^{(0)} M_{ij}
+		\pi_j^{(0)} M_{ij}
 	}{
 		\sum_{i'} p_{i'}^{(0)} M_{i'j}
 	}
 \end{equation}
 
 \paragraph{Maximization-step}
+
+We now choose $\boldsymbol{\pi}^{(t+1)}$ such that, in accordance with equation (8), the conditional expected log-likelihood is maximized. From equation (11), we note that only the terms involving $\boldsymbol{\pi}$ depend on the parameter of interest, since the remaining terms do not depend on $\boldsymbol{\pi}$ and can therefore be ignored in the maximization.
+
+Thus, maximizing the conditional log-likelihood is equivalent to maximizing
+\[
+\sum_{j} \sum_{i} \mathbb{E}[n_{ij} \mid \mathbf{Y} = \mathbf{y}] \, \log \pi_j.
+\]
+
+\subsection{Matrix population models}\label{sec:pop_model_matrix}
+
+To obtain a suitable idea of the population age distribution over time we use a population matrix model \cite{caswell2001}. The age class $j=1,2,... k$ is the discretization of the age $z$ to age-class $j$ with  $j - 1 \leq z \leq j$. The number of individuals for each age class $j$ is then given by $n_1,n_2,...,n_k$.
+
+
+Following \cite[Eq.~2.1]{caswell2001} the number of $n_1$ individuals at time $t+1$ can be projected with  
+$$n_1(t+1) = f_1n_1(t) + f_2n_2(t)+... + f_k n_k(t)$$
+
+Here $f_j$ denotes the reproductive rate per-capita. That is the average number of offspring an individual of age class $j$ has. For $j > 1$ the number of individuals in an age class $n_j$ at time $t+1$ is simply given by the survival probability of previous age class $(s_{j-1})(n_{j-1})$ at the previous timestep $t$. Together we can write the equation in matrix form for all $n_j$ at time $t+1$. 
+
+\[
+\begin{pmatrix}
+	n_1 \\
+	n_2 \\
+	\vdots \\
+	\vdots \\
+	n_k
+\end{pmatrix}  (t+1) =
+\begin{pmatrix}
+	f_1   & f_2   & f_3   & \cdots & f_k \\
+	s_1   & 0     & 0     & \cdots & 0   \\
+	0     & s_2   & 0     & \cdots & 0   \\
+	\vdots& \vdots& \ddots& \ddots & \vdots \\
+	0     & 0     & \cdots& s_{k-1}& 0
+\end{pmatrix}
+\begin{pmatrix}
+	n_1 \\
+	n_2 \\
+	\vdots \\
+	\vdots \\
+	n_k
+\end{pmatrix}  (t)
+\]
+\subsection{Computing age distribution from a Leslie matrix}\label{sec:age_distribution}
+
+The stable age distribution of a population can be obtained from the Leslie matrix $\mathbf{L}$ by computing its dominant eigenvalue $\lambda_1$ and the corresponding right eigenvector $\mathbf{w}$. 
+This eigenvector gives the relative proportions of individuals in each age class at equilibrium, and can be normalized to represent  a probability vector for k distinct age classes.
+
+The existence of a real, non-negative eigenvalue $\lambda_1$ that is greater than or equal in magnitude to all other eigenvalues $\lambda_i$ of a non-negative, primitive matrix $\mathbf{A}$ is guaranteed by the Perron-Frobenius theorem \cite{caswell2001}. 
+
+If $\mathbf{L}$ is primitive, then as $t \rightarrow \infty$, the population vector $\mathbf{n}_t$ satisfies
+\[
+\frac{\mathbf{n}_t}{\sum_j n_{j,t}} \to \mathbf{w},
+\]
+where $\mathbf{w}$ is the normalized right eigenvector corresponding to $\lambda_1$. 
+This represents the \textbf{stable age distribution} of the population and the $\lambda_1$ is the growth rate for a stable population. 
+
 
 \subsection{Evaluation method}\label{sec:eva_method}
 
@@ -353,100 +359,176 @@ In this thesis, we use TV distance to quantify and distinguish the effects of sa
 
 \colorbox{yellow!30}{\textbf{[TODO: Does this need a source reference?]}}
 
-\paragraph{KL-divergence} \label{sec:kl_div}
 
 
-\colorbox{gray!30}{\textbf{[Optional: seems unnecessary, it would only be useful if Tikhonov regularization reg was used too. ]}}
 
-\section{Methods / Simulation Setup}
+
+\section{Simulation Study}
 
 \subsection{Simulated Age Distributions}
 
-A Leslie matrix $L$ of dimension $20 \times 20$ was used to model the age-structured population.
-The first row represents the expected number of offspring produced by individuals in each age class, 
-calculated as the product of three components for age class $i$:
+We consider a population structured into $k = 20$ age classes, consistent with the discretisation used in \cite{nina_bearmodel}. Based on this structure, we construct a $20 \times 20$ Leslie matrix $\mathbf{L}$ as described in section \ref{sec:pop_model_matrix}. Each age class is defined as a one-year interval, where the age-class index $j \in \{1,\dots,20\}$ corresponds to the interval $[j-1, j)$ for $j = 1,\dots,19$, while the final class $j=20$ represents individuals aged $19$ years and older.
 
+We define the fertility contribution of individuals in age class $j$ as
 \begin{equation}
-	F_i = s_i \cdot p_{\text{coy},i} \cdot \text{litter}_i,
+	f_j = s_j \cdot p_{\text{coy},j} \cdot \text{litter}_j,
 \end{equation}
-
 where:
 \begin{itemize}
-	\item $s_i$ is the survival probability from age $i$ to $i+1$,
-	\item $p_{\text{coy},i}$ is the probability of conceiving at age $i$,
-	\item $\text{litter}_i$ is the expected litter size at age $i$.
+	\item $s_j$ is the survival probability from age $j$ to $j+1$,
+	\item $p_{\text{coy},j}$ is the probability of conceiving at age $j$,
+	\item $\text{litter}_j$ is the expected litter size at age $j$.
 \end{itemize}
 
-The survival and reproduction parameters were estimated from published graphs \cite{nina_bearmodel}. The full data vectors used to construct the Leslie matrix are provided in Appendix~\ref{app:leslie_params}.
+The survival and reproduction parameters were approximated by visual inspection of published graphs \cite{nina_bearmodel}. The extracted values used in the construction of $\mathbf{L}$ are provided in Appendix~\ref{app:leslie_params}.
+
+The stable age distribution, shown in Figure~\ref{fig:stable_age}, is computed as the normalized dominant right eigenvector of $\mathbf{L}$ using the method described in Section~\ref{sec:age_distribution}. This distribution is denoted by $\boldsymbol{\pi}$ and serves as the latent age distribution used throughout the simulation study.
+
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.8\textwidth]{../figures/age_distribution_p1.pdf}
-	\caption{Stable age distribution obtained from the normalized dominant eigenvector of the Leslie matrix (see Section~\ref{sec:age_distribution} for derivation).}
+	\caption{Latent age distribution $\boldsymbol{\pi}$ obtained from the normalized dominant eigenvector of the Leslie matrix $\mathbf{L}$.}
 	\label{fig:stable_age}
 \end{figure}
 
 \subsection{Error terms} \label{sec:error_terms}
 
-To simulate plausible errors in age determination, we considered four different error models. Let $Z$ denote the true age, and $e$ the error term added to $Z$ in the convolution. We model the error as conditionally normal:
+In this section, we define the discretization procedure used to construct the misclassification matrix $M$ described in Section \ref{par:measurement-error}. The chosen error model is designed to approximately reflect the error pattern shown in Figure 5(a) in \cite{nakamura2023}. This choice was motivated by a visual inspection of several plausible discretization strategies, in particular different treatments of boundary and out-of-range values.
 
+These included truncation of negative values at zero, absorption into the youngest age class (0--1 years), truncation of such values followed by renormalization of probabilities, and transformation via absolute values prior to binning.
+
+\paragraph{Error model of choice}
+
+For each individual with true age class $Z_r = j$, we assume an additive Gaussian measurement error as specified in \ref{par:measurement-error}
 \[
-e \mid Z \sim \mathcal{N}\big(\mu = f(Z), \sigma^2\big),
+\epsilon_r \mid Z_r = j \sim \mathcal{N}(0,\sigma^2).
 \]
 
-and discretize the resulting values to the integer age bins (1--20) to match the observed age categories. 
-Negative values were excluded, and the remaining probabilities were rescaled by $1 / (1 - F(e < 0))$. Values greater than 20 were assigned to the 19+ age class.
+In the simulation study, we fix $\sigma = 4$, which was chosen to approximate the spread of the measurement error observed in Figure 5(a) of \cite{nakamura2023}. 
 
-\colorbox{blue!30}{%
-	\parbox{0.95\linewidth}{\textbf{ Question: I set the mortality for bears over 19+ to 100\% because i didnt find data to compute actual mortality or fertility} 
+The observed value is then implicitly given by $j - 0.5 + \epsilon_r$, and is mapped to discrete age classes by binning into intervals $[i-1,i)$.
 
-}}
-
-
-The following four specifications for $f(Z)$ (mean) and $\sigma$ (standard deviation) were considered:
-
-
-\begin{enumerate} [label=\textbf{Model \Alph*:}, ref=\Alph*]
-	\item \textbf{Model A Unbiased, low variance:} $f(Z) = 0$, \quad $\sigma = 1$ \label{model:A}
-	\item \textbf{Model B Unbiased, high variance:} $f(Z) = 0$, \quad $\sigma = 4$ \label{model:B}
-	\item \textbf{Model C Age-dependent bias, low variance:} $f(Z) = \dfrac{4}{Z + 0.5}$, \quad \label{model:C} $\sigma = 1$
-	\item \textbf{Model D Age-dependent bias, high variance:} $f(Z) = \dfrac{4}{Z +0.5}$, \quad $\sigma = 4$ \label{model:D}
-\end{enumerate}
-
-
-\colorbox{yellow!30}{%
-	\parbox{0.95\linewidth}{\textbf{ TODO: Add reference and explanation for the choice of sigma and mu models. Improve clarity on how the mass redistribution was done with error models. Check for consitency /overlap with section \ref{sec:convolution}. } 
-		
-}}
-
-\subsection{Convolution and Sampling Effects}
-
-Having constructed the misclassification matrices for the four error models (Section~\ref{sec:error_terms}), we analytically convolve the true age distribution $p_Z(z)$ to obtain the distribution of observed ages $Y$:
-
+To account for the lower boundary, we condition on the event that the perturbed value lies within the support of the age scale, resulting in a truncated distribution. The probability of observing class $i = 1,\dots,19$ is therefore
 \[
-p_Y(y) = \sum_z M_{zy} \, p_Z(z),
+M_{ij}
+=
+\frac{
+	\Phi\!\left(\frac{i - (j - 0.5)}{\sigma}\right)
+	-
+	\Phi\!\left(\frac{i-1 - (j - 0.5)}{\sigma}\right)
+}{
+	1 - \Phi\!\left(\frac{0 - (j - 0.5)}{\sigma}\right)
+}.
 \]
 
-where $M$ is the misclassification matrix corresponding to each error model.
+For the upper boundary, the last age class absorbs all remaining probability mass:
+\[
+M_{20,j}
+=
+1 - \sum_{i=1}^{19} M_{ij}.
+\]
 
-To assess the effects of sampling error, we simulated random samples of size $n =  10, 25, 50,100,150,200$ from the convolved distribution $p_Y(y)$. This allows us to separate variability due to sampling error from information loss caused by the convolution.
+This ensures that $\sum_{i=1}^{20} M_{ij} = 1$.
 
-The difference between the sampled distribution and the true age distribution was quantified using Total Variation distance.
+Applying the misclassification matrix $M$ to the latent age distribution $\boldsymbol{\pi}$ yields the observed age distribution $\boldsymbol{\pi}^{\text{obs}} = M \boldsymbol{\pi}$, as defined in Section~\ref{par:observed_dist}.
+
+\[
+\boldsymbol{\pi}^{\text{obs}} = M \boldsymbol{\pi}.
+\]
+
+The resulting distribution corresponding to $\sigma = 4$ is shown in Figure~\ref{fig:stable_age_vs_D}.
+
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{../figures/age_distribution_comp_p2.pdf}
-	\caption{Stable age distribution vs convoluted age distribution using Model~\ref{model:D}}
+	\caption{Stable age distribution $\boldsymbol{\pi}$ and the corresponding observed age distribution $M\boldsymbol{\pi}$ under the measurement error model $\epsilon_r \mid Z_r \sim \mathcal{N}(0, 4^2)$.}
 	\label{fig:stable_age_vs_D}
 \end{figure}
 
 
-\colorbox{yellow!30}{%
-	\parbox{\linewidth}{%
-		\textbf{[TODO: Describe how $M^t p$ is the convoluted distribution,
-		refer to section in Theory or write here?]}%
-	}%
-}
+\subsection{Simulation design}
+
+This section describes the experimental design used to evaluate the performance of the proposed deconvolution methods under controlled conditions.
+
+\paragraph{General setup}
+The latent age distribution $\boldsymbol{\pi}$ is fixed across all simulations and corresponds to the stable age distribution of a Leslie matrix model with $k = 20$ age classes (see Section~\ref{sec:age_distribution}). Measurement error is introduced through a misclassification matrix $M$, constructed from the discretized Gaussian error model described in Section~\ref{sec:error_terms}, with fixed standard deviation $\sigma = 4$.
+
+This setup ensures that all variation in the results arises from sampling variability and estimation error, rather than changes in the underlying population structure.
+
+\paragraph{Sample sizes}
+To investigate how estimation performance depends on sample size, we consider:
+\[
+n \in \{50, 100, 250, 1000\}.
+\]
+
+\paragraph{Estimators}
+We compare three estimators of the latent distribution:
+\begin{itemize}
+	\item the naive empirical estimator $\hat{\boldsymbol{\pi}} = \mathbf{Y}/n$,
+	\item the method-of-moments (MoM) estimator,
+	\item the EM-based maximum likelihood estimator (see Section~\ref{sec:ML}).
+\end{itemize}
+
+\paragraph{Simulation repetitions}
+For each combination of sample size and estimator, the simulation is repeated $R$ times (typically $R = 1000$) to obtain Monte Carlo estimates of bias, variability, and overall performance.
+
+\paragraph{EM algorithm settings}
+For the EM-based estimator, convergence is declared when the log-likelihood improvement satisfies
+\[
+\ell(\boldsymbol{\pi}^{(t+1)}) - \ell(\boldsymbol{\pi}^{(t)}) < \epsilon,
+\]
+with $\epsilon > 0$ small (typically $10^{-4}$), or when a maximum number of iterations (100) is reached.
+
+\subsection{Simulation procedure}
+\label{sec:simulation_procedure}
+
+To evaluate the performance of the deconvolution methods, we conduct a Monte Carlo simulation study. Each replication follows the steps below.
+
+\paragraph{Step 1: Generate latent population}
+For a given sample size $n$, we simulate latent age classes independently from the true distribution:
+\[
+Z_r \sim \text{Categorical}(\boldsymbol{\pi}), \quad r = 1, \dots, n.
+\]
+
+This yields the latent count vector
+\[
+\mathbf{Z}^{(c)} \sim \text{Multinomial}(n, \boldsymbol{\pi}).
+\]
+
+\paragraph{Step 2: Introduce measurement error}
+Each latent observation is passed through the misclassification mechanism defined by $M$. Conditional on $\mathbf{Z}^{(c)}$, the observed counts are generated as
+\[
+\mathbf{Y}^{(c)} \sim \text{Multinomial}(n, M\boldsymbol{\pi}).
+\]
+
+This represents the convolution of the latent distribution with the measurement error process.
+
+\paragraph{Step 3: Estimation}
+Given the observed data $\mathbf{Y}^{(c)}$, we estimate the latent distribution using three methods:
+\begin{itemize}
+	\item the naive estimator $\hat{\boldsymbol{\pi}}^{\text{naive}} = \mathbf{Y}^{(c)} / n$,
+	\item the method-of-moments estimator,
+	\item the EM-based maximum likelihood estimator (Section~\ref{sec:ML}).
+\end{itemize}
+
+\paragraph{Step 4: Performance evaluation}
+For each estimator, we compute the total variation (TV) distance to the true distribution:
+\[
+\mathrm{TV}(\hat{\boldsymbol{\pi}}, \boldsymbol{\pi})
+= \frac{1}{2} \sum_{j=1}^{k} \left| \hat{\pi}_j - \pi_j \right|.
+\]
+
+This measure is used to quantify the estimation error induced by sampling variability and measurement error.
+
+\paragraph{Step 5: Forecasting analysis}
+To assess the practical implications of estimation error, we propagate the estimated age distributions through the Leslie matrix model:
+\[
+\mathbf{n}_{t+1} = \mathbf{L}\,\hat{\boldsymbol{\pi}}_t.
+\]
+
+Forecasts based on estimated distributions are compared to those obtained using the true latent distribution. Differences are evaluated over multiple time steps to assess how estimation error propagates through population dynamics.
 
 \subsection{Deconvolution Methods}
 
@@ -478,34 +560,6 @@ The algorithm was iterated until convergence, defined as
 \]
 or until a maximum of 100 iterations was reached.
 
-
-\subsection{Evaluation Against a Random Parameter Baseline}
-
-\colorbox{blue!30}{%
-	\parbox{0.95\linewidth}{\textbf{Question:} \\
-		\begin{itemize}
-			\item I wanted to include this as a sanity check. We may prove that deconvolution is better than convolution in terms of TV however it does not say that we might as well be better off ignoring the data and guessing the parameter randomly. 
-		\end{itemize}
-}}
-
-To assess whether our estimator outperforms a random baseline, we estimate the probability that a randomly sampled parameter from the parameter space yields a smaller total variation (TV) distance to the true distribution than our estimator.
-
-Let $\theta_s^{(i)} \sim \mathcal{U}(\Theta)$ for $i = 1, \dots, N$ denote independent samples from the parameter space. For each sample, we compute the indicator
-\begin{equation}
-	I^{(i)} =
-	\begin{cases}
-		1 & \text{if } TV(\theta_s^{(i)}, \theta_{true}) < TV(\hat{\theta}, \theta_{true}), \\
-		0 & \text{otherwise}.
-	\end{cases}
-\end{equation}
-
-The probability is then estimated using a Monte Carlo approximation:
-\begin{equation}
-	\hat{P} =
-	\frac{1}{N} \sum_{i=1}^{N} I^{(i)}.
-\end{equation}
-
-This quantity represents the empirical probability that a randomly chosen parameter from the parameter space outperforms the estimator in terms of total variation distance to the true distribution.
 
 \section{Results}
 

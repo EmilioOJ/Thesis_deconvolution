@@ -1,15 +1,15 @@
 [0] Config.pm:328> INFO - This is Biber 2.21
 [0] Config.pm:331> INFO - Logfile is 'kandidat_thesis.blg'
-[116] biber-MSWIN64:342> INFO - === 
-[151] Biber.pm:421> INFO - Reading 'kandidat_thesis.bcf'
-[246] Biber.pm:1002> INFO - Found 4 citekeys in bib section 0
-[259] Biber.pm:4487> INFO - Processing section 0
-[269] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
-[305] bibtex.pm:1713> INFO - LaTeX decoding ...
+[106] biber-MSWIN64:342> INFO - === 
+[141] Biber.pm:421> INFO - Reading 'kandidat_thesis.bcf'
+[239] Biber.pm:1002> INFO - Found 5 citekeys in bib section 0
+[252] Biber.pm:4487> INFO - Processing section 0
+[263] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
+[304] bibtex.pm:1713> INFO - LaTeX decoding ...
 [315] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[390] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[390] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[390] Biber.pm:4307> INFO - Sorting list 'nyt/global//global/global/global' of type 'entry' with template 'nyt' and locale 'en-US'
-[390] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
-[395] bbl.pm:676> INFO - Writing 'kandidat_thesis.bbl' with encoding 'latin1'
+[388] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[388] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[388] Biber.pm:4307> INFO - Sorting list 'nyt/global//global/global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[389] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[394] bbl.pm:676> INFO - Writing 'kandidat_thesis.bbl' with encoding 'latin1'
 [399] bbl.pm:779> INFO - Output to kandidat_thesis.bbl
