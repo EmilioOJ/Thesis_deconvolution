@@ -257,7 +257,84 @@
       \field{note}{Accessed: 2026-04-08}
       \field{title}{Bear Population Model}
     \endentry
+    \entry{robert2007}{book}{}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=0a257fbe5a59f3a17cc4e1089b887257}{%
+           family={Robert},
+           familyi={R\bibinitperiod},
+           given={Christian\bibnamedelima P.},
+           giveni={C\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c7abc90e14f2761d9325ee092fda0de7}{%
+           family={Casella},
+           familyi={C\bibinitperiod},
+           given={George},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{location}{1}{%
+        {Boca Raton, FL, USA}%
+      }
+      \list{publisher}{1}{%
+        {CRC Press}%
+      }
+      \strng{namehash}{6325bdb18443214ba419d392ce44599a}
+      \strng{fullhash}{6325bdb18443214ba419d392ce44599a}
+      \strng{fullhashraw}{6325bdb18443214ba419d392ce44599a}
+      \strng{bibnamehash}{6325bdb18443214ba419d392ce44599a}
+      \strng{authorbibnamehash}{6325bdb18443214ba419d392ce44599a}
+      \strng{authornamehash}{6325bdb18443214ba419d392ce44599a}
+      \strng{authorfullhash}{6325bdb18443214ba419d392ce44599a}
+      \strng{authorfullhashraw}{6325bdb18443214ba419d392ce44599a}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Latest edition}
+      \field{title}{Likelihood and Bayesian Inference: With Applications in Biology and Medicine}
+      \field{year}{2020}
+    \endentry
+    \entry{wasserman2004}{book}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=65f1811ef49856bc81a9defc770bff62}{%
+           family={Wasserman},
+           familyi={W\bibinitperiod},
+           given={Larry\bibnamedelima A.},
+           giveni={L\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{location}{1}{%
+        {New York, NY, USA}%
+      }
+      \list{publisher}{1}{%
+        {Springer Science+Business Media}%
+      }
+      \strng{namehash}{65f1811ef49856bc81a9defc770bff62}
+      \strng{fullhash}{65f1811ef49856bc81a9defc770bff62}
+      \strng{fullhashraw}{65f1811ef49856bc81a9defc770bff62}
+      \strng{bibnamehash}{65f1811ef49856bc81a9defc770bff62}
+      \strng{authorbibnamehash}{65f1811ef49856bc81a9defc770bff62}
+      \strng{authornamehash}{65f1811ef49856bc81a9defc770bff62}
+      \strng{authorfullhash}{65f1811ef49856bc81a9defc770bff62}
+      \strng{authorfullhashraw}{65f1811ef49856bc81a9defc770bff62}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{978-0-387-21736-9}
+      \field{series}{Springer Texts in Statistics}
+      \field{title}{All of Statistics: A Concise Course in Statistical Inference}
+      \field{year}{2004}
+      \verb{doi}
+      \verb 10.1007/978-0-387-21736-9
+      \endverb
+    \endentry
   \enddatalist
+  \missing{nrm_bear_monitoring}
 \endrefsection
 \endinput
 

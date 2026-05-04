@@ -10,7 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 source("stat_func.R")
 source("pupulation_model.R")
 source("thikanov_inv.R")
-source("simulation_data.R")
+# source("simulation_data.R")
+
 library(xtable)
 library(glmnet)
 library(purrr)
@@ -21,34 +22,28 @@ library(knitr)
 library(expm)
 library(here)
 
+# read data
+# EM ML
+iter_only_i <- readRDS("../data/simulations/iter_only_i.rds")
+iter_only_u <- readRDS("../data/simulations/iter_no_stop.rds")
+iter_only_u <- readRDS("../data/simulations/iter_no_stop.rds")
+deconvolved_ml_p_samples_i <- readRDS("../data/simulations/pi_samples_ml_i.rds")
+deconvolved_ml_p_samples_u <- readRDS("../data/simulations/pi_samples_ml_u_no_stop.rds")
+# Mom 
+deconvolved_mom_p_samples_i <- readRDS("../data/simulations/deconvolved_mom_p_samples_i.rds")
 
+# Error
+normalized_convolved_sim <- readRDS("../data/simulations/normalized_convolved_sim.rds")
+
+# Oracle 
+normalized_truedist_sim <- readRDS("../data/simulations/normalized_truedist_sim.rds")
 ```
+
 
 ```{r}
-# My missclass matrix
-missclass_matrix_A <-  truncated_misclassification(func_sigma = function(x) 1)
-missclass_matrix_B <-  truncated_misclassification(func_sigma = function(x) 4)
-missclass_matrix_C <-  truncated_misclassification(func_sigma = function(x) 1, func_mu = function(x) x+4/(x+0.5))
-missclass_matrix_D <-  truncated_misclassification(func_sigma = function(x) 4, func_mu = function(x) x+4/(x+0.5))
-
-missclass_all_t <- list(
-  A = t(missclass_matrix_A),
-  B = t(missclass_matrix_B),
-  C = t(missclass_matrix_C),
-  D = t(missclass_matrix_D)
-)
-
-missclass_all <- list(
-  A = missclass_matrix_A,
-  B = missclass_matrix_B,
-  C = missclass_matrix_C,
-  D = missclass_matrix_D
-)
-
-# Set samples
-samples <- c(10, 25, 50, 100, 150, 200)
+# iter_only <- readRDS("iter_only.rds")
+# deconvolved_ml_p_samples_i <- readRDS("pi_samples_ml.rds")
 ```
-
 
 
 ## Plot stable age distribution
@@ -82,13 +77,41 @@ ggsave(
 p1
 ```
 
+## Study error models
+```{r}
+set.seed(911122)
+# Candidates 
+absorbing_error_M <- missclass_absorbing(func_sigma = function(x) 3)
+absolute_error_M <-  missclass_absolute(func_sigma = function(x) 3)
+truncated_error_M <-  truncated_misclassification(func_sigma = function(x) 4)
+truncated_error_M_bias <-  truncated_misclassification(func_sigma = function(x) 3, func_mu = function(x) x+4/(x+0.5))
+
+
+
+df <- simulate_events(
+  rep(5,20),
+  truncated_error_M
+)
+
+true <- df$true - 0.5
+diff <- df$obs - df$true
+
+plot(jitter(true),
+     jitter(diff, amount = 0.3),
+     xlab = "True bin",
+     ylab = "Observed - True",
+     xlim = c(0, 30),
+     ylim = c(-10, 10))
+
+abline(h = 0, lty = 2)
+```
 
 ## naiv metod (mätfel)
 ```{r}
 
 
 # convolute distribution analytically  with a msicclass matrix
-conv_data <- as.vector(t(missclass_matrix_D)%*%dist_eigenvector$stable_dist)
+conv_data <- as.vector(t(truncated_error_M)%*%dist_eigenvector$stable_dist)
 
 dist1 <- data.frame(
   age_labels = dist_eigenvector$age_labels,
@@ -136,6 +159,7 @@ ggsave(
 p2
 
 ```
+
 ## Numerisk instabilitet plot
 
 ```{r}
@@ -191,13 +215,8 @@ p3
 
 ## True distribution sampling & statistics & table
 ```{r}
-# simulate 
+set.seed(19911122)
 
-sim_results_true_dist <- lapply( list(stable_dist), function(dist) {
-  lapply(samples, function(n) {
-    simulate_counts(dist, size_per_sample = n, n_samples = 100)
-  })
-})
 
 #  summary statistic of TV from sim_results
 tv_result_summary_true <-  compute_tv_all(sim_results_true_dist, stable_dist)
@@ -219,22 +238,14 @@ writeLines(table_tex, "../tables/df_tv_true_t1.tex")
 # Show convolution 
 set.seed(19911122)
 
-# Convoluted Distribution
-conv_dist <- lapply(missclass_all_t, function(M) {
-  as.vector(M %*% stable_dist)
-})
 
 
-# To each type of conv matrix, sample for each type of sample size 
-# Dist A,B,C,D = 1,2,3,4 & sampel size 10, 25, 50, 100 = 1, 2, 3, 4,5,6 Each one is a matrix where column is replica and row "bin" 
-sim_results_c <- lapply(conv_dist, function(dist) {
-  lapply(samples, function(n) {
-    simulate_counts(dist, size_per_sample = n, n_samples = 100)
-  })
-})
+
+# Remove nested list
+convolved_sim_cleaned <- lapply(normalized_convolved_sim, function(x) x[[1]])
 
 #  summary statistic of TV from sim_results
-tv_result_summary <-  compute_tv_all(convolved_sim, stable_dist)
+tv_result_summary <-  compute_tv_all(convolved_sim_cleaned, stable_dist)
 
 # convert to data frame
 df_tv_c <- tv_to_df_summary(tv_result_summary)
@@ -248,131 +259,24 @@ writeLines(table_tex, "../tables/df_tv_convolution_t2.tex")
 
 ```
 
-### Convolution graph
-```{r}
-
-df_all_c_t <- rbind(df_tv_c, df_tv_true)
-
-p4 <- ggplot(df_all_c_t, aes(x = sample_size, y = mean, group = model, color = model)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-    title = "Convergence of TV Distance vs sample size",
-    x = "Sample size",
-    y = "Mean TV distance",
-    color = "Error Model"
-  ) +
-  scale_color_manual(values = c(
-    "A" = "red",
-    "B" = "blue",
-    "C" = "darkgreen",
-    "D" = "orange",
-    "True distribution" = "black"
-  )) +
-  coord_cartesian(ylim = c(0, 0.7)) +
-  theme_minimal(base_size = 14)
 
 
 
-ggsave(
-  filename = "../figures/Conv_TV_vs_sample_p4.pdf",
-  plot = p4,
-  width = 6,
-  height = 4
-)
 
+## Deconvolution ML method informed
 
-
-p4
-```
-### Deconvolution uniform-init simulation 
-```{r}
-# Deconvolution steps
-set.seed(19911122)
-
-deconvolved_samples_u <- Map(function(dist_list, K) {
-  lapply(dist_list, function(mat) {
-    apply(mat, 2, function(col) {
-      em_deconvolve(col, K = K)$p
-    })
-  })
-}, sim_results_c, missclass_all)
-
-#  summary statistic of TV from sim_results
-tv_result_summary_deconv <-  compute_tv_all(deconvolved_samples_u, stable_dist)
-
-# convert to data frame
-df_tv_deconv_u <- tv_to_df_summary(tv_result_summary_deconv)
-
-df_tv_deconv_u
-
-# Export to ..\tables
-table_tex <- kable(df_tv_deconv_u, format = "latex", booktabs = TRUE)
-
-writeLines(table_tex, "../tables/df_tv_deconvolution_u_t3.tex")
-# 
-# A	10	0.5635416	0.5442254	0.7641923
-# A	25	0.4792911	0.4671815	0.7003950
-# A	50	0.3984489	0.3892980	0.5646527
-# A	100	0.3354296	0.3257366	0.4896924
-# A	150	0.2741892	0.2598381	0.3893600
-# A	200	0.2690260	0.2600026	0.3836192
-# B	10	0.5363998	0.5455556	0.7712813
-# B	25	0.4087443	0.4013897	0.6919004
-# B	50	0.3180364	0.3045640	0.5465116
-# B	100	0.2502946	0.2323665	0.4132018
-```
-
-### Deconvolution uniform graph
-```{r}
-
-df_all_du_t <- rbind(df_tv_deconv_u, df_tv_true)
-
-p5 <- ggplot(df_all_du_t, aes(x = sample_size, y = mean, group = model, color = model)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-
-    x = "Sample size",
-    y = "Mean TV distance",
-    color = "Error Model"
-  ) +
-  scale_color_manual(values = c(
-    "A" = "red",
-    "B" = "blue",
-    "C" = "darkgreen",
-    "D" = "orange",
-    "True distribution" = "black"
-  )) +
-  coord_cartesian(ylim = c(0, 0.7)) +
-  theme_minimal(base_size = 14)
-
-p5
-
-ggsave(
-  filename = "../figures/deconv_TV_vs_sample_u_p5.pdf",
-  plot = p5,
-  width = 6,
-  height = 4
-)
-
-```
-## Deconvolution well-informed init simulation
 
 ```{r}
 # Deconvolution steps
 set.seed(19911122)
 
-deconvolved_samples_i <- Map(function(dist_list, K) {
-  lapply(dist_list, function(mat) {
-    apply(mat, 2, function(col) {
-      em_deconvolve(col, K = K, init = TRUE)$p
-    })
-  })
-}, sim_results_c, missclass_all)
+deconvolved_ml_p_samples_i_fixed <- lapply(
+  deconvolved_ml_p_samples_i,
+  function(x) x[[1]]
+)
 
 #  summary statistic of TV from sim_results
-tv_result_summary_deconv_i <-  compute_tv_all(deconvolved_samples_i, stable_dist)
+tv_result_summary_deconv_i <-  compute_tv_all(deconvolved_ml_p_samples_i_fixed, stable_dist)
 
 # convert to data frame
 df_tv_deconv_i <- tv_to_df_summary(tv_result_summary_deconv_i)
@@ -384,60 +288,47 @@ table_tex <- kable(df_tv_deconv_i, format = "latex", booktabs = TRUE)
 
 writeLines(table_tex, "../tables/df_tv_deconvolution_i_t3.tex")
 ```
-### Deconvolution informed - Graph
 ```{r}
-df_all_di_i <- rbind(df_tv_deconv_i, df_tv_true)
+# Deconvolution steps
+set.seed(19911122)
 
-p6 <- ggplot(df_all_di_i, aes(x = sample_size, y = mean, group = model, color = model)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-    x = "Sample size",
-    y = "Mean TV distance",
-    color = "Error Model"
-  ) +
-  scale_color_manual(values = c(
-    "A" = "red",
-    "B" = "blue",
-    "C" = "darkgreen",
-    "D" = "orange",
-    "True distribution" = "black"
-  )) +
-  coord_cartesian(ylim = c(0, 0.7)) +
-  theme_minimal(base_size = 14)
-
-
-p6
-
-ggsave(
-  filename = "../figures/deconv_TV_vs_sample_i_p6.pdf",
-  plot = p6,
-  width = 6,
-  height = 4
+deconvolved_ml_p_samples_u_fixed <- lapply(
+  deconvolved_ml_p_samples_u,
+  function(x) x[[1]]
 )
-  
+
+#  summary statistic of TV from sim_results
+tv_result_summary_deconv_ml_u <-  compute_tv_all(deconvolved_ml_p_samples_u_fixed, stable_dist)
+
+# convert to data frame
+df_tv_deconv_ml_u <- tv_to_df_summary(tv_result_summary_deconv_ml_u)
+
+df_tv_deconv_ml_u
+
+# Export to ..\tables
+# table_tex <- kable(df_tv_deconv_i, format = "latex", booktabs = TRUE)
+# 
+# writeLines(table_tex, "../tables/df_tv_deconvolution_i_t3.tex")
+```
+# Dconvolution MoM method
+```{r}
+deconvolved_mom_p_samples_i_fixed_a <- lapply(
+  deconvolved_mom_p_samples_i,
+  function(x) x[[1]]
+)
+
+
+
+#  summary statistic of TV from sim_results
+deconvolved_mom_p_samples_i_fixed <-  compute_tv_all(deconvolved_mom_p_samples_i_fixed_a, stable_dist)
+deconvolved_mom_p_samples_i_fixed <- tv_to_df_summary(deconvolved_mom_p_samples_i_fixed)
+deconvolved_mom_p_samples_i_fixed
 ```
 
-```{r}
-p7 <- (p5 | p6) +
-  plot_layout(guides = "collect")  + 
-  plot_annotation(
-    title = "Convergence of TV Distance vs sample size",
-    tag_levels = "a"
-  ) &
-  theme(legend.position = "bottom")
 
-p7
-
-ggsave(
-  filename = "../figures/deconv_TV_vs_sample_p7.pdf",
-  plot = p7,
-  width = 6,
-  height = 4
-)
-```
 
 ```{r}
+
 
 df_diff_i <- df_tv_deconv_i %>%
   left_join(df_tv_true, by = "sample_size", suffix = c("", "_true")) %>%
@@ -445,16 +336,27 @@ df_diff_i <- df_tv_deconv_i %>%
     mean_diff = mean - mean_true,
     median_diff = median - median_true,
     upper_95_diff = upper_95 - upper_95_true,
-    method = "Informed"
+    method = "ML informed estimator"
   )
 
-df_diff_u <- df_tv_deconv_u %>%
+df_diff_u <- df_tv_deconv_ml_u %>%
   left_join(df_tv_true, by = "sample_size", suffix = c("", "_true")) %>%
   mutate(
     mean_diff = mean - mean_true,
     median_diff = median - median_true,
     upper_95_diff = upper_95 - upper_95_true,
-    method = "Uninformed"
+    method = "ML estimator"
+  )
+
+
+
+df_diff_MoM <- deconvolved_mom_p_samples_i_fixed %>%
+  left_join(df_tv_true, by = "sample_size", suffix = c("", "_true")) %>%
+  mutate(
+    mean_diff = mean - mean_true,
+    median_diff = median - median_true,
+    upper_95_diff = upper_95 - upper_95_true,
+    method = "MoM estimator"
   )
 
 df_diff_c <- df_tv_c %>%
@@ -463,14 +365,18 @@ df_diff_c <- df_tv_c %>%
     mean_diff = mean - mean_true,
     median_diff = median - median_true,
     upper_95_diff = upper_95 - upper_95_true,
-    method = "convoluted"
+    method = "Naive estimator"
   )
 
-df_all <- rbind(df_diff_u,df_diff_i,df_diff_c)
+
+
+
+df_all <- rbind(df_diff_MoM,df_diff_u,df_diff_c)
 df_all$method <- factor(df_all$method,
-                        levels = c("convoluted", "Uninformed", "Informed"))
+                        levels = c("Naive estimator", "MoM estimator", "ML estimator"))
 
 ```
+
 ```{r}
 # df_all <- rbind(
 #   df_tv_c %>% mutate(method = "Convolved"),
@@ -482,49 +388,408 @@ p8 <- ggplot(df_all, aes(x = factor(sample_size), y = mean_diff, fill = method))
   geom_col(position = "dodge") +
   facet_wrap(~model) +
   labs(
-    title = "Excess TV Distance Relative to the True Distribution sample",
+    title = "Excess TV Distance Relative to oracle baseline vs sample size",
     x = "Sample size",
-    y = "Difference in Mean TV Distance",,
+    y = "Excess TV distance relative to oracle baseline",
     fill = "method"
   ) +
   scale_fill_manual(values = c(
-    "convoluted" = "black",
-    "Informed" = "green",
-    "Uninformed" = "darkgreen"
+    "Naive estimator" = "gray",
+    "ML estimator" = "blue",
+    "MoM estimator" = "orange"
   )) +
   theme_minimal(base_size = 14)
 p8
 ggsave(
-  filename = "../figures/barplot_c_u_i_TV_minus_baseline_p8.pdf",
+  filename = "../figures/barplot_c_MoM_i_TV_minus_baseline_p8.pdf",
   plot = p8,
-  width = 6,
+  width = 8,
   height = 4
 )
 ```
+```{r}
+df_true_method <- df_all %>%
+  mutate(
+    mean = mean_true,
+    median = median_true,
+    upper_95 = upper_95_true,
+    method = "Oracle estimator"
+  ) %>%
+  select(names(df_all))  # keep same structure
+
+df_plot <- bind_rows(df_all, df_true_method)
+
+df_plot$method <- factor(
+  df_plot$method,
+  levels = c("Naive estimator", "MoM estimator", "ML estimator","Oracle estimator")
+)
+
+```
+
 
 ```{r}
-# t-test
-sim_results_c
-deconvolved_samples_u
-deconvolved_samples_i
 
-compute_tv_all_per_replica <- function(sim_results, stable_dist) {
+
+
+p4 <- ggplot(df_plot, aes(x = sample_size, y = mean, group = method, color = method)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  facet_wrap(~ model, nrow = 1) +   # ← two panels side by side
+  labs(
+    title = "Deconvolution accuracy vs sample size",
+    x = "Sample size",
+    y = "Mean TV distance",
+    color = "Method"
+  ) +
+  scale_color_manual(values = c(
+  "Naive estimator" = "gray",
+  "MoM estimator" = "orange",
+  "ML estimator" = "blue",
+  "Oracle estimator" = "green"
+  )) +
+  coord_cartesian(ylim = c(0, 0.7)) +
+  theme_minimal(base_size = 14)
+
+ggsave(
+  filename = "../figures/lineplot_sz_decon.pdf",
+  plot = p4,
+  width = 8,
+  height = 4
+)
+
+p4
+```
+
+
+```{r}
+get_est_df <- function(vec, method_name, sd_name) {
+  data.frame(
+    age = seq_along(vec),
+    prob = vec,
+    method = method_name,
+    sd = sd_name
+  )
+}
+
+all_df <- bind_rows(
+  get_est_df(get_median_estimator_fast(convolved_sim_cleaned$sd1[[4]], stable_dist), "Naive", "sd1"),
+  get_est_df(get_median_estimator_fast(convolved_sim_cleaned$sd4[[4]], stable_dist), "Naive", "sd4"),
   
-  lapply(seq_along(sim_results), function(i) {
+  # get_est_df(get_median_estimator_fast(deconvolved_ml_p_samples_i_fixed$sd1[[4]], stable_dist), "ML informed", "sd1"),
+  # get_est_df(get_median_estimator_fast(deconvolved_ml_p_samples_i_fixed$sd4[[4]], stable_dist), "ML informed", "sd4"),
+  
+  get_est_df(get_median_estimator_fast(deconvolved_ml_p_samples_u_fixed$sd1[[4]], stable_dist), "ML", "sd1"),
+  get_est_df(get_median_estimator_fast(deconvolved_ml_p_samples_u_fixed$sd4[[4]], stable_dist), "ML", "sd4"),
+  
+  get_est_df(get_median_estimator_fast(deconvolved_mom_p_samples_i_fixed_a$sd1[[4]], stable_dist), "MoM", "sd1"),
+  get_est_df(get_median_estimator_fast(deconvolved_mom_p_samples_i_fixed_a$sd4[[4]], stable_dist), "MoM", "sd4")
+)
+
+# ensure age exists
+dist_eigenvector$age <- seq_along(dist_eigenvector$stable_dist)
+
+# replicate latent distribution across all panels
+dist_all <- do.call(rbind, lapply(unique(all_df$method), function(m) {
+  do.call(rbind, lapply(unique(all_df$sd), function(s) {
+    data.frame(
+      age = dist_eigenvector$age,
+      stable_dist = dist_eigenvector$stable_dist,
+      method = m,
+      sd = s
+    )
+  }))
+}))
+
+# factors for ordering
+all_df$method <- factor(all_df$method, levels = c("Naive", "ML", "MoM"))
+all_df$sd <- factor(all_df$sd, levels = c("sd1", "sd4"))
+dist_all$method <- factor(dist_all$method, levels = levels(all_df$method))
+dist_all$sd <- factor(dist_all$sd, levels = levels(all_df$sd))
+
+p_all <- ggplot(all_df, aes(age, prob)) +
+  geom_col(fill = "gray60") +
+  geom_line(
+    data = dist_all,
+    aes(age, stable_dist),
+    color = "black",
+    linewidth = 0.8,
+    linetype = "dashed",
+    inherit.aes = FALSE
+  ) +
+  facet_grid(method ~ sd) +
+  theme_minimal()
+
+p_all
+# Save
+ggsave(
+  filename = "../figures/estimate_median_distribution.pdf",
+  plot = p_all,
+  width = 6,
+  height = 4
+)
+
+```
+
+
+```{r}
+
+# wrap your existing function
+summarise_mc2 <- function(mat, method_name, sd_name) {
+  df <- summarise_mc(mat, method_name)
+  df$sd <- sd_name
+  df
+}
+
+all_df <- bind_rows(
+  summarise_mc2(convolved_sim_cleaned$sd1[[4]], "Naive", "sd1"),
+  summarise_mc2(convolved_sim_cleaned$sd4[[4]], "Naive", "sd4"),
+  
+  # summarise_mc2(deconvolved_ml_p_samples_i_fixed$sd1[[4]], "MLinformed", "sd1"),
+  # summarise_mc2(deconvolved_ml_p_samples_i_fixed$sd4[[4]], "MLinformed", "sd4"),
+  # 
+  summarise_mc2(deconvolved_ml_p_samples_u_fixed$sd1[[4]], "ML", "sd1"),
+  summarise_mc2(deconvolved_ml_p_samples_u_fixed$sd4[[4]], "ML", "sd4"),
+  
+  summarise_mc2(deconvolved_mom_p_samples_i_fixed_a$sd1[[4]], "MoM", "sd1"),
+  summarise_mc2(deconvolved_mom_p_samples_i_fixed_a$sd4[[4]], "MoM", "sd4")
+)
+
+# latent distribution
+dist_eigenvector$age <- seq_along(dist_eigenvector$stable_dist)
+
+dist_all <- do.call(rbind, lapply(unique(all_df$method), function(m) {
+  do.call(rbind, lapply(unique(all_df$sd), function(s) {
+    data.frame(
+      age = dist_eigenvector$age,
+      stable_dist = dist_eigenvector$stable_dist,
+      method = m,
+      sd = s
+    )
+  }))
+}))
+
+# ordering
+all_df$method <- factor(all_df$method, levels = c("Naive", "ML", "MoM"))
+all_df$sd <- factor(all_df$sd, levels = c("sd1", "sd4"))
+dist_all$method <- factor(dist_all$method, levels = levels(all_df$method))
+dist_all$sd <- factor(dist_all$sd, levels = levels(all_df$sd))
+
+p_all_ci <- ggplot(all_df, aes(age)) +
+  geom_ribbon(
+    aes(ymin = lower, ymax = upper),
+    fill = "gray70",
+    alpha = 0.4
+  ) +
+  geom_line(
+    aes(y = median),
+    color = "gray40",
+    linewidth = 0.8
+  ) +
+  geom_line(
+    data = dist_all,
+    aes(age, stable_dist),
+    color = "black",
+    linewidth = 0.8,
+    linetype = "dashed",
+    inherit.aes = FALSE
+  ) +
+  facet_grid(method ~ sd) +
+  labs(
+    x = "Age class",
+    y = "Probability",
+    title = "Recovered age distributions with Monte Carlo uncertainty"
+  ) +
+  theme_minimal()
+
+p_all_ci
+
+ggsave(
+  filename = "../figures/confidence_interval_dist.pdf",
+  plot = p_all_ci,
+  width = 10,
+  height = 6
+)
+```
+
+
+```{r}
+# 1. Count failures (you already did this)
+count_iter_n <- lapply(iter_only_u, function(sd) {
+  
+  lapply(sd, function(scenario) {
     
-    true_dist <- stable_dist
-    
-    lapply(sim_results[[i]], function(mat) {
-      tv_vec <- apply(mat, 2, function(counts) {
-    est_dist <- counts / sum(counts)
-    tv_distance(est_dist, true_dist)
-  })
+    sapply(scenario, function(group_5) {
+      
+      sum(unlist(group_5) == 1001)
+      
     })
     
   })
+  
+})
+
+
+# 2. Sample sizes (must match inner list order)
+sample_sizes <- c(50, 100, 250, 500, 1000)
+
+
+sample_sizes <- c(50, 100, 250, 500, 1000)
+
+failure_df <- do.call(rbind, lapply(names(count_iter_n), function(sd_name) {
+  
+  sd_block <- count_iter_n[[sd_name]]
+  
+  do.call(rbind, lapply(seq_along(sample_sizes), function(i) {
+    
+    # extract all scenarios for this sample size
+    vals <- sapply(sd_block, function(scenario) {
+      scenario[[i]]
+    })
+    
+    data.frame(
+      SD = sd_name,
+      SampleSize = sample_sizes[i],
+      FailureRate = mean(vals) / 1000
+    )
+    
+  }))
+  
+}))
+failure_df
+
+# Export to ..\tables
+table_tex <- kable(failure_df, format = "latex", booktabs = TRUE)
+
+writeLines(table_tex, "../tables/failure_rate_ml.tex")
+```
+
+```{r}
+extract_tv_df <- function(mat, estimator, sd_label, true_dist) {
+  
+  tv_vals <- apply(mat, 2, function(p_hat) {
+    tv_distance(p_hat, true_dist)
+  })
+  
+  data.frame(
+    TV = tv_vals,
+    Estimator = estimator,
+    SD = sd_label
+  )
 }
+
+all_tv_df <- bind_rows(
+  
+  # Naive
+  extract_tv_df(convolved_sim_cleaned$sd1[[4]], "Naive", "sd1", stable_dist),
+  extract_tv_df(convolved_sim_cleaned$sd4[[4]], "Naive", "sd4", stable_dist),
+  
+  # ML informed
+  # extract_tv_df(deconvolved_ml_p_samples_i_fixed$sd1[[4]], "ML informed", "sd1", stable_dist),
+  # extract_tv_df(deconvolved_ml_p_samples_i_fixed$sd4[[4]], "ML informed", "sd4", stable_dist),
+  # 
+  # ML uninformed
+  extract_tv_df(deconvolved_ml_p_samples_u_fixed$sd1[[4]], "ML uninformed", "sd1", stable_dist),
+  extract_tv_df(deconvolved_ml_p_samples_u_fixed$sd4[[4]], "ML uninformed", "sd4", stable_dist),
+  
+  # MoM
+  extract_tv_df(deconvolved_mom_p_samples_i_fixed_a$sd1[[4]], "MoM", "sd1", stable_dist),
+  extract_tv_df(deconvolved_mom_p_samples_i_fixed_a$sd4[[4]], "MoM", "sd4", stable_dist)
+)
+
+
+
+violin_1 <- ggplot(all_tv_df, aes(x = Estimator, y = TV, fill = SD)) +
+  geom_violin(position = position_dodge(width = 0.9),
+              alpha = 0.6, trim = FALSE) +
+  
+  # median only
+  stat_summary(
+    fun = median,
+    geom = "point",
+    position = position_dodge(width = 0.9),
+    size = 2,
+    color = "black"
+  ) +
+  coord_cartesian(ylim = c(0, 1)) +
+  theme_minimal() +
+  labs(
+    x = "Estimator",
+    y = "Total Variation distance",
+    fill = "Noise level",
+    title = "Distribution of TV distance across estimators (Monte Carlo) | n = 500"
+  )
 ```
 ```{r}
+violins <- violin_2 / violin_1
+violins
+ggsave(
+  filename = "../figures/violin.pdf",
+  plot = violins,
+  width = 10,
+  height = 6
+)
+```
+
+
+```{r}
+extract_tv_df <- function(mat, estimator, sd_label, true_dist) {
+  
+  tv_vals <- apply(mat, 2, function(p_hat) {
+    tv_distance(p_hat, true_dist)
+  })
+  
+  data.frame(
+    TV = tv_vals,
+    Estimator = estimator,
+    SD = sd_label
+  )
+}
+
+all_tv_df <- bind_rows(
+  
+  # Naive
+  extract_tv_df(convolved_sim_cleaned$sd1[[2]], "Naive", "sd1", stable_dist),
+  extract_tv_df(convolved_sim_cleaned$sd4[[2]], "Naive", "sd4", stable_dist),
+  
+  # # ML informed
+  # extract_tv_df(deconvolved_ml_p_samples_i_fixed$sd1[[2]], "ML informed", "sd1", stable_dist),
+  # extract_tv_df(deconvolved_ml_p_samples_i_fixed$sd4[[4]], "ML informed", "sd4", stable_dist),
+  # 
+  # ML uninformed
+  extract_tv_df(deconvolved_ml_p_samples_u_fixed$sd1[[2]], "ML uninformed", "sd1", stable_dist),
+  extract_tv_df(deconvolved_ml_p_samples_u_fixed$sd4[[2]], "ML uninformed", "sd4", stable_dist),
+  
+  # MoM
+  extract_tv_df(deconvolved_mom_p_samples_i_fixed_a$sd1[[2]], "MoM", "sd1", stable_dist),
+  extract_tv_df(deconvolved_mom_p_samples_i_fixed_a$sd4[[2]], "MoM", "sd4", stable_dist)
+)
+
+
+
+violin_2 <- ggplot(all_tv_df, aes(x = Estimator, y = TV, fill = SD)) +
+  geom_violin(position = position_dodge(width = 0.9),
+              alpha = 0.6, trim = FALSE) +
+  
+  # median only
+  stat_summary(
+    fun = median,
+    geom = "point",
+    position = position_dodge(width = 0.9),
+    size = 2,
+    color = "black"
+  ) +
+  coord_cartesian(ylim = c(0, 1)) +
+  theme_minimal() +
+  labs(
+    x = "Estimator",
+    y = "Total Variation distance",
+    fill = "Noise level",
+    title = "Distribution of TV distance across estimators (Monte Carlo) | n = 100"
+  )
+```
+
+
+```{r}
 compute_tv_all_per_replica <- function(sim_results, stable_dist) {
   
   lapply(seq_along(sim_results), function(i) {
@@ -540,7 +805,7 @@ compute_tv_all_per_replica <- function(sim_results, stable_dist) {
     
   })
 }
-tv_per_rep_c <- compute_tv_all_per_replica(sim_results_c,stable_dist)
+tv_per_rep_c <- compute_tv_all_per_replica(convolved_sim_cleaned,stable_dist)
 tv_per_rep_u <- compute_tv_all_per_replica(deconvolved_samples_u,stable_dist)
 tv_per_rep_i <- compute_tv_all_per_replica(deconvolved_samples_i,stable_dist)
 
@@ -629,134 +894,5 @@ top10 <- results_long %>%
 table_tex <- kable(top10, format = "latex", booktabs = TRUE)
 
 writeLines(table_tex, "../tables/diff_tv_top10_t4.tex")
-```
-### Population framskrivning
-```{r}
-#simulera från convolverad fel-modeller 
-#simulation from true dist
-
-# convolute 
-
-convolved_sim <- lapply(missclass_all, function(K) {
-  
-  lapply(sim_results_true_dist, function(sim_list) {
-    
-    lapply(sim_list, function(mat) {
-      
-      out <- matrix(0, nrow = nrow(mat), ncol = ncol(mat))
-      
-      for (j in seq_len(ncol(mat))) {
-        out[, j] <- simulate_convolved_counts(mat[, j], K)
-      }
-      
-      out
-    })
-    
-  })
-  
-})
-# #  summary statistic of TV from sim_results
-# tv_result_summary_deconv_i <-  compute_tv_all(deconvolved_samples_i, stable_dist)
-
-
-#Simulera från s-paramter: 100 replikat med stickprovsstorlek n=(10,25,50,100,150,200) x_n-stickprov
-
-#Framskriv 1-10 generationer L^i x_n = x_n^(i) i = 1,2,...,10
-
-# ta medelvärde, median och tvåsidigt ci baserat på datat 
-```
-
-## EM-alg Skatta parameter p for a decon for a u-init
-
-```{r}
-deconvolved_p_samples_u <- Map(function(model_list, K) {
-  
-  lapply(model_list, function(scenario_list) {
-    
-    lapply(scenario_list, function(mat) {
-      
-      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
-      
-      apply(mat, 2, function(col) {
-        em_deconvolve(col, K = K)$p
-      })
-      
-    })
-    
-  })
-  
-}, convolved_sim, missclass_all)
-```
-
-## EM-alg Skatta parameter p for a decon for informed init
-
-```{r}
-deconvolved_p_samples_i <- Map(function(model_list, K) {
-  
-  lapply(model_list, function(scenario_list) {
-    
-    lapply(scenario_list, function(mat) {
-      
-      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
-      
-      apply(mat, 2, function(col) {
-        em_deconvolve(col, K = K, init=TRUE)$p
-      })
-      
-    })
-    
-  })
-  
-}, convolved_sim, missclass_all)
-```
-
-```{r}
-# normalized convolved sim 
-
-normalized_convolved_sim <- lapply(convolved_sim, function(model_list) {
-  
-  lapply(model_list, function(sample_list) {
-    
-    lapply(sample_list, function(mat) {
-      
-      stopifnot(is.matrix(mat))
-      
-      col_sums <- colSums(mat)
-      
-      # avoid division by zero
-      col_sums[col_sums == 0] <- 1
-      
-      sweep(mat, 2, col_sums, `/`)
-    })
-    
-  })
-  
-})
-```
-
-## forcasting 
-
-```{r}
-
-```
-
-```{r}
-#Plot part
-leslie_p <- generate_leslie_powers(L, 100) 
-
-f_proj_c <- compute_leslie_projection(deconvolved_p_samples_i[[1]][[1]][[1]], leslie_p, n_future_proj = 100)
-summary_case <- summary_leslie_proj(f_proj_c)
-
-ggplot(summary_case, aes(x = seq_len(nrow(summary_case)))) +
-  
-  geom_ribbon(aes(ymin = lower_95, ymax = upper_95),
-              fill = "skyblue", alpha = 0.3) +
-  
-  geom_line(aes(y = mean), color = "blue", linewidth = 1) +
-  
-  geom_line(aes(y = median), color = "red", linetype = "dashed") +
-  
-  labs(x = "Time step", y = "Population") +
-  theme_minimal()
 ```
 

@@ -17,123 +17,27 @@ library(ggplot2)
 library(dplyr)
 library(knitr)
 library(expm)
+
+# read data
+# EM ML
+iter_only_i <- readRDS("../data/simulations/iter_only_i.rds")
+iter_only_u <- readRDS("../data/simulations/iter_only_u.rds")
+deconvolved_ml_p_samples_i <- readRDS("../data/simulations/pi_samples_ml_i.rds")
+deconvolved_ml_p_samples_u <- readRDS("../data/simulations/pi_samples_ml_u_no_stop.rds")
+# Mom 
+deconvolved_mom_p_samples_i <- readRDS("../data/simulations/deconvolved_mom_p_samples_i.rds")
+
+# Error
+normalized_convolved_sim <- readRDS("../data/simulations/normalized_convolved_sim.rds")
+
+# Oracle 
+normalized_truedist_sim <- readRDS("../data/simulations/normalized_truedist_sim.rds")
 ```
 
-### Population framskrivning
-## Convolution data
-```{r}
-
-# sim_results_true_dist <- true data simulation
-convolved_sim <- lapply(missclass_all, function(K) {
-  
-  lapply(sim_results_true_dist, function(sim_list) {
-    
-    lapply(sim_list, function(mat) {
-      
-      apply(mat, 2, simulate_convolved_counts, K = K)
-      
-    })
-    
-  })
-  
-})
-```
-
-
-## EM-alg Skatta parameter p for a decon for a u-init
-
-```{r}
-deconvolved_p_samples_u <- Map(function(model_list, K) {
-  
-  lapply(model_list, function(scenario_list) {
-    
-    lapply(scenario_list, function(mat) {
-      
-      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
-      
-      apply(mat, 2, function(col) {
-        em_deconvolve(col, K = K)$p
-      })
-      
-    })
-    
-  })
-  
-}, convolved_sim, missclass_all)
-```
-
-## EM-alg Skatta parameter p for a decon for informed init
-
-```{r}
-deconvolved_p_samples_i <- Map(function(model_list, K) {
-  
-  lapply(model_list, function(scenario_list) {
-    
-    lapply(scenario_list, function(mat) {
-      
-      stopifnot(is.matrix(mat))  # IMPORTANT DEBUG SAFETY
-      
-      apply(mat, 2, function(col) {
-        em_deconvolve(col, K = K, init=TRUE)$p
-      })
-      
-    })
-    
-  })
-  
-}, convolved_sim, missclass_all)
-```
-# Normalize 
-```{r}
-# normalized convolved sim 
-
-normalized_convolved_sim <- lapply(convolved_sim, function(model_list) {
-  
-  lapply(model_list, function(sample_list) {
-    
-    lapply(sample_list, function(mat) {
-      
-      stopifnot(is.matrix(mat))
-      
-      col_sums <- colSums(mat)
-      
-      # avoid division by zero
-      col_sums[col_sums == 0] <- 1
-      
-      sweep(mat, 2, col_sums, `/`)
-    })
-    
-  })
-  
-})
-
-# Normalize true dist sim
-
-
-normalized_truedist_sim <- lapply(sim_results_true_dist, function(model_list) {
-  
-  lapply(model_list, function(mat) {
-    
-    stopifnot(is.matrix(mat))
-    
-    if (anyNA(mat)) stop("NA detected in matrix")
-    
-    col_sums <- colSums(mat)
-    
-    if (any(col_sums <= 0)) {
-      stop("Invalid column sums (<=0) detected")
-    }
-    
-    sweep(mat, 2, col_sums, "/")
-  })
-  
-})
-
-```
 
 ## summarized data 
 
-
+### population forcast summary
 ```{r}
 true_proj_f <- function(sim_list, L, n_future = 5, summarize = FALSE) {
   
@@ -163,10 +67,12 @@ true_proj_f <- function(sim_list, L, n_future = 5, summarize = FALSE) {
   out
 }
 # 
-true_summary_proj <- true_proj_f(normalized_truedist_sim, L, n_future = 5, summarize = TRUE)
-convoluted_summary_proj <- leslie_summary_nested(normalized_convolved_sim, L, n_future = 5)
-decon_u_summary_proj <- leslie_summary_nested(deconvolved_p_samples_u, L, n_future = 5)
-decon_i_summary_proj <- leslie_summary_nested(deconvolved_p_samples_i, L, n_future = 5)
+forecast_years <- 5
+
+true_summary_proj <- true_proj_f(normalized_truedist_sim, L, n_future = forecast_years, summarize = TRUE)
+decon_MoM_summary_proj <- leslie_summary_nested(deconvolved_mom_p_samples_i, L, n_future = forecast_years)
+convoluted_summary_proj <- leslie_summary_nested(normalized_convolved_sim, L, n_future = forecast_years)
+decon_i_summary_proj <- leslie_summary_nested(deconvolved_ml_p_samples_u, L, n_future = forecast_years)
 ```
 
 ```{r}
@@ -193,12 +99,12 @@ flatten_results <- function(nested_list, source_name, models, sample_sizes) {
   do.call(rbind, out)
 }
 
-df_con <- flatten_results(convoluted_summary_proj, "convoluted", c("A", "B", "C", "D"), c(10, 25, 50, 100, 150, 200))
-df_decon_u <- flatten_results(decon_u_summary_proj, "deconvoluted uninformed", c("A", "B", "C", "D"), c(10, 25, 50, 100, 150, 200)) 
-df_decon_i <- flatten_results(decon_i_summary_proj, "deconvoluted informed", c("A", "B", "C", "D"), c(10, 25, 50, 100, 150, 200)) 
-df_true_dist <- flatten_results(list(true_summary_proj), "true distribution", c("True dist"), c(10, 25, 50, 100, 150, 200)) 
 
-combined_df_projection_sum <- do.call(rbind, list(df_con, df_decon_u, df_decon_i, df_true_dist))
+df_con <- flatten_results(convoluted_summary_proj, "Naive estimator", c("σ = 1", "σ = 4"), samples)
+df_decon_ML <- flatten_results(decon_i_summary_proj, "ML estimator", c("σ = 1", "σ = 4"), samples) 
+df_true_dist <- flatten_results(list(true_summary_proj), "true distribution", c("True dist"), samples) 
+df_decon_MoM <- flatten_results(decon_MoM_summary_proj, "MoM estimator", c("σ = 1", "σ = 4"), samples) 
+combined_df_projection_sum <- do.call(rbind, list(df_con, df_decon_MoM, df_decon_ML, df_true_dist))
 combined_df_projection_sum
 ```
 
@@ -221,6 +127,8 @@ df_final <- combined_df_projection_sum %>%
     lower_diff  = lower_95 - true_mean,
     upper_diff  = upper_95 - true_mean
   )
+df_final <- df_final %>%
+  mutate(time = time - 1)
 df_final
 ```
 
@@ -236,7 +144,7 @@ df_final
 
 ```{r}
 plot_df <- df_final %>%
-  filter(sample_size %in% c(50, 100, 200),
+  filter(sample_size %in% c(50, 100, 250,500,1000),
          source != "true distribution")
 
 
@@ -252,29 +160,203 @@ make_plot <- function(df, m, s) {
     geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
     
     geom_ribbon(aes(ymin = lower_diff, ymax = upper_diff, fill = source),
-                alpha = 0.5, color = NA) +
+                alpha = 0.2, color = NA) +
     
-    geom_line(aes(y = mean_diff), linewidth = 1) +
+    geom_line(aes(y = mean_diff), linewidth = 1, alpha = 1.2) +
     
     geom_line(aes(y = median_diff, linetype = source), linewidth = 0.8) +
     
     labs(
-      title = paste("Model", m, "| n =", s),
-      x = "Time step",
-      y = "Difference (estimate - true)",
+      title = paste("Error Model", m, "| n =", s),
+      x = NULL,
+      y = NULL,
       color = "Source",
       fill = "Source",
       linetype = "Source"
-    ) +
-    
+    ) + 
+    scale_color_manual(values = c(
+  "Naive estimator" = "gray40",
+  "MoM estimator" = "orange",
+  "ML estimator" = "blue"
+)) +
+scale_fill_manual(values = c(
+  "Naive estimator" = "gray40",
+  "MoM estimator" = "orange",
+  "ML estimator" = "blue"
+)) +
+scale_linetype_manual(values = c(
+  "Naive estimator" = "solid",
+  "MoM estimator" = "dashed",
+  "ML estimator" = "solid"
+)) +
+    scale_x_continuous(limits = c(0, 5)) +
     theme_minimal()
 }
 ```
 
 ```{r}
-models <- c("A", "B", "C", "D")
-sizes  <- c(50, 100, 200)
 
-make_plot(df_final,"C","200")
+make_plot(df_final,"σ = 4","1000")
+```
+```{r}
+
+models <- c("σ = 1", "σ = 4")
+sizes  <- c(100, 1000)
+plots <- list()
+
+make_panel_figure <- function(s,df, modelsx) {
+  
+  plots <- list()
+  
+  for (m in modelsx) {
+    plots[[m]] <- make_plot(plot_df, m, s)
+  }
+  
+  # combine A–D into one grid
+  wrap_plots(plots, ncol = 2)
+}
+p5 <- make_panel_figure(100, plot_df,models)
+p6 <- make_panel_figure(1000, plot_df, models)
+```
+
+
+
+```{r}
+p5 <- p5 +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Total population forcast error",
+    tag_levels = "a"
+  ) &
+  theme(
+    legend.position = "bottom"
+  )
+
+# ADD GLOBAL AXIS LABELS:
+
+```
+```{r}
+library(cowplot)
+final_plot_p5 <- ggdraw(p5) +
+  draw_label("Years", x = 0.5, y = 0, vjust = -0.5, fontface = "plain") +
+  draw_label("Percentage deviation from true total population",
+             x = 0, y = 0.5, angle = 90, vjust = 1, size = 11
+)
+
+final_plot_p5
+
+```
+```{r}
+p6 <- p6 +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Total population forcast error",
+    tag_levels = "a"
+  ) &
+  theme(
+    legend.position = "bottom"
+  )
+
+# ADD GLOBAL AXIS LABELS:
+
+```
+```{r}
+
+final_plot_p6 <- ggdraw(p6) +
+  draw_label("Years", x = 0.5, y = 0, vjust = -0.5, fontface = "plain") +
+  draw_label("Percentage deviation from true total population",
+             x = 0, y = 0.5, angle = 90, vjust = 1, size = 11
+)
+
+final_plot_p6
+```
+# save plots
+```{r}
+ggsave(
+  filename = "../figures/TP_50_samples.pdf",
+  plot = final_plot_p5,
+  width = 8,
+  height = 6
+)
+ggsave(
+  filename = "../figures/TP_1000_samples.pdf",
+  plot = final_plot_p6,
+  width = 8,
+  height = 6
+)
+```
+
+
+
+```{r}
+make_plot <- function(df) {
+  
+  df_sub <- df %>%
+    filter(source != "true distribution")
+  
+  ggplot(df_sub, aes(x = time, color = source)) +
+    
+    geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
+    
+    geom_ribbon(aes(ymin = lower_diff, ymax = upper_diff, fill = source),
+                alpha = 0.2, color = NA) +
+    
+    geom_line(aes(y = mean_diff), linewidth = 1) +
+    
+    geom_line(aes(y = median_diff, linetype = source), linewidth = 0.8) +
+    
+    facet_grid(sample_size ~ model) +
+    
+    labs(
+      x = NULL,
+      y = NULL,
+      color = "Source",
+      fill = "Source",
+      linetype = "Source"
+    ) + 
+    
+    scale_color_manual(values = c(
+      "Naive estimator" = "gray40",
+      "MoM estimator" = "orange",
+      "ML estimator" = "blue"
+    )) +
+    
+    scale_fill_manual(values = c(
+      "Naive estimator" = "gray40",
+      "MoM estimator" = "orange",
+      "ML estimator" = "blue"
+    )) +
+    
+    scale_linetype_manual(values = c(
+      "Naive estimator" = "solid",
+      "MoM estimator" = "dashed",
+      "EM ML estimator" = "solid"
+    )) +
+    
+    coord_cartesian(xlim = c(0, 5)) +
+    theme_minimal()
+}
+```
+
+```{r}
+df_sub <- df_final %>%
+  filter(
+    source != "true distribution",
+    sample_size %in% c(100, 1000)
+  )
+
+p6 <- make_plot(df_sub)
+
+final_plot_p6 <- ggdraw(p6) +
+  draw_label("Years", x = 0.5, y = -0.5, vjust = -0.5) +
+  draw_label("Percentage deviation from true total population",
+             x = 0, y = 0.5, angle = 90, vjust = 1, size = 11)
+
+final_plot_p6
+
+ggsave("../figures/forcast_plot.pdf", final_plot_p6,
+       width = 14,
+       height = 10,
+       dpi = 300)
 ```
 

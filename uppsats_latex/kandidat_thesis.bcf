@@ -2382,13 +2382,13 @@
     <bcf:citekey order="6" intorder="1">mclachlan2008</bcf:citekey>
     <bcf:citekey order="7" intorder="1">mclachlan2008</bcf:citekey>
     <bcf:citekey order="8" intorder="1">mclachlan2008</bcf:citekey>
-    <bcf:citekey order="9" intorder="1">caswell2001</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">wasserman2004</bcf:citekey>
     <bcf:citekey order="10" intorder="1">caswell2001</bcf:citekey>
     <bcf:citekey order="11" intorder="1">caswell2001</bcf:citekey>
     <bcf:citekey order="12" intorder="1">nina_bearmodel</bcf:citekey>
     <bcf:citekey order="13" intorder="1">nina_bearmodel</bcf:citekey>
     <bcf:citekey order="14" intorder="1">nakamura2023</bcf:citekey>
-    <bcf:citekey order="15" intorder="1">nakamura2023</bcf:citekey>
+    <bcf:citekey order="15" intorder="1">robert2007</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">
@@ -2420,4 +2420,14 @@
     </bcf:sort>
   </bcf:sortingtemplate>
   <!-- DATALISTS -->
+  <bcf:datalist section="0"
+                name="nyt/global//global/global/global"
+                type="entry"
+                sortingtemplatename="nyt"
+                sortingnamekeytemplatename="global"
+                labelprefix=""
+                uniquenametemplatename="global"
+                labelalphanametemplatename="global"
+                namehashtemplatename="global">
+  </bcf:datalist>
 </bcf:controlfile>

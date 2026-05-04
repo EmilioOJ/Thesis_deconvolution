@@ -40,7 +40,7 @@ em_deconvolve <- function(counts_convolved, K, n_iter = 100, tol = 1e-4, init = 
   if(init){
     p <- stable_dist
   } else {
-    p <- rep(1/n_bins, n_bins)
+    p <-  counts_convolved / sum(counts_convolved)
   }
   
   iterations = 1
@@ -66,9 +66,9 @@ em_deconvolve <- function(counts_convolved, K, n_iter = 100, tol = 1e-4, init = 
     
     #  Check convergence
     diff <- max(abs(p - p_old))
-    rel_diff <- diff / (max(abs(p_old)) + 1e-12)
+    #rel_diff <- diff / (max(abs(p_old)) + 1e-12)
     # We break if reach convergence or are moving at to slow of a rate
-    if (diff < tol || rel_diff < tol) break
+    if (diff < tol ) break
     iterations = iterations + 1
   }
   

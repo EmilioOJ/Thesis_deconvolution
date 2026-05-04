@@ -1,3 +1,5 @@
+# source("simulation_data.R")
+
 
 # Takes a Matrix of matrixes where col is replika and row is bin and computes TV summary
 compute_tv_all <- function(sim_results, stable_dist) {
@@ -54,12 +56,12 @@ tv_to_df_summary <- function(tv_results) {
   df <- do.call(rbind, out)
   
   df$model <- factor(df$model,
-                     levels = 1:4,
-                     labels = c("A", "B", "C", "D"))
+                     levels = 1:2,
+                     labels = c("σ = 1", "σ = 4"))
   
   df$sample_size <- factor(df$sample_size,
-                           levels = 1:6,
-                           labels = c("10", "25", "50", "100", "150", "200"))
+                           levels = 1:5,
+                           labels = c("50", "100", "250", "500", "1000"))
   
   df
 }
@@ -140,4 +142,71 @@ leslie_summary_nested <- function(sim_nested, L, n_future = 5) {
     })
     
   })
+}
+
+### Median estimator
+
+extract_median_estimator <- function(mat, true_dist) {
+  
+  tv_vec <- apply(mat, 2, function(counts) {
+    est_dist <- counts / sum(counts)
+    tv_distance(est_dist, true_dist)
+  })
+  
+  median_index <- which.min(abs(tv_vec - median(tv_vec)))
+  
+  est_dist <- mat[, median_index]
+  est_dist <- est_dist / sum(est_dist)
+  
+  list(
+    estimator = est_dist,
+    median_index = median_index,
+    tv_value = tv_vec[median_index]
+  )
+}
+
+get_median_estimator_by_sd_and_n <- function(sd_list, sample_index, true_dist) {
+  
+  mat <- sd_list[[sample_index]]
+  
+  extract_median_estimator(mat, true_dist)$estimator
+}
+
+get_median_estimator_fast <- function(mat, true_dist) {
+  
+  # normalize all simulations at once (fast matrix op)
+  col_sums <- colSums(mat)
+  est_mat <- sweep(mat, 2, col_sums, "/")
+  
+  # compute TV vector (still loop, but minimal work per step)
+  tv_vec <- colSums(abs(est_mat - true_dist)) / 2
+  
+  median_index <- which.min(abs(tv_vec - median(tv_vec)))
+  
+  est_mat[, median_index]
+}
+
+# Summarise motne carlo per age bin
+
+summarise_mc <- function(mat) {
+  data.frame(
+    age = seq_len(nrow(mat)),
+    median = apply(mat, 1, median),
+    lower = apply(mat, 1, quantile, probs = 0.025),
+    upper = apply(mat, 1, quantile, probs = 0.975)
+  )
+}
+
+# Normalizer
+summarise_mc <- function(mat, method_name) {
+  # normalize each simulation (column)
+  mat <- apply(mat, 2, function(x) x / sum(x))
+  
+  data.frame(
+    age = seq_len(nrow(mat)),
+    median = apply(mat, 1, median),
+    lower = apply(mat, 1, quantile, probs = 0.025),
+    upper = apply(mat, 1, quantile, probs = 0.975),
+    method = method_name
+  )
 }
