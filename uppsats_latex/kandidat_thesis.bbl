@@ -59,6 +59,207 @@
       \field{title}{Stokastik: sannolikhetsteori och statistikteori med tillämpningar}
       \field{year}{2008}
     \endentry
+    \entry{asbrink2025}{report}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=ef01d27077a4b46bd0121a97c62c8357}{%
+           family={Åsbrink},
+           familyi={Å\bibinitperiod},
+           given={Jessica},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=48216a9e1bca9b27b4db753f6bd6f6bd}{%
+           family={Sköld},
+           familyi={S\bibinitperiod},
+           given={Martin},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f005d3dfc8e7886151e5cea60ab7bae8}{%
+           family={Gyllenstrand},
+           familyi={G\bibinitperiod},
+           given={Niclas},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {Naturhistoriska riksmuseet}%
+      }
+      \list{location}{1}{%
+        {Stockholm}%
+      }
+      \strng{namehash}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{fullhash}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{fullhashraw}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{bibnamehash}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{authorbibnamehash}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{authornamehash}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{authorfullhash}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \strng{authorfullhashraw}{5bbb842fd3768f34dba1a7a2ca21f319}
+      \field{sortinit}{Å}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0585-3249}
+      \field{note}{Naturhistoriska riksmuseets småskriftserie}
+      \field{number}{2025:3}
+      \field{title}{Resultat från inventering av brunbjörn i Västerbottens län 2024}
+      \field{type}{Rapport från Naturhistoriska riksmuseet}
+      \field{year}{2025}
+      \verb{urlraw}
+      \verb https://www.nrm.se/download/18.fa4343b199372946183c02c/1758261826003/2025-3-rapport_bjorninventering_2024.pdf
+      \endverb
+      \verb{url}
+      \verb https://www.nrm.se/download/18.fa4343b199372946183c02c/1758261826003/2025-3-rapport_bjorninventering_2024.pdf
+      \endverb
+    \endentry
+    \entry{asbrink2023_bjorninventering}{report}{}{}
+      \name{author}{4}{ul=3}{%
+        {{un=0,uniquepart=base,hash=ef01d27077a4b46bd0121a97c62c8357}{%
+           family={Åsbrink},
+           familyi={Å\bibinitperiod},
+           given={Jessica},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=48216a9e1bca9b27b4db753f6bd6f6bd}{%
+           family={Sköld},
+           familyi={S\bibinitperiod},
+           given={Martin},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e92e05765aea4c5c0b61a5b9ab56c377}{%
+           family={Källman},
+           familyi={K\bibinitperiod},
+           given={Thomas},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f005d3dfc8e7886151e5cea60ab7bae8}{%
+           family={Gyllenstrand},
+           familyi={G\bibinitperiod},
+           given={Niclas},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {Naturhistoriska riksmuseet, Enheten för miljöforskning och övervakning}%
+      }
+      \list{location}{1}{%
+        {Stockholm}%
+      }
+      \strng{namehash}{82d064ada600d98b9a89b25b60d6bb8e}
+      \strng{fullhash}{592b02810b8a129344ea42d6c438109a}
+      \strng{fullhashraw}{592b02810b8a129344ea42d6c438109a}
+      \strng{bibnamehash}{82d064ada600d98b9a89b25b60d6bb8e}
+      \strng{authorbibnamehash}{82d064ada600d98b9a89b25b60d6bb8e}
+      \strng{authornamehash}{82d064ada600d98b9a89b25b60d6bb8e}
+      \strng{authorfullhash}{592b02810b8a129344ea42d6c438109a}
+      \strng{authorfullhashraw}{592b02810b8a129344ea42d6c438109a}
+      \field{sortinit}{Å}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{30}
+      \field{issn}{0585-3249}
+      \field{month}{6}
+      \field{note}{Naturhistoriska riksmuseets småskriftserie. Rapporten bör citeras: Åsbrink et al. 2023}
+      \field{number}{2023:2}
+      \field{title}{Resultat från inventering av brunbjörn i Dalarnas, Gävleborgs och Värmlands län 2022}
+      \field{type}{Rapport från Naturhistoriska riksmuseet}
+      \field{urlday}{8}
+      \field{urlmonth}{5}
+      \field{urlyear}{2026}
+      \field{year}{2023}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.nrm.se/download/18.fa4343b199372946183c02c/1758261826003/2025-3-rapport_bjorninventering_2024.pdf
+      \endverb
+      \verb{url}
+      \verb https://www.nrm.se/download/18.fa4343b199372946183c02c/1758261826003/2025-3-rapport_bjorninventering_2024.pdf
+      \endverb
+    \endentry
+    \entry{naturvardsverket2025}{report}{}{}
+      \list{institution}{1}{%
+        {Naturvårdsverket}%
+      }
+      \list{location}{1}{%
+        {Stockholm, Sweden}%
+      }
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labeltitlesource}{title}
+      \field{day}{19}
+      \field{isbn}{978-91-620-8942-9}
+      \field{month}{6}
+      \field{note}{Rapport 8942}
+      \field{title}{Björnprojektet – 40 års forskning}
+      \field{year}{2025}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.naturvardsverket.se/49f29c/globalassets/media/publikationer-pdf/8900/978-91-620-8942-9a.pdf
+      \endverb
+      \verb{url}
+      \verb https://www.naturvardsverket.se/49f29c/globalassets/media/publikationer-pdf/8900/978-91-620-8942-9a.pdf
+      \endverb
+    \endentry
+    \entry{carroll2006}{book}{}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=ff40667debdc82eadecab2faa0252a62}{%
+           family={Carroll},
+           familyi={C\bibinitperiod},
+           given={Raymond\bibnamedelima J.},
+           giveni={R\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ca15388bebf8dfd3024fe7557ae32d5c}{%
+           family={Ruppert},
+           familyi={R\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a7b5f500e0c5c4e29452da3d073c0799}{%
+           family={Stefanski},
+           familyi={S\bibinitperiod},
+           given={Leonard\bibnamedelima A.},
+           giveni={L\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=3957322d290a7f8c9d1720ba655a36de}{%
+           family={Crainiceanu},
+           familyi={C\bibinitperiod},
+           given={Ciprian\bibnamedelima M.},
+           giveni={C\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{location}{1}{%
+        {Boca Raton, FL, USA}%
+      }
+      \list{publisher}{2}{%
+        {Chapman}%
+        {Hall/CRC}%
+      }
+      \strng{namehash}{c9ea0bdb2753cad8c06e707be16ccfe3}
+      \strng{fullhash}{40c4e6ff9e8ef93fddccb38e436cd165}
+      \strng{fullhashraw}{40c4e6ff9e8ef93fddccb38e436cd165}
+      \strng{bibnamehash}{c9ea0bdb2753cad8c06e707be16ccfe3}
+      \strng{authorbibnamehash}{c9ea0bdb2753cad8c06e707be16ccfe3}
+      \strng{authornamehash}{c9ea0bdb2753cad8c06e707be16ccfe3}
+      \strng{authorfullhash}{40c4e6ff9e8ef93fddccb38e436cd165}
+      \strng{authorfullhashraw}{40c4e6ff9e8ef93fddccb38e436cd165}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{2}
+      \field{isbn}{9781584886334}
+      \field{note}{Second edition}
+      \field{title}{Measurement Error in Nonlinear Models: A Modern Perspective}
+      \field{year}{2006}
+    \endentry
     \entry{caswell2001}{book}{}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=c1ca0958655e25f8facdd1ce8b110a0c}{%
@@ -93,6 +294,132 @@
       \field{note}{Second edition}
       \field{title}{Matrix Population Models: Construction, Analysis, and Interpretation}
       \field{year}{2001}
+    \endentry
+    \entry{https://doi.org/10.1890/07-0369.1}{article}{}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=81f50cf2d6d4a7e7392febe086a96ee9}{%
+           family={Conn},
+           familyi={C\bibinitperiod},
+           given={Paul\bibnamedelima B.},
+           giveni={P\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=8dfdfd35238b94cd9eecbc9d9e1682a9}{%
+           family={Diefenbach},
+           familyi={D\bibinitperiod},
+           given={Duane\bibnamedelima R.},
+           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{fullhash}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{fullhashraw}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{bibnamehash}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{authorbibnamehash}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{authornamehash}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{authorfullhash}{8b4d7713934c0514c804c51b2c0da0f6}
+      \strng{authorfullhashraw}{8b4d7713934c0514c804c51b2c0da0f6}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Ecologists often use samples from the age or stage structure of a population to make inferences about population-level processes and to parameterize matrix models. Typically, researchers make a simplifying assumption that age and stage classes are determined without error, when in fact some level of misclassification often can be expected. If unaccounted for, misclassification will lead to overly optimistic levels of precision and can cause biased estimates of age or stage structure. Although several studies have used information from known-age individuals to quantify errors in age or stage distribution, the problem of estimating the age or stage structure in face of such errors has received comparably little attention. In this paper, we describe a general statistical framework for estimating the true stage distribution of a sample when misclassification rates can be estimated. The estimation process requires auxiliary information on misclassification rates, such as data from individuals of known age. We analyze age-structured harvest records from black bears in Pennsylvania to illustrate how incorporating misclassification errors leads to changes in point estimates and provides a measure of precision.}
+      \field{journaltitle}{Ecology}
+      \field{number}{8}
+      \field{title}{ADJUSTING AGE AND STAGE DISTRIBUTIONS FOR MISCLASSIFICATION ERRORS}
+      \field{volume}{88}
+      \field{year}{2007}
+      \field{pages}{1977\bibrangedash 1983}
+      \range{pages}{7}
+      \verb{doi}
+      \verb https://doi.org/10.1890/07-0369.1
+      \endverb
+      \verb{eprint}
+      \verb https://esajournals.onlinelibrary.wiley.com/doi/pdf/10.1890/07-0369.1
+      \endverb
+      \verb{urlraw}
+      \verb https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1890/07-0369.1
+      \endverb
+      \verb{url}
+      \verb https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1890/07-0369.1
+      \endverb
+      \keyw{age-at-harvest,age structure,aging error,matrix population model,misclassification error,stage structure,Ursus americanus.}
+    \endentry
+    \entry{https://doi.org/10.2981/10-100}{article}{}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=0cfb18adf8b2e542b1e94d0721b247ea}{%
+           family={Kindberg},
+           familyi={K\bibinitperiod},
+           given={Jonas},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b8e6854e3e56db02b4acc0a49092a27f}{%
+           family={Swenson},
+           familyi={S\bibinitperiod},
+           given={Jon\bibnamedelima E.},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d532a4ee3e58fad82d5ceab6f1e0c8c2}{%
+           family={Ericsson},
+           familyi={E\bibinitperiod},
+           given={Göran},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e5ab458cc1dac76c880d7cdeaceaa079}{%
+           family={Bellemain},
+           familyi={B\bibinitperiod},
+           given={Eva},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=7631fdc3ad66de954a4e0efe5bcce1ad}{%
+           family={Miquel},
+           familyi={M\bibinitperiod},
+           given={Christian},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1564c09aa4ca88abc3c82774cf5afc13}{%
+           family={Taberlet},
+           familyi={T\bibinitperiod},
+           given={Pierre},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{09ad2cfd6cabfc75acae89fafdd68a53}
+      \strng{fullhash}{2268ad407366f061a99ae46ebc0d84c2}
+      \strng{fullhashraw}{2268ad407366f061a99ae46ebc0d84c2}
+      \strng{bibnamehash}{09ad2cfd6cabfc75acae89fafdd68a53}
+      \strng{authorbibnamehash}{09ad2cfd6cabfc75acae89fafdd68a53}
+      \strng{authornamehash}{09ad2cfd6cabfc75acae89fafdd68a53}
+      \strng{authorfullhash}{2268ad407366f061a99ae46ebc0d84c2}
+      \strng{authorfullhashraw}{2268ad407366f061a99ae46ebc0d84c2}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Abstract Estimating population size and trends are key issues in the conservation and management of large carnivores. The rebounding brown bear Ursus arctos population in Sweden is monitored by two different systems, both relying on voluntary resources. Population estimates have been calculated using Capture-Mark-Recapture methods, based on DNA-based scat surveys in five of the six Swedish counties with established bear populations. A total of 1,358 genotypes were identified using DNA extracted from collected scats. An independent ongoing programme, the Large Carnivore Observation Index (LCOI), was initiated in 1998. The LCOI uses effort-corrected observations of bears by moose Alces alces hunters during the moose hunt (> 2 million observation hours/year) and has shown a good correlation with relative population density of bears using the DNA-based method. From this, we have calculated population trends during the period 1998-2007. Using an exponential model, we estimated the yearly increase in the bear population to be 4.5\% at the national level, varying between 0 and 10.2\% in different counties. We used the regional population estimates and the trends from the LCOI, taking the variation from both systems into account using parametric bootstrapping, to calculate the regional as well as the national population size in Sweden in fall 2008. In one case (the northernmost county; Norrbotten) a DNA-scat survey was lacking, so we used assumptions based on data from the neighbouring county to estimate population size. We estimated the Swedish brown bear population to be 3,298 individuals (2,968-3,667; 95\% confidence intervals) in 2008. Our results suggest that reliable information, necessary for the management of the brown bear population can be obtained from volunteers using standardised methods.}
+      \field{journaltitle}{Wildlife Biology}
+      \field{number}{2}
+      \field{title}{Estimating population size and trends of the Swedish brown bear Ursus arctos population}
+      \field{volume}{17}
+      \field{year}{2011}
+      \field{pages}{114\bibrangedash 123}
+      \range{pages}{10}
+      \verb{doi}
+      \verb https://doi.org/10.2981/10-100
+      \endverb
+      \verb{eprint}
+      \verb https://nsojournals.onlinelibrary.wiley.com/doi/pdf/10.2981/10-100
+      \endverb
+      \verb{urlraw}
+      \verb https://nsojournals.onlinelibrary.wiley.com/doi/abs/10.2981/10-100
+      \endverb
+      \verb{url}
+      \verb https://nsojournals.onlinelibrary.wiley.com/doi/abs/10.2981/10-100
+      \endverb
+      \keyw{brown bear,DNA,faeces,genetic,monitoring,observations,population size,survey,Ursus arctos,volunteers}
     \endentry
     \entry{mclachlan2008}{book}{}{}
       \name{author}{2}{}{%
@@ -134,6 +461,40 @@
       \field{note}{Second edition}
       \field{title}{The EM Algorithm and Extensions}
       \field{year}{2008}
+    \endentry
+    \entry{article}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=8eddd08393fbc930afdc96a71409e843}{%
+           family={Morris},
+           familyi={M\bibinitperiod},
+           given={PA},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{8eddd08393fbc930afdc96a71409e843}
+      \strng{fullhash}{8eddd08393fbc930afdc96a71409e843}
+      \strng{fullhashraw}{8eddd08393fbc930afdc96a71409e843}
+      \strng{bibnamehash}{8eddd08393fbc930afdc96a71409e843}
+      \strng{authorbibnamehash}{8eddd08393fbc930afdc96a71409e843}
+      \strng{authornamehash}{8eddd08393fbc930afdc96a71409e843}
+      \strng{authorfullhash}{8eddd08393fbc930afdc96a71409e843}
+      \strng{authorfullhashraw}{8eddd08393fbc930afdc96a71409e843}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Mammal Review}
+      \field{month}{04}
+      \field{title}{A review of mammalian age determination methods}
+      \field{volume}{2}
+      \field{year}{2008}
+      \field{pages}{69\bibrangedash 104}
+      \range{pages}{36}
+      \verb{doi}
+      \verb 10.1111/j.1365-2907.1972.tb00160.x
+      \endverb
     \endentry
     \entry{nakamura2023}{article}{}{}
       \name{author}{12}{}{%
@@ -234,28 +595,45 @@
       \verb 10.1111/1755-0998.13788
       \endverb
     \endentry
-    \entry{nina_bearmodel}{misc}{}{}
+    \entry{nina_bearmodel}{online}{}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=4d5f748a872558c448c7430ed8742219}{%
-           family={{Norwegian Institute for Nature Research (NINA)}},
-           familyi={N\bibinitperiod}}}%
+        {{un=0,uniquepart=base,hash=11ba881cc98a67aa4958c7fb980a68fb}{%
+           family={Nature\bibnamedelimb Research\bibnamedelima (NINA)},
+           familyi={N\bibinitperiod\bibinitdelim R\bibinitperiod\bibinitdelim (\bibinitperiod},
+           given={Norwegian\bibnamedelima Institute},
+           giveni={N\bibinitperiod\bibinitdelim I\bibinitperiod},
+           givenun=0,
+           prefix={for},
+           prefixi={f\bibinitperiod},
+           prefixun=0}}%
       }
-      \strng{namehash}{4d5f748a872558c448c7430ed8742219}
-      \strng{fullhash}{4d5f748a872558c448c7430ed8742219}
-      \strng{fullhashraw}{4d5f748a872558c448c7430ed8742219}
-      \strng{bibnamehash}{4d5f748a872558c448c7430ed8742219}
-      \strng{authorbibnamehash}{4d5f748a872558c448c7430ed8742219}
-      \strng{authornamehash}{4d5f748a872558c448c7430ed8742219}
-      \strng{authorfullhash}{4d5f748a872558c448c7430ed8742219}
-      \strng{authorfullhashraw}{4d5f748a872558c448c7430ed8742219}
+      \strng{namehash}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{fullhash}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{fullhashraw}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{bibnamehash}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{authorbibnamehash}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{authornamehash}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{authorfullhash}{11ba881cc98a67aa4958c7fb980a68fb}
+      \strng{authorfullhashraw}{11ba881cc98a67aa4958c7fb980a68fb}
       \field{sortinit}{N}
       \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
-      \field{labeldatesource}{nodate}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://www.nina.no/bearmodel}}
-      \field{note}{Accessed: 2026-04-08}
-      \field{title}{Bear Population Model}
+      \field{note}{Online population modelling tool used for age-structured simulations}
+      \field{title}{Bear model (age-structured population model)}
+      \field{urlday}{9}
+      \field{urlmonth}{5}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.nina.no/bearmodel
+      \endverb
+      \verb{url}
+      \verb https://www.nina.no/bearmodel
+      \endverb
     \endentry
     \entry{robert2007}{book}{}{}
       \name{author}{2}{}{%
@@ -334,7 +712,6 @@
       \endverb
     \endentry
   \enddatalist
-  \missing{nrm_bear_monitoring}
 \endrefsection
 \endinput
 

@@ -1,39 +1,39 @@
-\contentsline {section}{\numberline {1}Introduktion}{2}{section.1}%
-\contentsline {section}{\numberline {2}Methodology}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Deconvolution}{3}{subsection.2.1}%
-\contentsline {paragraph}{Latent distribution}{4}{section*.2}%
-\contentsline {paragraph}{Measurement error}{4}{section*.3}%
-\contentsline {paragraph}{Observed data}{5}{section*.4}%
-\contentsline {paragraph}{Naive estimator}{5}{section*.5}%
-\contentsline {subsection}{\numberline {2.2}Estimation methods}{6}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Method of Moments}{6}{subsubsection.2.2.1}%
-\contentsline {paragraph}{Matrix regularization}{6}{section*.6}%
-\contentsline {subsubsection}{\numberline {2.2.2}Maximum-likelihood method ML}{7}{subsubsection.2.2.2}%
-\contentsline {paragraph}{Expectation-Maximization (EM) algorithm}{7}{section*.7}%
-\contentsline {paragraph}{Monotonicity}{7}{section*.8}%
-\contentsline {paragraph}{Applying EM-alg}{7}{section*.9}%
-\contentsline {paragraph}{Maximization-step}{9}{section*.10}%
-\contentsline {subsection}{\numberline {2.3}Matrix population models}{9}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Leslie Matrix}{9}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Computing age distribution from a Leslie matrix}{10}{subsubsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.3}Population forecast}{11}{subsubsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.4}Evaluation metric: total variation distance (TV)}{11}{subsection.2.4}%
-\contentsline {section}{\numberline {3}Simulation Study}{12}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Simulated Age Distributions}{12}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Error term}{13}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Simulation design}{14}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Simulation procedure}{15}{subsection.3.4}%
-\contentsline {paragraph}{Step 1: Generate latent data}{15}{section*.11}%
-\contentsline {paragraph}{Step 2: Apply measurement error}{15}{section*.12}%
-\contentsline {paragraph}{Step 3: Estimate distribution}{15}{section*.13}%
-\contentsline {paragraph}{Step 4: Evaluate performance}{15}{section*.14}%
-\contentsline {paragraph}{Step 5: Forecasting analysis}{15}{section*.15}%
-\contentsline {section}{\numberline {4}Results}{15}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Recovery of latent age distribution}{15}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Sample size effect on TV}{17}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Population forecast}{19}{subsection.4.3}%
-\contentsline {section}{\numberline {5}Analysis / Discussion}{20}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Properties of estimators}{21}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Practical Implications}{22}{subsection.5.2}%
+\contentsline {paragraph}{AI usage}{1}{section*.2}%
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}Methodology}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Deconvolution}{5}{subsection.2.1}%
+\contentsline {paragraph}{Latent distribution}{5}{section*.5}%
+\contentsline {paragraph}{Measurement error}{6}{section*.6}%
+\contentsline {paragraph}{Observed data}{7}{section*.7}%
+\contentsline {subsection}{\numberline {2.2}Estimation methods}{7}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Oracle and naive estimator}{7}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Method of Moments estimator}{7}{subsubsection.2.2.2}%
+\contentsline {paragraph}{Matrix regularization}{8}{section*.8}%
+\contentsline {subsubsection}{\numberline {2.2.3}Maximum likelihood estimation via the EM algorithm}{8}{subsubsection.2.2.3}%
+\contentsline {paragraph}{Monotonicity}{9}{section*.9}%
+\contentsline {paragraph}{Applying EM-algorithm}{9}{section*.10}%
+\contentsline {paragraph}{Maximization-step}{10}{section*.11}%
+\contentsline {subsection}{\numberline {2.3}Matrix population models}{11}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Leslie Matrix}{11}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Computing age distribution from a Leslie matrix}{11}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Population forecast}{12}{subsubsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.4}Evaluation metric: total variation distance (TV)}{12}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Simulation Study}{13}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Simulated Age Distributions}{13}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Error term}{14}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Simulation design}{15}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Simulation procedure}{16}{subsection.3.4}%
+\contentsline {paragraph}{Step 1: Generate latent data}{16}{section*.12}%
+\contentsline {paragraph}{Step 2: Apply measurement error}{16}{section*.13}%
+\contentsline {paragraph}{Step 3: Estimate distribution}{16}{section*.14}%
+\contentsline {paragraph}{Step 4: Evaluate performance}{16}{section*.15}%
+\contentsline {paragraph}{Step 5: Forecasting analysis}{16}{section*.16}%
+\contentsline {section}{\numberline {4}Results}{16}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Recovery of latent age distribution}{16}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Sample size effect on TV}{18}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Population forecast}{20}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Discussion}{21}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Properties of estimators}{22}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Practical Implications}{23}{subsection.5.2}%
 \contentsline {subsection}{\numberline {5.3}Viability of assumptions \& improvements}{23}{subsection.5.3}%
-\contentsline {section}{\numberline {6}Appendix}{24}{section.6}%
+\contentsline {section}{\numberline {6}Appendix}{25}{section.6}%

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.26)  4 MAY 2026 23:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.26)  13 MAY 2026 10:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -27,26 +27,7 @@ File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@prehook=\toks17
 \inpenc@posthook=\toks18
-
-(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/base\latin1.def
-File: latin1.def 2024/02/08 v1.3d Input encoding file
-LaTeX Encoding Info:    Ignoring declaration for text command \textdegree (enco
-ding ?) on input line 47.
-LaTeX Encoding Info:    Ignoring declaration for text command \textonehalf (enc
-oding ?) on input line 48.
-LaTeX Encoding Info:    Ignoring declaration for text command \textonequarter (
-encoding ?) on input line 49.
-LaTeX Encoding Info:    Ignoring declaration for text command \textthreequarter
-s (encoding ?) on input line 50.
-LaTeX Encoding Info:    Ignoring declaration for text command \textcent (encodi
-ng ?) on input line 51.
-LaTeX Encoding Info:    Ignoring declaration for text command \textyen (encodin
-g ?) on input line 53.
-LaTeX Encoding Info:    Ignoring declaration for text command \textcurrency (en
-coding ?) on input line 55.
-LaTeX Encoding Info:    Ignoring declaration for text command \textbrokenbar (e
-ncoding ?) on input line 57.
-))
+)
 (C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
 \@mathmargin=\skip51
@@ -559,26 +540,33 @@ Package biblatex Info: ... file 'biblatex.cfg' found.
 (C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/biblatex\biblatex.cfg
 File: biblatex.cfg 
 )
-Package biblatex Info: Input encoding 'latin1' detected.
-Package biblatex Info: Document encoding not detected as UTF8.
-(biblatex)             Setting 'casechanger=latex2e'.
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Document encoding is UTF8 ....
 
-(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/biblatex\blx-case-latex
-2e.sty
-Package: blx-case-latex2e 2025/07/10 v3.21 biblatex compatibility (PK/MW)
-))
-\@quotelevel=\count440
-\@quotereset=\count441
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/l3kernel\expl3.sty
+Package: expl3 2025-12-29 L3 programming layer (loader) 
 
 (C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
 tex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count442
-) (kandidat_thesis.aux
+\l__color_backend_stack_int=\count440
+))
+Package biblatex Info: ... and expl3
+(biblatex)             2025-12-29 L3 programming layer (loader) 
+(biblatex)             is new enough (at least 2020/04/06),
+(biblatex)             setting 'casechanger=expl3'.
 
-LaTeX Warning: Label `app:leslie_params' multiply defined.
-
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/biblatex\blx-case-expl3
+.sty
+(C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/l3packages/xparse\xpars
+e.sty
+Package: xparse 2025-10-09 L3 Experimental document command parser
 )
+Package: blx-case-expl3 2025/07/10 v3.21 expl3 case changing code for biblatex
+))
+\@quotelevel=\count441
+\@quotereset=\count442
+ (kandidat_thesis.aux)
 \openout1 = `kandidat_thesis.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 22.
@@ -637,167 +625,188 @@ Package biblatex Info: ... file 'english.lbx' found.
 x
 File: english.lbx 2025/07/10 v3.21 biblatex localization (PK/MW)
 )
-Package biblatex Info: Input encoding 'latin1' detected.
+Package biblatex Info: Input encoding 'utf8' detected.
 Package biblatex Info: Automatic encoding selection.
-(biblatex)             Assuming data encoding 'latin1'.
+(biblatex)             Assuming data encoding 'utf8'.
 \openout3 = `kandidat_thesis.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'kandidat_thesis.bbl' found.
- (kandidat_thesis.bbl
-
-Package biblatex Warning: The following entry could not be found
-(biblatex)                in the database:
-(biblatex)                nrm_bear_monitoring
-(biblatex)                Please verify the spelling and rerun
-(biblatex)                LaTeX afterwards.
-
-)
+ (kandidat_thesis.bbl)
 Package biblatex Info: Reference section=0 on input line 22.
 Package biblatex Info: Reference segment=0 on input line 22.
- (kandidat_thesis.toc
-LaTeX Font Info:    Trying to load font information for U+msa on input line 3.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 25.
+
 
 (C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 3.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 25.
+
 
 (C:\Users\Sueco\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 [1
 
-{C:/Users/Sueco/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}])
+{C:/Users/Sueco/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+(kandidat_thesis.toc)
 \tf@toc=\write5
 \openout5 = `kandidat_thesis.toc'.
 
-
-
-LaTeX Warning: Citation 'nrm_bear_monitoring' on page 2 undefined on input line
- 39.
-
-[2] [3] [4] [5] [6] [7] [8] [9] [10] [11]
-<../figures/age_distribution_p1.pdf, id=250, 433.62pt x 289.08pt>
+ [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12]
+<../figures/age_distribution_p1.pdf, id=272, 433.62pt x 289.08pt>
 File: ../figures/age_distribution_p1.pdf Graphic file (type pdf)
 <use ../figures/age_distribution_p1.pdf>
 Package pdftex.def Info: ../figures/age_distribution_p1.pdf  used on input line
- 457.
+ 429.
 (pdftex.def)             Requested size: 288.0011pt x 192.01082pt.
- [12]
-<../figures/age_distribution_comp_p2.pdf, id=262, 433.62pt x 289.08pt>
+ [13]
+[14 <../figures/age_distribution_p1.pdf>]
+<../figures/age_distribution_comp_p2.pdf, id=295, 867.24pt x 433.62pt>
 File: ../figures/age_distribution_comp_p2.pdf Graphic file (type pdf)
 <use ../figures/age_distribution_comp_p2.pdf>
 Package pdftex.def Info: ../figures/age_distribution_comp_p2.pdf  used on input
- line 500.
-(pdftex.def)             Requested size: 288.0011pt x 192.01082pt.
- [13 <../figures/age_distribution_p1.pdf>] [14 <../figures/age_distribution_com
-p_p2.pdf>] [15]
-<../figures/estimate_median_distribution.pdf, id=301, 433.62pt x 289.08pt>
+ line 472.
+(pdftex.def)             Requested size: 288.0011pt x 144.0015pt.
+ [15 <../figures/age_distribution_comp_p2.pdf>]
+<../figures/estimate_median_distribution.pdf, id=315, 433.62pt x 289.08pt>
 File: ../figures/estimate_median_distribution.pdf Graphic file (type pdf)
 <use ../figures/estimate_median_distribution.pdf>
 Package pdftex.def Info: ../figures/estimate_median_distribution.pdf  used on i
-nput line 577.
+nput line 544.
 (pdftex.def)             Requested size: 288.0011pt x 192.01082pt.
- [16 <../figures/estimate_median_distribution.pdf>]
-<../figures/confidence_interval_dist.pdf, id=314, 722.7pt x 433.62pt>
+ [16]
+<../figures/confidence_interval_dist.pdf, id=328, 722.7pt x 433.62pt>
 File: ../figures/confidence_interval_dist.pdf Graphic file (type pdf)
 <use ../figures/confidence_interval_dist.pdf>
 Package pdftex.def Info: ../figures/confidence_interval_dist.pdf  used on input
- line 595.
+ line 558.
 (pdftex.def)             Requested size: 288.0011pt x 172.80312pt.
-<../figures/lineplot_sz_decon.pdf, id=316, 578.16pt x 289.08pt>
+ [17 <../figures/estimate_median_distribution.pdf>]
+<../figures/lineplot_sz_decon.pdf, id=339, 578.16pt x 289.08pt>
 File: ../figures/lineplot_sz_decon.pdf Graphic file (type pdf)
 <use ../figures/lineplot_sz_decon.pdf>
-Package pdftex.def Info: ../figures/lineplot_sz_decon.pdf  used on input line 6
-14.
+Package pdftex.def Info: ../figures/lineplot_sz_decon.pdf  used on input line 5
+75.
 (pdftex.def)             Requested size: 288.0011pt x 143.99709pt.
- [17 <../figures/confidence_interval_dist.pdf>]
-<../figures/barplot_c_MoM_i_TV_minus_baseline_p8.pdf, id=331, 578.16pt x 289.08
+ [18 <../figures/confidence_interval_dist.pdf>]
+<../figures/barplot_c_MoM_i_TV_minus_baseline_p8.pdf, id=354, 578.16pt x 289.08
 pt>
 File: ../figures/barplot_c_MoM_i_TV_minus_baseline_p8.pdf Graphic file (type pd
 f)
 <use ../figures/barplot_c_MoM_i_TV_minus_baseline_p8.pdf>
 Package pdftex.def Info: ../figures/barplot_c_MoM_i_TV_minus_baseline_p8.pdf  u
-sed on input line 624.
+sed on input line 585.
 (pdftex.def)             Requested size: 288.0011pt x 143.99709pt.
- [18 <../figures/lineplot_sz_decon.pdf> <../figures/barplot_c_MoM_i_TV_minus_ba
+ [19 <../figures/lineplot_sz_decon.pdf> <../figures/barplot_c_MoM_i_TV_minus_ba
 seline_p8.pdf>]
-<../figures/violin.pdf, id=348, 722.7pt x 433.62pt>
+<../figures/violin.pdf, id=372, 722.7pt x 433.62pt>
 File: ../figures/violin.pdf Graphic file (type pdf)
 <use ../figures/violin.pdf>
-Package pdftex.def Info: ../figures/violin.pdf  used on input line 637.
+Package pdftex.def Info: ../figures/violin.pdf  used on input line 598.
 (pdftex.def)             Requested size: 288.0011pt x 172.80312pt.
- [19 <../figures/violin.pdf>]
-<../figures/forcast_plot.pdf, id=366, 1011.78pt x 722.7pt>
+ [20 <../figures/violin.pdf>]
+<../figures/forcast_plot.pdf, id=389, 578.16pt x 433.62pt>
 File: ../figures/forcast_plot.pdf Graphic file (type pdf)
 <use ../figures/forcast_plot.pdf>
-Package pdftex.def Info: ../figures/forcast_plot.pdf  used on input line 659.
-(pdftex.def)             Requested size: 288.0011pt x 205.718pt.
- [20 <../figures/forcast_plot.pdf>] [21] [22]
+Package pdftex.def Info: ../figures/forcast_plot.pdf  used on input line 614.
+(pdftex.def)             Requested size: 288.0011pt x 215.99564pt.
 
-LaTeX Warning: Reference `ref:' on page 23 undefined on input line 726.
+[21 <../figures/forcast_plot.pdf>] [22] [23] (../tables/failure_rate_ml.tex)
+[24]
+<../figures/error_model_example.pdf, id=435, 867.24pt x 433.62pt>
+File: ../figures/error_model_example.pdf Graphic file (type pdf)
+<use ../figures/error_model_example.pdf>
+Package pdftex.def Info: ../figures/error_model_example.pdf  used on input line
+ 731.
+(pdftex.def)             Requested size: 288.0011pt x 144.0015pt.
+ [25]
+Overfull \hbox (24.19778pt too wide) in paragraph at lines 738--738
+\OT1/cmr/m/n/10.95 Naturhis-toriska riksmuseet 2025:3. Naturhis-toriska riksmus
+eets sm^^Waskriftserie.
+ []
 
-(../tables/failure_rate_ml.tex) [23] [24]
-Overfull \hbox (0.82274pt too wide) in paragraph at lines 786--786
+
+Overfull \hbox (6.62526pt too wide) in paragraph at lines 738--738
+\OT1/cmr/m/it/10.95 sul-tat fr^^Wan in-ven-ter-ing av brunbj^^?orn i Dalar-nas,
+ G^^?avleborgs och V^^?armlands
+ []
+
+
+Overfull \hbox (79.14459pt too wide) in paragraph at lines 738--738
+\OT1/cmr/m/n/10.95 och ^^?overvakning. \OT1/cmr/m/sc/10.95 url\OT1/cmr/m/n/10.9
+5 : [][]$\OT1/cmtt/m/n/10.95 https : / / www . nrm . se / download / 18 . fa434
+3b199372946183c02c /
+ []
+
+[26 <../figures/error_model_example.pdf>]
+Overfull \hbox (0.18365pt too wide) in paragraph at lines 738--738
+\OT1/cmr/m/n/10.95 STAGE DIS-TRI-BU-TIONS FOR MIS-CLAS-SI-FI-CA-TION ER-RORS''.
+ In:
+ []
+
+
+Overfull \hbox (26.56715pt too wide) in paragraph at lines 738--738
+\OT1/cmtt/m/n/10.95 doi / pdf / 10 . 1890 / 07 -[] 0369 . 1$[][]\OT1/cmr/m/n/10
+.95 . \OT1/cmr/m/sc/10.95 url\OT1/cmr/m/n/10.95 : [][]$\OT1/cmtt/m/n/10.95 http
+s : / / esajournals . onlinelibrary .
+ []
+
+
+Overfull \hbox (0.82274pt too wide) in paragraph at lines 738--738
 \OT1/cmr/m/n/10.95 tion lev-els in brown bears''. In: \OT1/cmr/m/it/10.95 Molec
 -u-lar Ecol-ogy Re-sources \OT1/cmr/m/n/10.95 23, pp. 1211{
  []
 
-[25] (kandidat_thesis.aux)
+[27] (kandidat_thesis.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-29>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: There were multiply-defined labels.
-
 Package rerunfilecheck Info: File `kandidat_thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 80AC05DE929476CA76E4E37A92308247;4243.
+(rerunfilecheck)             Checksum: 7B6DD18F11F9FCA9D622901A0B0C0E71;4564.
 Package logreq Info: Writing requests to 'kandidat_thesis.run.xml'.
 \openout1 = `kandidat_thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 18152 strings out of 467871
- 315177 string characters out of 5418376
- 1164856 words of memory out of 5000000
- 46736 multiletter control sequences out of 15000+600000
- 638194 words of font info for 77 fonts, out of 8000000 for 9000
+ 18315 strings out of 467871
+ 320589 string characters out of 5418376
+ 1164892 words of memory out of 5000000
+ 46891 multiletter control sequences out of 15000+600000
+ 639359 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,79p,982b,1480s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\Sueco\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcti
-1095.pk> <C:\Users\Sueco\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
-0\tcrm1095.pk><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/
-amsfonts/cm/cmbx10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmbx12.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/f
-onts/type1/public/amsfonts/cm/cmbx6.pfb><C:/Users/Sueco/AppData/Local/Programs/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/Sueco/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/Sueco/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/Su
-eco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:
-/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6
+ 75i,15n,79p,2004b,1847s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\Sueco\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
+1095.pk><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/cmextra/cmbsy8.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmbx10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/Sueco/AppData/Local/Programs/
+MiKTeX/fonts/type1/public/amsfonts/cm/cmbx6.pfb><C:/Users/Sueco/AppData/Local/P
+rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/Sueco/AppData
+/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/Sue
+co/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/
+Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10
 .pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmmi8.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
-msfonts/cm/cmmib10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/cmextra/cmmib8.pfb><C:/Users/Sueco/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Sueco/AppData/Local/Prog
-rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/Sueco/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Sueco/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/S
-ueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:
-/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8
-.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmti10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/
-amsfonts/cm/cmtt10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/symbols/msbm10.pfb>
-Output written on kandidat_thesis.pdf (25 pages, 458865 bytes).
+cm/cmmi6.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmmi8.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmmib10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cmextra/cmmib8.pfb><C:/Users/Sueco/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Sueco/AppData/Lo
+cal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Sueco/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/
+Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:
+/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.
+pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmsy10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmsy8.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmti10.pfb><C:/Users/Sueco/AppData/Local/Programs/MiKTeX/fon
+ts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/Sueco/AppData/Local/Programs/M
+iKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on kandidat_thesis.pdf (27 pages, 510833 bytes).
 PDF statistics:
- 545 PDF objects out of 1000 (max. 8388607)
- 103 named destinations out of 1000 (max. 500000)
- 241 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 604 PDF objects out of 1000 (max. 8388607)
+ 107 named destinations out of 1000 (max. 500000)
+ 254 words of extra memory for PDF output out of 10000 (max. 10000000)
 
